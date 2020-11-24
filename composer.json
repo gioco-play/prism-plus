@@ -22,5 +22,10 @@
         "psr-4": {
           "GiocoPlus\\EZAdmin\\": "src/"
         }
+    },
+    "extra": {
+        "hyperf": {
+            "config": "GiocoPlus\\EZAdmin\\ConfigProvider"
+        }
     }
 }
