@@ -13,9 +13,8 @@ use Psr\Container\ContainerInterface;
 
 /**
  * 快取
- *
  * Class CacheService
- * @package App\Service
+ * @package GiocoPlus\EZAdmin\Service
  */
 class CacheService
 {
