@@ -17,10 +17,10 @@
     },
     "autoload": {
         "files": [
-          "src/Functions.php"
+          "./src/Functions.php"
         ],
         "psr-4": {
-          "GiocoPlus\\EZAdmin\\": "src"
+          "GiocoPlus\\EZAdmin\\": "src/"
         }
     }
 }
