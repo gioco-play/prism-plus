@@ -8,7 +8,11 @@ namespace GiocoPlus\EZAdmin\Service;
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
 use Psr\EventDispatcher\EventDispatcherInterface;
-
+/**
+ * 清除快取
+ * Class CacheFlushService
+ * @package GiocoPlus\EZAdmin\Service
+ */
 class CacheFlushService
 {
 
