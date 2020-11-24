@@ -33,7 +33,7 @@ class CacheService
      *
      * @param string $account
      *
-     * @Cacheable(prefix="admin_user", ttl=30, value="_#{account}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user", ttl=60, value="_#{account}", listener="admin-user-update")
      */
     public function adminUserInfo(string $account) {
         $role = current($this->mongodb->fetchAll('admin_user_roles', ['account' => $account]));
@@ -51,7 +51,7 @@ class CacheService
      *
      * @param string $code
      *
-     * @Cacheable(prefix="op", ttl=30, value="_#{code}", listener="op-update")
+     * @Cacheable(prefix="op", ttl=60, value="_#{code}", listener="op-update")
      */
     public function operator(string $code) {
 
@@ -69,7 +69,7 @@ class CacheService
      *
      * @param string $code
      *
-     * @Cacheable(prefix="comp", ttl=30, value="_#{code}", listener="comp-update")
+     * @Cacheable(prefix="comp", ttl=60, value="_#{code}", listener="comp-update")
      */
     public function company(string $code) {
 
@@ -87,7 +87,7 @@ class CacheService
      *
      * @param string $code
      *
-     * @Cacheable(prefix="vendor", ttl=30, value="_#{code}", listener="vendor-update")
+     * @Cacheable(prefix="vendor", ttl=60, value="_#{code}", listener="vendor-update")
      */
     public function vendor(string $code) {
 
@@ -104,7 +104,7 @@ class CacheService
      * 遊戲商 請求參數列表
      *
      *
-     * @Cacheable(prefix="list_request_params", ttl=30, listener="vendor-request-param-list")
+     * @Cacheable(prefix="list_request_params", ttl=60, listener="vendor-request-param-list")
      */
     public function listRequestParams() {
 
