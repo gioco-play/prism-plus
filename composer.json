@@ -1,0 +1,18 @@
+{
+    "name": "gioco-plus/ezadmin-tools",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Xuan Yang",
+            "email": "xuan.yang@goldenf.co"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "psr/container": "^1.0",
+        "gioco-plus/hyperf-cors": "dev-master",
+        "gioco-plus/hyperf-jwt-auth": "dev-master",
+        "gioco-plus/hyperf-mongodb": "dev-master"
+    }
+}
