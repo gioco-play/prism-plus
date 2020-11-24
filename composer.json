@@ -14,5 +14,13 @@
         "gioco-plus/hyperf-cors": "dev-master",
         "gioco-plus/hyperf-jwt-auth": "dev-master",
         "gioco-plus/hyperf-mongodb": "dev-master"
+    },
+    "autoload": {
+        "files": [
+          "src/Functions.php"
+        ],
+        "psr-4": {
+          "GiocoPlus\\EZAdmin\\": "src"
+        }
     }
 }
