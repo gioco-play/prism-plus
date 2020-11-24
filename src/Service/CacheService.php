@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace GiocoPlus\EZAdmin\Service;
 
 use GiocoPlus\Mongodb\MongoDb;
+use GiocoPlus\Mongodb\Pool\PoolFactory;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Utils\Context;
+use Psr\Container\ContainerInterface;
 
 /**
  * 快取
@@ -18,10 +21,13 @@ class CacheService
 {
 
     /**
-     * @Inject()
      * @var MongoDb
      */
     protected $mongodb;
+
+    public function __construct(ContainerInterface $container) {
+        $this->mongodb = $container->get(MongoDb::class);
+    }
 
     /**
      * 管理者基本資料
