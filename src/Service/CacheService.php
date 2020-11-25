@@ -33,7 +33,7 @@ class CacheService
      *
      * @param string $account
      *
-     * @Cacheable(prefix="admin_user", ttl=60, value="_#{account}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user_info", ttl=60, value="_#{account}", listener="admin-user-update")
      */
     public function adminUserInfo(string $account) {
         $role = current($this->mongodb->fetchAll('admin_user_roles', ['account' => $account]));
@@ -44,6 +44,17 @@ class CacheService
             'company_code' => $company['code']??"unknown-code",
             'company_name' => $company['name']??"unknown-name"
         ];
+    }
+
+    /**
+     * 管理者帳號
+     *
+     * @param string $uid
+     * @Cacheable(prefix="admin_user", ttl=60, value="_#{uid}", listener="admin-user-update")
+     */
+    public function adminUser(string $uid) {
+        $user = current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
+        return $user;
     }
 
     /**
