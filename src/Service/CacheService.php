@@ -88,7 +88,12 @@ class CacheService
     public function opMongoDbConfig(string $code) {
         $op = $this->operator($code);
         $dbConn = $op['db']->mongodb;
-        $mongodb = mongodb_pool_config($dbConn->host, $dbConn->db_name, intval($dbConn->port), $dbConn->replica, $dbConn->read_preference??"primary");
+        $mongodb = mongodb_pool_config(
+            $dbConn->host,
+            $dbConn->db_name??"{$code}_db",
+            intval($dbConn->port),
+            $dbConn->replica,
+            $dbConn->read_preference??"primary");
         $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
         $config->set("mongodb.db_{$code}", $mongodb);
         return "db_{$code}";
