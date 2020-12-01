@@ -7,6 +7,7 @@ namespace GiocoPlus\EZAdmin\Service;
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\Pool\PoolFactory;
 use Hyperf\Cache\Annotation\Cacheable;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Utils\Context;
 use Psr\Container\ContainerInterface;
@@ -24,8 +25,14 @@ class CacheService
      */
     protected $mongodb;
 
+    /**
+     * @var ConfigInterface
+     */
+    protected $config;
+
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
+        $this->config = $container->get(Config::class);
     }
 
     /**
@@ -73,6 +80,20 @@ class CacheService
         }
 
         return null;
+    }
+
+    /**
+     * @param string $code
+     * @return MongoDb
+     *
+     * @Cacheable(prefix="op_mongodb", ttl=60, value="_#{code}", listener="op-mongodb")
+     */
+    public function operatorMongoDbConnection(string $code) {
+        $op = $this->operator($code);
+        $dbConn = $op['db']['mongodb'];
+        $config = mongodb_pool_config($dbConn['host'], $dbConn['db_name'], intval($dbConn['port']), $dbConn['replica']);
+        $this->config->set("mongodb.db_$code", $config);
+        return $this->mongodb->setPool("db_$code");
     }
 
     /**

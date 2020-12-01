@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace GiocoPlus\EZAdmin;
 
+
 class ConfigProvider
 {
     public function __invoke(): array
     {
         return [
             'dependencies' => [
-                CacheInterface::class => Cache::class
+                CacheInterface::class => Cache::class,
+                ConfigInterface::class => Config::class
             ],
             'commands' => [
             ],
