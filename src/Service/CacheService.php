@@ -83,6 +83,7 @@ class CacheService
     }
 
     /**
+     * 營運商 MongoDb 配置参数
      *
      * @param string $code
      * @return array
