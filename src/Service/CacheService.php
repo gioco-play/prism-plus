@@ -32,7 +32,7 @@ class CacheService
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
-        $this->config = $container->get(Config::class);
+        $this->config = $container->get(ConfigInterface::class);
     }
 
     /**
