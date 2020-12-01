@@ -83,20 +83,6 @@ class CacheService
     }
 
     /**
-     * @param string $code
-     * @return MongoDb
-     *
-     * @Cacheable(prefix="op_mongodb", ttl=60, value="_#{code}", listener="op-mongodb")
-     */
-    public function operatorMongoDbConnection(string $code) {
-        $op = $this->operator($code);
-        $dbConn = $op['db']->mongodb;
-        $config = mongodb_pool_config($dbConn->host, $dbConn->db_name, intval($dbConn->port), $dbConn->replica);
-        $this->config->set("mongodb.db_$code", $config);
-        return $this->mongodb;
-    }
-
-    /**
      * 公司
      *
      * @param string $code
