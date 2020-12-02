@@ -46,7 +46,7 @@ class DbManager
             intval($dbConn->port),
             $dbConn->replica,
             $dbConn->read_preference??$readPref);
-        $config = ApplicationCont::getContainer()->get(ConfigInterface::class);
+        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
         $config->set("mongodb.db_{$code}", $dbCfg);
         return $this->mongodb->setPool("db_{$code}");
     }
