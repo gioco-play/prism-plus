@@ -59,7 +59,7 @@ class Transaction
 
     }
 
-    protected function genGameTransactionLog(string $transType, string $vendorCode, string $uniqId, string $playerName, string $walletCode,
+    protected function transactionLog(string $transType, string $vendorCode, string $uniqId, string $playerName, string $walletCode,
                                           float $balance, float $amount) {
         return [
             'trans_type' => $transType,
@@ -69,21 +69,6 @@ class Transaction
             'amount' => $amount,
             'balance' => bcsub(strval($balance), strval($amount), 2),
             'trace_id' => gen_trace_id($playerName, $vendorCode, $transType, $uniqId),
-            'created_time' => micro_timestamp(),
-            'belong_date' => date('Y-m-d')
-        ];
-    }
-
-    protected function genOpTransactionLog(string $transType, string $opCode, string $uniqId, string $playerName, string $walletCode,
-                                        float $balance, float $amount) {
-        return [
-            'trans_type' => $transType,
-            'player_name' => $playerName,
-            'wallet_code' => $walletCode,
-            'before_balance' => $balance,
-            'amount' => $amount,
-            'balance' => bcsub(strval($balance), strval($amount), 2),
-            'trace_id' => $uniqId ?? gen_order_no($opCode),
             'created_time' => micro_timestamp(),
             'belong_date' => date('Y-m-d')
         ];
