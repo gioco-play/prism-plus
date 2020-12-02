@@ -26,7 +26,7 @@ class CacheService
      */
     protected $mongodb;
 
-    protected $poolName = "mongodb.default";
+    protected $poolName = "default";
 
 
     public function __construct(ContainerInterface $container) {
