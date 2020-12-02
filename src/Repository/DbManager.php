@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GiocoPlus\EZAdmin\Repository;
 
+use Hyperf\Di\Annotation\Inject;
 use GiocoPlus\Mongodb\MongoDbConst;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\ApplicationContext;
@@ -17,11 +18,13 @@ class DbManager
 {
 
     /**
+     * @Inject
      * @var CacheService
      */
     protected $cache;
 
     /**
+     * @Inject
      * @var MongoDb
      */
     protected $mongodb;
