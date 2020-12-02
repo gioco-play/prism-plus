@@ -24,13 +24,68 @@ class Transaction
      */
     protected $postgres;
 
+    protected $operatorCode;
+
+    protected $playerName;
+
+    protected $walletCode;
+
     /**
      * Transaction constructor.
-     * @param string $opCode
+     * @param string $operatorCode
+     * @param string $playerName
+     * @param string $walletCode
      */
-    public function __construct(string $opCode) {
-        $this->postgres = $this->dbManager->opPostgreDb($opCode);
+    public function __construct(string $operatorCode, string $playerName, string $walletCode) {
+        $this->postgres = $this->dbManager->opPostgreDb($operatorCode);
+        $this->operatorCode = $operatorCode;
+        $this->playerName = $playerName;
+        $this->walletCode = $walletCode;
     }
 
-//    public function transferIn($am)
+    public function transferIn(string $transType, float $amount, string $traceId) {
+
+    }
+
+    public function transferOut(string $transType, float $amount, string $traceId) {
+
+    }
+
+    public function forceTransferOut(string $transType, float $amount, string $traceId) {
+
+    }
+
+    protected function transaction(string $transType, float $amount, string $traceId, bool $force = false) {
+
+    }
+
+    protected function genGameTransactionLog(string $transType, string $vendorCode, string $uniqId, string $playerName, string $walletCode,
+                                          float $balance, float $amount) {
+        return [
+            'trans_type' => $transType,
+            'player_name' => $playerName,
+            'wallet_code' => $walletCode,
+            'before_balance' => $balance,
+            'amount' => $amount,
+            'balance' => bcsub(strval($balance), strval($amount), 2),
+            'trace_id' => gen_trace_id($playerName, $vendorCode, $transType, $uniqId),
+            'created_time' => micro_timestamp(),
+            'belong_date' => date('Y-m-d')
+        ];
+    }
+
+    protected function genOpTransactionLog(string $transType, string $opCode, string $uniqId, string $playerName, string $walletCode,
+                                        float $balance, float $amount) {
+        return [
+            'trans_type' => $transType,
+            'player_name' => $playerName,
+            'wallet_code' => $walletCode,
+            'before_balance' => $balance,
+            'amount' => $amount,
+            'balance' => bcsub(strval($balance), strval($amount), 2),
+            'trace_id' => $uniqId ?? gen_order_no($opCode),
+            'created_time' => micro_timestamp(),
+            'belong_date' => date('Y-m-d')
+        ];
+    }
 }

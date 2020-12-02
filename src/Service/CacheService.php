@@ -26,6 +26,8 @@ class CacheService
      */
     protected $mongodb;
 
+    protected $poolName = "mongodb.default";
+
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
@@ -39,8 +41,8 @@ class CacheService
      * @Cacheable(prefix="admin_user_info", ttl=60, value="_#{account}", listener="admin-user-update")
      */
     public function adminUserInfo(string $account) {
-        $role = current($this->mongodb->fetchAll('admin_user_roles', ['account' => $account]));
-        $_company = current($this->mongodb->fetchAll('admin_user_company', ['account' => $account]));
+        $role = current($this->mongodb->setPool($this->poolName)->fetchAll('admin_user_roles', ['account' => $account]));
+        $_company = current($this->mongodb->setPool($this->poolName)->fetchAll('admin_user_company', ['account' => $account]));
         $company = $this->company($_company['company_code']??"unknown");
         return [
             'role' => $role['role']??"unknown-role",
@@ -56,7 +58,7 @@ class CacheService
      * @Cacheable(prefix="admin_user", ttl=60, value="_#{uid}", listener="admin-user-update")
      */
     public function adminUser(string $uid) {
-        $user = current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
+        $user = current($this->mongodb->setPool($this->poolName)->fetchAll('admin_users', ['_id' => $uid]));
         return $user;
     }
 
@@ -69,7 +71,7 @@ class CacheService
      */
     public function operator(string $code) {
 
-        $data = current($this->mongodb->fetchAll('operators', ['code' => $code]));
+        $data = current($this->mongodb->setPool($this->poolName)->fetchAll('operators', ['code' => $code]));
 
         if ($data) {
             return $data;
@@ -87,7 +89,7 @@ class CacheService
      */
     public function company(string $code) {
 
-        $data = current($this->mongodb->fetchAll('companies', ['code' => $code]));
+        $data = current($this->mongodb->setPool($this->poolName)->fetchAll('companies', ['code' => $code]));
 
         if ($data) {
             return $data;
@@ -105,7 +107,7 @@ class CacheService
      */
     public function vendor(string $code) {
 
-        $data = current($this->mongodb->fetchAll('vendors', ['code' => $code]));
+        $data = current($this->mongodb->setPool($this->poolName)->fetchAll('vendors', ['code' => $code]));
 
         if ($data) {
             return $data;
@@ -122,7 +124,7 @@ class CacheService
      */
     public function listRequestParams() {
 
-        $data = $this->mongodb->fetchAll('vendors');
+        $data = $this->mongodb->setPool($this->poolName)->fetchAll('vendors');
 
         if ($data) {
             return $data;
@@ -142,7 +144,7 @@ class CacheService
      */
     public function companyOpCodes(string $code) : array {
 
-        $comp = $this->mongodb->fetchAll('companies', ['type' => 'comp' ,'code' => $code]);
+        $comp = $this->mongodb->setPool($this->poolName)->fetchAll('companies', ['type' => 'comp' ,'code' => $code]);
 
         if ($comp) {
             return $this->_subCompanyOpcodes($comp);
@@ -160,7 +162,7 @@ class CacheService
         $_code = [];
         foreach ($comp as $c) {
             if ($c['type'] === 'comp') {
-                $_comp = $this->mongodb->fetchAll('companies', ['parent_code' => $c['code'], 'status' => 'online'], [
+                $_comp = $this->mongodb->setPool($this->poolName)->fetchAll('companies', ['parent_code' => $c['code'], 'status' => 'online'], [
                     'sort' => ['sort'=>1]
                 ]);
                 $__codes = $this->_subCompanyOpcodes($_comp);
@@ -197,10 +199,10 @@ class CacheService
             $filter = [];
         }
 
-        $roles = $this->mongodb->fetchAll('admin_role_menus', $filter);
+        $roles = $this->mongodb->setPool($this->poolName)->fetchAll('admin_role_menus', $filter);
         $menu_codes = collect($roles)->pluck('menu_code')->toArray();
 
-        $data = $this->mongodb->fetchAll('menus',
+        $data = $this->mongodb->setPool($this->poolName)->fetchAll('menus',
             [
                 'code' => [
                     '$in' => $menu_codes
@@ -238,6 +240,6 @@ class CacheService
             return [];
         }
 
-        return $this->mongodb->fetchAll('admin_role_menu_permissions', $filter);
+        return $this->mongodb->setPool($this->poolName)->fetchAll('admin_role_menu_permissions', $filter);
     }
 }
