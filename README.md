@@ -22,12 +22,20 @@ protected $cacheFlush;
 
 ```php
 # 配置MongoDb連線
-$confName = $this->cache->opMongoDbConfig('gf');
-$this->mongoDbClient->setPool($confName)->insert("hyperf_test", [
+
+/**
+ * @Inject()
+ * @var DbManager
+ */
+protected $dbManger;
+
+# 使用
+$this->dbManger->opMongoDb('gf')->insert("hyperf_test", [
     'aaa'=>'a',
     'bbb'=>'b',
     'ccc'=>'c'
 ]);
+
 # 獲取Config
 $this->config->get("mongodb.{$confName}");
 ```
