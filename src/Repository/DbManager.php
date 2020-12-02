@@ -55,16 +55,22 @@ class DbManager
      * 選擇商戶PostgreSql資料庫
      * @param string $code
      * @param string|null $dbName
-     * @return MongoDb
+     * @param null $host
+     * @param int $port
+     * @param null $user
+     * @param null $password
+     * @return Swoole\Coroutine\PostgreSQL|void
      */
-    public function opPostgreDb(string $code, string $dbName = null) {
+    public function opPostgreDb(string $code, string $dbName = null, $host = null, $port = null, $user = null, $password = null) {
         $op = $this->cache->operator($code);
         $dbConn = $op['db']->postgres;
-        $host = $dbConn->host;
-        $port = $dbConn->port;
+        //
+        $host = $host ?? $dbConn->host;
+        $port = $port ?? $dbConn->port;
+        $user = $user ?? $dbConn->user;
+        $password = $password ?? $dbConn->password;
         $dbName = $dbName ?? "{$code}_db";
-        $user = $dbConn->user;
-        $password = $dbConn->password;
+        //
         $pg = new Swoole\Coroutine\PostgreSQL();
         $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
         if (!$conn) {
