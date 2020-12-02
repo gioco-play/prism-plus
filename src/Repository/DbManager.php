@@ -61,7 +61,7 @@ class DbManager
      * @param string $dbName
      * @return Swoole\Coroutine\PostgreSQL|void
      */
-    public function opPostgreDb(string $code, string $dbName) {
+    public function opPostgreDb(string $code, string $dbName = null) {
         try {
             $op = $this->cache->operator($code);
             $dbConn = $op['db']->postgres;
