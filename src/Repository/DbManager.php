@@ -37,46 +37,50 @@ class DbManager
      * @return MongoDb
      */
     public function opMongoDb(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
-        $dbName = $dbName ?? "{$code}_db";
-        $op = $this->cache->operator($code);
-        $dbConn = $op['db']->mongodb;
-        $dbCfg = mongodb_pool_config(
-            $dbConn->host,
-            $dbConn->db_name??$dbName,
-            intval($dbConn->port),
-            $dbConn->replica,
-            $dbConn->read_preference??$readPref);
-        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
-        $config->set("mongodb.db_{$code}", $dbCfg);
-        return $this->mongodb->setPool("db_{$code}");
+        try {
+            $dbName = $dbName ?? "{$code}_db";
+            $op = $this->cache->operator($code);
+            $dbConn = $op['db']->mongodb;
+            $dbCfg = mongodb_pool_config(
+                $dbConn->host,
+                $dbConn->db_name??$dbName,
+                intval($dbConn->port),
+                $dbConn->replica,
+                $dbConn->read_preference??$readPref);
+            $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
+            $config->set("mongodb.db_{$code}", $dbCfg);
+            return $this->mongodb->setPool("db_{$code}");
+        } catch (\RuntimeException $e) {
+            echo sprintf('RuntimeException %s[%s] in %s', $e->getMessage(), $e->getLine(), $e->getFile());
+        }
     }
 
     /**
      * 選擇商戶PostgreSql資料庫
      * @param string $code
-     * @param string|null $dbName
-     * @param null $host
-     * @param int $port
-     * @param null $user
-     * @param null $password
+     * @param string $dbName
      * @return Swoole\Coroutine\PostgreSQL|void
      */
-    public function opPostgreDb(string $code, string $dbName = null, $host = null, $port = null, $user = null, $password = null) {
-        $op = $this->cache->operator($code);
-        $dbConn = $op['db']->postgres ?? new \stdClass();
-        //
-        $host = $host ?? $dbConn->host;
-        $port = $port ?? $dbConn->port;
-        $user = $user ?? $dbConn->user;
-        $password = $password ?? $dbConn->password;
-        $dbName = $dbName ?? "{$code}_db";
-        //
-        $pg = new Swoole\Coroutine\PostgreSQL();
-        $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
-        if (!$conn) {
-            var_dump($pg->error);
-            return;
+    public function opPostgreDb(string $code, string $dbName) {
+        try {
+            $op = $this->cache->operator($code);
+            $dbConn = $op['db']->postgres;
+            //
+            $host = $dbConn->host;
+            $port = $dbConn->port;
+            $user = $dbConn->user;
+            $password = $password ?? $dbConn->password;
+            $dbName = $dbName ?? "{$code}_db";
+            //
+            $pg = new Swoole\Coroutine\PostgreSQL();
+            $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
+            if (!$conn) {
+                var_dump($pg->error);
+                return;
+            }
+            return $pg;
+        } catch (\RuntimeException $e) {
+            echo sprintf('RuntimeException %s[%s] in %s', $e->getMessage(), $e->getLine(), $e->getFile());
         }
-        return $pg;
     }
 }
