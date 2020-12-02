@@ -58,8 +58,8 @@ class DbManager
     /**
      * 選擇商戶PostgreSql資料庫
      * @param string $code
-     * @param string $dbName
-     * @return Swoole\Coroutine\PostgreSQL|void
+     * @param string|null $dbName
+     * @return \Swoole\Coroutine\PostgreSQL|void
      */
     public function opPostgreDb(string $code, string $dbName = null) {
         try {
