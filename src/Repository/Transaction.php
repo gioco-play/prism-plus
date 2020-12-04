@@ -115,41 +115,38 @@ class Transaction
      * @param int $connectTimeout
      */
     public function __construct(string $accountOp, string $walletCode, int $connectTimeout = 10000) {
+
         list($this->playerName, $this->operatorCode) = array_values(Tool::MemberSplitCode($accountOp));
-        $this->postgres = $this->dbManager->opPostgreDb($this->operatorCode);
-        $this->operator = $this->cache->operator($this->operatorCode);
+        $this->postgres = $this->dbManager->opPostgreDb(strtolower($this->operatorCode));
+        $this->operator = (array) $this->cache->operator($this->operatorCode);
         $this->walletCode = $walletCode;
         $this->connectTimeout = $connectTimeout;
-
         // 根據錢包代碼取得產品商代碼
         list($gf, $vendorCode, $wallet) = explode('_', $walletCode);
-
         // 判斷產品是否啟用
-        if (isset($this->operator['vendor_switch'][$vendorCode]) === false ) {
+        if (isset($this->operator['vendor_switch']->$vendorCode) === false) {
             throw new TransactionException(ApiResponse::PRODUCT_NEED_ACK, $vendorCode);
         }
-
         // 判斷幣值轉換
         $currencyRates = collect($this->operator['currency_rate'])->pluck('rate', 'vendor');
-        if (isset($currencyRates[$vendorCode]) === false ) {
-            throw new TransactionException(ApiResponse::TRANS_CURRENCY_RATE_EMPTY, $walletCode );
+        if (isset($currencyRates[$vendorCode]) === false) {
+            throw new TransactionException(ApiResponse::TRANS_CURRENCY_RATE_EMPTY, $walletCode);
         }
         $this->vendorCode = $vendorCode;
         $this->currencyRate = $currencyRates[$vendorCode];
-
         // 檢查類單一配置
-        $this->seamlessEnable = $this->operator['vendor_switch'][$vendorCode]['seamless_enable']??false;
+        $this->seamlessEnable = $this->operator['vendor_switch']->$vendorCode->seamless_enable ?? false;
+
         if ($this->seamlessEnable) {
-            if (isset($this->operator['seamless_setting'])===false || empty($this->operator['seamless_setting']['host'])) {
+            if (isset($this->operator['seamless_setting']) === false || empty($this->operator['seamless_setting']->host)) {
                 throw new TransactionException(ApiResponse::TRANS_SEAMLESS_ERROR);
             }
             $this->seamlessSetting = $this->operator['seamless_setting'];
         }
-
         // 錢包初始化
-        if ($this->seamlessEnable === false ) {
+        if ($this->seamlessEnable === false) {
             $result = $this->walletInit();
-            if ($result === false ) {
+            if ($result === false) {
                 throw new TransactionException(ApiResponse::TRANS_WALLET_EMPTY, $walletCode);
             }
         }
@@ -450,18 +447,18 @@ class Transaction
                 ];
                 $fields = implode(",", array_keys($form));
                 $values = "'".implode("','", array_values($form))."'";
-                $result = $pg->query("INSERT INTO member_wallets ($fields) VALUES ($values) RETURNING trace_id ;");
+                $result = $pg->query("INSERT INTO member_wallets ($fields) VALUES ($values) RETURNING wallet_code ;");
                 if ($result) {
                     $pg->query("COMMIT;");
                     return true;
                 }
             }
             $pg->query("ROLLBACK;");
+            return true;
         } catch (\Exception $e) {
             $pg->query("ROLLBACK;");
             throw new TransactionException(ApiResponse::TRANS_WALLET_INIT_FAIL);
         }
-        return false;
     }
 
     /**

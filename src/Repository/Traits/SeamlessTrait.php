@@ -5,12 +5,9 @@ namespace GiocoPlus\EZAdmin\Repository\Traits;
 
 use GiocoPlus\EZAdmin\Event\SeamlessRequest;
 use GiocoPlus\EZAdmin\Repository\TransactionConst;
-use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\TransferStats;
-use Hyperf\Utils\Coroutine;
-use Hyperf\Guzzle\PoolHandler;
-use Hyperf\Guzzle\RetryMiddleware;
+use Hyperf\Guzzle\HandlerStackFactory;
+use GuzzleHttp\Client;
 
 /**
  * 類單一錢包
@@ -180,43 +177,27 @@ trait SeamlessTrait
 
     /**
      * 呼叫API
-     * @param $host
      * @param $path
      * @param array $params
-     * @param int $timeout
      * @return mixed
      */
     protected function CallPostAPI($path, $params = []) {
-        $handler = null;
-        if (Coroutine::inCoroutine()) {
-            $handler = make(PoolHandler::class, [
-                'option' => [
-                    'max_connections' => 100,
-                ],
-            ]);
-        }
-
-        $retry = make(RetryMiddleware::class, [
-            'retries' => 1,
-            'delay' => 10,
-        ]);
-
-        $stack = HandlerStack::create($handler);
-        $stack->push($retry->getMiddleware(), 'retry');
+        $factory = new HandlerStackFactory();
+        $stack = $factory->create();
 
         $client = make(Client::class, [
-            'base_uri' => $this->seamlessSetting['host'],
-            'timeout' => floatval($this->connectTimeout),
             'config' => [
+                'base_uri' => $this->seamlessSetting->host,
+                'timeout' => floatval($this->connectTimeout),
                 'handler' => $stack,
-            ]
+            ],
         ]);
 
         return $client->request('POST', $path, [
             'json' => $params,
             'headers' => [
                 'Content-Type' => 'application/json',
-                'wtoken' => $this->seamlessSetting['wtoken']
+                'wtoken' => $this->seamlessSetting->wtoken
             ],
             'on_stats' => function(TransferStats $stats) {
                 $this->eventDispatcher->dispatch(new SeamlessRequest($stats));
