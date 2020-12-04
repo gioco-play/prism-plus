@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace GiocoPlus\EZAdmin\Repository;
 
+use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
 use GiocoPlus\Mongodb\MongoDbConst;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\ApplicationContext;
 use GiocoPlus\EZAdmin\Service\CacheService;
 use GiocoPlus\Mongodb\MongoDb;
+use Psr\Container\ContainerInterface;
 
 /**
  * 資料庫管理
@@ -18,16 +20,23 @@ class DbManager
 {
 
     /**
-     * @Inject
      * @var CacheService
      */
     protected $cache;
 
     /**
-     * @Inject
      * @var MongoDb
      */
     protected $mongodb;
+
+    /**
+     * DbManager constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container) {
+        $this->cache = $container->get(Cache::class);
+        $this->mongodb = $container->get(MongoDb::class);
+    }
 
     /**
      * 選擇商戶MongoDb資料庫

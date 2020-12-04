@@ -122,7 +122,7 @@ class ApiResponse {
      * @param array $status
      * @return array
      */
-    public static function result($data = [], array $status = self::API_SUCCESS) {
+    public static function result($data = [], array $status = self::SUCCESS) {
         $result = [
             'status' => $status['code'],
             'message' => $status['msg']

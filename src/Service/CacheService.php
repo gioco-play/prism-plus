@@ -42,7 +42,7 @@ class CacheService
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
         $this->mongodb = $this->mongodb->setPool($this->poolName);
-        $this->dbManager = new DbManager;
+        $this->dbManager = new DbManager(ApplicationContext::getContainer());
     }
 
     /**
