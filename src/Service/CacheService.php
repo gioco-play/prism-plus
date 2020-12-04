@@ -270,7 +270,7 @@ class CacheService
     public function memberInfo(string $accountOp) {
         list($account, $op) = array_values(Tool::MemberSplitCode($accountOp));
         $dbManager = new DbManager();
-        $pg = $dbManager->opPostgreDb($op);
+        $pg = $dbManager->opPostgreDb(strtolower($op));
         $result = $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
         if ($result) {
             return current($pg->fetchAll($result));
