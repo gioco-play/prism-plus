@@ -34,15 +34,9 @@ class CacheService
      */
     protected $poolName = "default";
 
-    /**
-     * @var DbManager
-     */
-    protected $dbManager;
-
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
         $this->mongodb = $this->mongodb->setPool($this->poolName);
-        $this->dbManager = new DbManager(ApplicationContext::getContainer());
     }
 
     /**
@@ -275,7 +269,7 @@ class CacheService
      */
     public function memberInfo(string $accountOp) {
         list($account, $op) = array_values(Tool::MemberSplitCode($accountOp));
-        $pg = $this->dbManager->opPostgreDb($op);
-        return $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
+        $dbManager = new DbManager();
+        return $dbManager->opPostgreDb($op)->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
     }
 }

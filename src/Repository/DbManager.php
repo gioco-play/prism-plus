@@ -20,23 +20,17 @@ class DbManager
 {
 
     /**
+     * @Inject
      * @var CacheService
      */
     protected $cache;
 
     /**
+     * @Inject
      * @var MongoDb
      */
     protected $mongodb;
 
-    /**
-     * DbManager constructor.
-     * @param ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container) {
-        $this->cache = $container->get(Cache::class);
-        $this->mongodb = $container->get(MongoDb::class);
-    }
 
     /**
      * 選擇商戶MongoDb資料庫
