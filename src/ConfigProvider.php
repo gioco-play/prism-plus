@@ -12,7 +12,8 @@ class ConfigProvider
         return [
             'dependencies' => [
                 CacheInterface::class => Cache::class,
-                ConfigInterface::class => Config::class
+                ConfigInterface::class => Config::class,
+                EventDispatcherInterface::class => EventDispatcher::class
             ],
             'commands' => [
             ],

@@ -11,52 +11,57 @@ namespace GiocoPlus\EZAdmin\Repository;
 class TransactionConst
 {
     /**
+     * 調整 玩家餘額異常
+     */
+
+    const ADJUST = 'adjust';
+    /**
      * 下注
      */
-    const Stake = 'stake';
+    const STAKE = 'stake';
 
     /**
      * 派彩
      */
-    const Payoff = 'payoff';
+    const PAYOFF = 'payoff';
 
     /**
      * 上分遊戲場館
      */
-    const GameTransferIn = 'game_transfer_in';
+    const GAME_TRANSFER_IN = 'game_transfer_in';
 
     /**
      * 下分遊戲場館
      */
-    const GameTransferOut = 'game_transfer_out';
+    const GAME_TRANSFER_OUT = 'game_transfer_out';
 
     /**
      * 上分GF平台錢包
      */
-    const TransferIn = 'transfer_in';
+    const TRANSFER_IN = 'transfer_in';
 
     /**
      * 下分GF平台錢包
      */
-    const TransferOut = 'transfer_out';
+    const TRANSFER_OUT = 'transfer_out';
 
     /**
      * 取消下注
      */
-    const CancelStake = 'cancel_stake';
+    const CANCEL_STAKE = 'cancel_stake';
 
     /**
      * 取消派彩
      */
-    const CancelPayoff = 'cancel_payoff';
+    const CANCEL_PAYOFF = 'cancel_payoff';
 
     /**
      * 錢包之間 - 轉入
      */
-    const WalletTransferIn = 'wallet_transfer_in';
+    const WALLET_TRANSFER_IN = 'wallet_transfer_in';
 
     /**
      * 錢包之間 - 轉出
      */
-    const WalletTransferOut = 'wallet_transfer_out';
+    const WALLET_TRANSFER_OUT = 'wallet_transfer_out';
 }

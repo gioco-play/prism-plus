@@ -59,6 +59,18 @@ class CacheFlushService
     }
 
     /**
+     * 清除 遊戲清單
+     *
+     * @param $vendorCode
+     * @return bool
+     */
+    public function games($vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor-game-update', [ 'vendor_code' => $vendorCode]));
+
+        return true;
+    }
+
+    /**
      * 清除 營運商 - 公司
      *
      * @param $code
@@ -90,6 +102,18 @@ class CacheFlushService
      */
     public function roleMenuPermit($role) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-permit-update', [ 'role' => $role]));
+
+        return true;
+    }
+
+    /**
+     * 清除 玩家
+     *
+     * @param $accountOp
+     * @return bool
+     */
+    public function memberInfo($accountOp) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op-member-info-update', [ 'accountOp' => $accountOp]));
 
         return true;
     }

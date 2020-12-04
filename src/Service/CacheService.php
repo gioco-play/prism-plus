@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GiocoPlus\EZAdmin\Service;
 
+use GiocoPlus\EZAdmin\Helper\Tool;
+use GiocoPlus\EZAdmin\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\Pool\PoolFactory;
 use Hyperf\Cache\Annotation\Cacheable;
@@ -26,12 +28,21 @@ class CacheService
      */
     protected $mongodb;
 
+    /**
+     * MongoDb 連結池
+     * @var string
+     */
     protected $poolName = "default";
 
+    /**
+     * @var DbManager
+     */
+    protected $dbManager;
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
         $this->mongodb = $this->mongodb->setPool($this->poolName);
+        $this->dbManager = new DbManager;
     }
 
     /**
@@ -56,7 +67,7 @@ class CacheService
      * 管理者帳號
      *
      * @param string $uid
-     * @Cacheable(prefix="admin_user", ttl=60, value="_#{uid}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user", ttl=120, value="_#{uid}", listener="admin-user-update")
      */
     public function adminUser(string $uid) {
         $user = current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
@@ -68,7 +79,7 @@ class CacheService
      *
      * @param string $code
      *
-     * @Cacheable(prefix="op", ttl=60, value="_#{code}", listener="op-update")
+     * @Cacheable(prefix="op", ttl=300, value="_#{code}", listener="op-update")
      */
     public function operator(string $code) {
 
@@ -101,14 +112,27 @@ class CacheService
 
     /**
      * 遊戲商
-     *
      * @param string $code
-     *
-     * @Cacheable(prefix="vendor", ttl=60, value="_#{code}", listener="vendor-update")
+     * @Cacheable(prefix="vendor", ttl=300, value="_#{code}", listener="vendor-update")
      */
     public function vendor(string $code) {
 
         $data = current($this->mongodb->fetchAll('vendors', ['code' => $code]));
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
+     * 遊戲清單
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_game", ttl=300, value="_#{vendorCode}", listener="vendor-game-update")
+     */
+    public function games(string $vendorCode) {
+        $data = $this->mongodb->fetchAll('games', ['vendor_code' => $vendorCode]);
 
         if ($data) {
             return $data;
@@ -138,7 +162,6 @@ class CacheService
      * 營運商 - 公司
      *
      * @param string $code
-     * @param bool $full
      * @return array
      *
      * @Cacheable(prefix="comp_opcodes", ttl=60, value="_#{code}", listener="comp-opcodes-update")
@@ -242,5 +265,17 @@ class CacheService
         }
 
         return $this->mongodb->fetchAll('admin_role_menu_permissions', $filter);
+    }
+
+    /**
+     * 查詢會員資料
+     * @param string $accountOp (含後綴商戶代碼)
+     * @return mixed
+     * @Cacheable(prefix="op_member_info", ttl=60, value="_#{accountOp}", listener="op-member-info-update")
+     */
+    public function memberInfo(string $accountOp) {
+        list($account, $op) = array_values(Tool::MemberSplitCode($accountOp));
+        $pg = $this->dbManager->opPostgreDb($op);
+        return $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
     }
 }
