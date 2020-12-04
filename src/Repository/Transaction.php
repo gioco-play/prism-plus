@@ -373,7 +373,11 @@ class Transaction
         }
 
         $pg = $this->postgres;
-        return $pg->query("SELECT * FROM member_wallets WHERE player_name='{$this->playerName}' AND wallet_code = '{$this->walletCode}'");
+        $result = $pg->query("SELECT * FROM member_wallets WHERE player_name='{$this->playerName}' AND wallet_code = '{$this->walletCode}'");
+        if ($result) {
+            return current($pg->fetchAll($result));
+        }
+        return false;
     }
 
     /**
