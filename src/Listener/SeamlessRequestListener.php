@@ -25,7 +25,7 @@ class SeamlessRequestListener implements ListenerInterface
     /**
      * @param SeamlessRequest $event
      */
-    public function process(SeamlessRequest $event)
+    public function process(object $event)
     {
         // 事件觸發後該監聽器要執行的程式碼寫在這裡，比如該示例下的傳送使用者註冊成功簡訊等
         // 直接訪問 $event 的 user 屬性獲得事件觸發時傳遞的引數值
