@@ -183,7 +183,12 @@ trait SeamlessTrait
      */
     protected function CallPostAPI($path, $params = []) {
         $factory = new HandlerStackFactory();
-        $stack = $factory->create();
+        $stack = $factory->create([
+            'max_connections' => 100,
+        ], [
+            'retries' => 1,
+            'delay' => 10,
+        ]);
 
         $client = make(Client::class, [
             'config' => [
