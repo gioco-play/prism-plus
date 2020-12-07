@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Listener;
 
-use GiocoPlus\PrismPlus\Event\SeamlessRequest;
+use GiocoPlus\PrismPlus\Event\TransactionRequest;
 use Hyperf\Event\Contract\ListenerInterface;
 
 /**
@@ -16,7 +16,7 @@ class TransactionRequestListener implements ListenerInterface
     public function listen(): array
     {
         return [
-             SeamlessRequest::class,
+             TransactionRequest::class,
         ];
     }
 
