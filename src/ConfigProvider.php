@@ -40,6 +40,12 @@ class ConfigProvider
                     'source' => __DIR__ . '/publish/ezadmin.php',
                     'destination' => BASE_PATH . '/config/autoload/ezadmin.php',
                 ],
+                [
+                    'id' => 'SeamlessListener',
+                    'description' => 'The seamless request listener',
+                    'source' => __DIR__ . '/Listener/SeamlessRequestListener.php',
+                    'destination' => BASE_PATH . '/app/Listener/SeamlessRequestListener.php',
+                ],
             ],
         ];
     }

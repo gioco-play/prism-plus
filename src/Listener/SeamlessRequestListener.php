@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Listener;
+namespace App\Listener;
 
 use GiocoPlus\EZAdmin\Event\SeamlessRequest;
 use Hyperf\Event\Contract\ListenerInterface;
@@ -18,7 +18,7 @@ class SeamlessRequestListener implements ListenerInterface
     {
         // 返回一個該監聽器要監聽的事件陣列，可以同時監聽多個事件
         return [
-//             SeamlessRequest::class,
+             SeamlessRequest::class,
         ];
     }
 
