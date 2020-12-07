@@ -47,6 +47,12 @@ class ConfigProvider
                     'destination' => BASE_PATH . '/app/Listener/SeamlessRequestListener.php',
                 ],
                 [
+                    'id' => 'TransactionRequest',
+                    'description' => 'The transaction request listener',
+                    'source' => __DIR__ . '/Listener/TransactionRequest.php',
+                    'destination' => BASE_PATH . '/app/Listener/TransactionRequest.php',
+                ],
+                [
                     'id' => 'BoIPCheckMiddleware',
                     'description' => 'The bo ip checker',
                     'source' => __DIR__ . '/Middleware/BoIPCheckMiddleware.php',

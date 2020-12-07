@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Repository;
 
+use GiocoPlus\PrismPlus\Event\TransactionRequest;
 use GiocoPlus\PrismPlus\Exception\TransactionException;
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
@@ -117,11 +118,21 @@ class Transaction
         list($gf, $vendorCode, $wallet) = explode('_', $walletCode);
         // 判斷產品是否啟用
         if (isset($this->operator['vendor_switch']->$vendorCode) === false) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::PRODUCT_NEED_ACK,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::PRODUCT_NEED_ACK, $vendorCode);
         }
         // 判斷幣值轉換
         $currencyRates = collect($this->operator['currency_rate'])->pluck('rate', 'vendor');
         if (isset($currencyRates[$vendorCode]) === false) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_CURRENCY_RATE_EMPTY,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_CURRENCY_RATE_EMPTY, $walletCode);
         }
         $this->vendorCode = $vendorCode;
@@ -131,6 +142,11 @@ class Transaction
 
         if ($this->seamlessEnable) {
             if (isset($this->operator['seamless_setting']) === false || empty($this->operator['seamless_setting']->host)) {
+                $this->eventDispatcher(new TransactionRequest([
+                    'error' => ApiResponse::TRANS_SEAMLESS_ERROR,
+                    'func' => __FUNCTION__,
+                    'args' => func_get_args()
+                ]));
                 throw new TransactionException(ApiResponse::TRANS_SEAMLESS_ERROR);
             }
             $this->seamlessSetting = $this->operator['seamless_setting'];
@@ -139,6 +155,11 @@ class Transaction
         if ($this->seamlessEnable === false) {
             $result = $this->walletInit();
             if ($result === false) {
+                $this->eventDispatcher(new TransactionRequest([
+                    'error' => ApiResponse::TRANS_WALLET_EMPTY,
+                    'func' => __FUNCTION__,
+                    'args' => func_get_args()
+                ]));
                 throw new TransactionException(ApiResponse::TRANS_WALLET_EMPTY, $walletCode);
             }
         }
@@ -152,6 +173,11 @@ class Transaction
      */
     public function opTransferIn(float $amount, string $traceId) {
         if ($amount <= 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
         // 幣值轉換
@@ -173,6 +199,11 @@ class Transaction
      */
     public function opTransferOut(float $amount, string $traceId) {
         if ($amount <= 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -195,6 +226,11 @@ class Transaction
      */
     public function gameTransferIn(float $amount, string $traceId) {
         if ($amount <= 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -220,6 +256,11 @@ class Transaction
      */
     public function gameTransferOut(float $amount, string $traceId) {
         if ($amount < 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -244,6 +285,11 @@ class Transaction
      */
     public function gameStake(float $amount, string $traceId, string $betId) {
         if ($amount < 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -270,6 +316,11 @@ class Transaction
      */
     public function gamePayoff(float $amount, string $traceId, string $betId) {
         if ($amount < 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -294,6 +345,11 @@ class Transaction
      */
     public function gameCancelStake(float $amount, string $traceId, string $betId) {
         if ($amount <= 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -318,6 +374,11 @@ class Transaction
      */
     public function gameCancelPayoff(float $amount, string $traceId, string $betId) {
         if ($amount <= 0) {
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_AMOUNT_ERROR,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_AMOUNT_ERROR, $amount);
         }
 
@@ -391,6 +452,11 @@ class Transaction
                 $beforeBalance = floatval($wallet['balance']);
                 $balance =  floatval(bcadd(strval($beforeBalance), strval($amount), $this->currencyScale));
                 if ($force === false && $balance < 0 && $transType == TransactionConst::TransferOut) {
+                    $this->eventDispatcher(new TransactionRequest([
+                        'error' => ApiResponse::TRANS_BALANCE_SHORT,
+                        'func' => __FUNCTION__,
+                        'args' => func_get_args()
+                    ]));
                     throw new \Exception(ApiResponse::TRANS_BALANCE_SHORT['msg'], ApiResponse::TRANS_BALANCE_SHORT['code']);
                 }
                 // 產生交易紀錄
@@ -420,6 +486,11 @@ class Transaction
             }
         } catch (\Exception $e) {
             $pg->query("ROLLBACK;");
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_BALANCE_FAIL,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_BALANCE_FAIL);
         }
         return false;
@@ -453,6 +524,11 @@ class Transaction
             return true;
         } catch (\Exception $e) {
             $pg->query("ROLLBACK;");
+            $this->eventDispatcher(new TransactionRequest([
+                'error' => ApiResponse::TRANS_WALLET_INIT_FAIL,
+                'func' => __FUNCTION__,
+                'args' => func_get_args()
+            ]));
             throw new TransactionException(ApiResponse::TRANS_WALLET_INIT_FAIL);
         }
     }
