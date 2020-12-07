@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Listener;
+namespace GiocoPlus\EZAdmin\Listener;
 
 use GiocoPlus\EZAdmin\Event\SeamlessRequest;
 use Hyperf\Event\Contract\ListenerInterface;
