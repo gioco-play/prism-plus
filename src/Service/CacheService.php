@@ -264,11 +264,12 @@ class CacheService
     /**
      * 查詢會員資料
      * @param string $accountOp (含後綴商戶代碼)
+     * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
      * @return mixed
      * @Cacheable(prefix="op_member_info", ttl=60, value="_#{accountOp}", listener="op-member-info-update")
      */
-    public function memberInfo(string $accountOp) {
-        list($account, $op) = array_values(Tool::MemberSplitCode($accountOp));
+    public function memberInfo(string $accountOp, string $delimiter = '_') {
+        list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
         $dbManager = new DbManager();
         $pg = $dbManager->opPostgreDb(strtolower($op));
         $result = $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");

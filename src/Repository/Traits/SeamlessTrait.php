@@ -184,10 +184,10 @@ trait SeamlessTrait
     protected function CallPostAPI($path, $params = []) {
         $factory = new HandlerStackFactory();
         $stack = $factory->create([
-            'max_connections' => 100,
+            'max_connections' => config('ezadmin.transaction.seamless.max_connections', 50),
         ], [
-            'retries' => 1,
-            'delay' => 10,
+            'retries' => config('ezadmin.transaction.seamless.retries', 1),
+            'delay' => config('ezadmin.transaction.seamless.delay', 10),
         ]);
 
         $client = make(Client::class, [
@@ -209,26 +209,6 @@ trait SeamlessTrait
             }
         ]);
 
-//        $status = "success";
-//        if ($output === false ) {
-//            $status = "timeout";
-//        }
-//
-//        $exec_time = ($end_time - $start_time);
-//
-//        $output = json_decode($output, true);
-
-//        static::requestLog($operator, [
-//            "request_host" => $host,
-//            "request_path" => $path,
-//            "request_method" => "POST",
-//            "request_params" => $params,
-//            "curl_info" => $info,
-//            "response" => $output,
-//            "curl_exec_time" => $exec_time
-//        ], $status);
-
-//        return $output;
     }
 
 }

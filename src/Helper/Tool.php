@@ -33,10 +33,12 @@ class Tool
     /**
      * 玩家代碼 裁成 player_name \ op_code
      * @param $accountOp
+     * @param string $delimiter
+     * @return array
      */
-    public static function MemberSplitCode($accountOp) {
-        $account = substr($accountOp, 0, strrpos($accountOp, '_'));
-        $op_code = substr($accountOp, strrpos($accountOp, '_')+1, strlen($accountOp));
+    public static function MemberSplitCode($accountOp, string $delimiter = '_') {
+        $account = substr($accountOp, 0, strrpos($accountOp, $delimiter));
+        $op_code = substr($accountOp, strrpos($accountOp, $delimiter)+1, strlen($accountOp));
         return [
             'player_name' => $account,
             'op_code' => $op_code

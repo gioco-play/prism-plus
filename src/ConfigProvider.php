@@ -28,10 +28,17 @@ class ConfigProvider
                     ],
                 ],
             ],
+            'scan' => [
+                'paths' => [
+                    __DIR__,
+                ],
+            ],
             'publish' => [
                 [
-                    'id' => 'ezadmin',
-                    'description' => 'ezadmin-tools'
+                    'id' => 'config',
+                    'description' => 'The config of ezadmin client.',
+                    'source' => __DIR__ . '/publish/ezadmin.php',
+                    'destination' => BASE_PATH . '/config/autoload/ezadmin.php',
                 ],
             ],
         ];
