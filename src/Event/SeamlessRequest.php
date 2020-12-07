@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Event;
+namespace GiocoPlus\PrismPlus\Event;
 
 use GuzzleHttp\TransferStats;
 
 /**
  * 類單一請求事件
  * Class SeamlessRequest
- * @package GiocoPlus\EZAdmin\Event
+ * @package GiocoPlus\PrismPlus\Event
  */
 class SeamlessRequest
 {

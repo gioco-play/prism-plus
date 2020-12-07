@@ -1,5 +1,5 @@
 {
-    "name": "gioco-plus/ezadmin-tools",
+    "name": "gioco-plus/prism-plus",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -21,12 +21,12 @@
           "./src/Functions.php"
         ],
         "psr-4": {
-          "GiocoPlus\\EZAdmin\\": "src/"
+          "GiocoPlus\\PrismPlus\\": "src/"
         }
     },
     "extra": {
         "hyperf": {
-            "config": "GiocoPlus\\EZAdmin\\ConfigProvider"
+            "config": "GiocoPlus\\PrismPlus\\ConfigProvider"
         }
     }
 }

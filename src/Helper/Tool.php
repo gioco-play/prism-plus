@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Helper;
+namespace GiocoPlus\PrismPlus\Helper;
 
 
 /**

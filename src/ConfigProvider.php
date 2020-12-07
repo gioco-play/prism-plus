@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin;
+namespace GiocoPlus\PrismPlus;
 
 
 class ConfigProvider
@@ -36,9 +36,9 @@ class ConfigProvider
             'publish' => [
                 [
                     'id' => 'config',
-                    'description' => 'The config of ezadmin client.',
-                    'source' => __DIR__ . '/publish/ezadmin.php',
-                    'destination' => BASE_PATH . '/config/autoload/ezadmin.php',
+                    'description' => 'The config of prismplus client.',
+                    'source' => __DIR__ . '/publish/prismplus.php',
+                    'destination' => BASE_PATH . '/config/autoload/prismplus.php',
                 ],
                 [
                     'id' => 'SeamlessListener',
@@ -46,6 +46,12 @@ class ConfigProvider
                     'source' => __DIR__ . '/Listener/SeamlessRequestListener.php',
                     'destination' => BASE_PATH . '/app/Listener/SeamlessRequestListener.php',
                 ],
+                [
+                    'id' => 'BoIPCheckMiddleware',
+                    'description' => 'The bo ip checker',
+                    'source' => __DIR__ . '/Middleware/BoIPCheckMiddleware.php',
+                    'destination' => BASE_PATH . '/app/Middleware/BoIPCheckMiddleware.php',
+                ]
             ],
         ];
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Service;
+namespace GiocoPlus\PrismPlus\Service;
 
 
 use Hyperf\Cache\Listener\DeleteListenerEvent;
@@ -11,7 +11,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 /**
  * 清除快取
  * Class CacheFlushService
- * @package GiocoPlus\EZAdmin\Service
+ * @package GiocoPlus\PrismPlus\Service
  */
 class CacheFlushService
 {

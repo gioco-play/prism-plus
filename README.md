@@ -1,8 +1,8 @@
-## EZAdmin工具
+## PrismPlus工具
 
 ### 偏好設定
 ```php
-php bin/hyperf.php vendor:publish "gioco-plus/ezadmin-tools"
+php bin/hyperf.php vendor:publish "gioco-plus/prism-plus"
 ```
 
 ### 快取

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Exception;
+namespace GiocoPlus\PrismPlus\Exception;
 
 /**
  * Class TransactionException
- * @package GiocoPlus\EZAdmin\Exception
+ * @package GiocoPlus\PrismPlus\Exception
  */
 class TransactionException extends \RuntimeException
 {

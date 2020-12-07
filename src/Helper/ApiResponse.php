@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-namespace GiocoPlus\EZAdmin\Helper;
+namespace GiocoPlus\PrismPlus\Helper;
 
 /**
  *

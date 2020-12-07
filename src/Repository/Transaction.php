@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Repository;
+namespace GiocoPlus\PrismPlus\Repository;
 
-use GiocoPlus\EZAdmin\Exception\TransactionException;
-use GiocoPlus\EZAdmin\Helper\ApiResponse;
-use GiocoPlus\EZAdmin\Helper\Tool;
-use GiocoPlus\EZAdmin\Repository\Traits\SeamlessTrait;
-use GiocoPlus\EZAdmin\Service\CacheService;
+use GiocoPlus\PrismPlus\Exception\TransactionException;
+use GiocoPlus\PrismPlus\Helper\ApiResponse;
+use GiocoPlus\PrismPlus\Helper\Tool;
+use GiocoPlus\PrismPlus\Repository\Traits\SeamlessTrait;
+use GiocoPlus\PrismPlus\Service\CacheService;
 use Hyperf\Di\Annotation\Inject;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -17,7 +17,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
  * 注意： 轉帳模式：幣值轉換只有在商戶 "上分"、"下分"
  *
  * Class Transaction
- * @package GiocoPlus\EZAdmin\Repository
+ * @package GiocoPlus\PrismPlus\Repository
  */
 class Transaction
 {
@@ -103,24 +103,16 @@ class Transaction
     protected $seamlessSetting = null;
 
     /**
-     * 類單一請求逾時 10 秒
-     * @var int
-     */
-    protected $connectTimeout = 10000;
-
-    /**
      * Transaction constructor.
      * @param string $accountOp (玩家帳號含商戶代碼)
      * @param string $walletCode
-     * @param int $connectTimeout
      */
-    public function __construct(string $accountOp, string $walletCode, int $connectTimeout = 10000) {
+    public function __construct(string $accountOp, string $walletCode) {
 
         list($this->playerName, $this->operatorCode) = array_values(Tool::MemberSplitCode($accountOp));
         $this->postgres = $this->dbManager->opPostgreDb(strtolower($this->operatorCode));
         $this->operator = (array) $this->cache->operator($this->operatorCode);
         $this->walletCode = $walletCode;
-        $this->connectTimeout = $connectTimeout;
         // 根據錢包代碼取得產品商代碼
         list($gf, $vendorCode, $wallet) = explode('_', $walletCode);
         // 判斷產品是否啟用

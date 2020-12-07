@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Repository;
+namespace GiocoPlus\PrismPlus\Repository;
 
 /**
  * 交易類別對照
  * Class TransactionConst
- * @package GiocoPlus\EZAdmin\Repository
+ * @package GiocoPlus\PrismPlus\Repository
  */
 class TransactionConst
 {

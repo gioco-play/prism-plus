@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\Listener;
 
-use GiocoPlus\EZAdmin\Event\SeamlessRequest;
+use GiocoPlus\PrismPlus\Event\SeamlessRequest;
 use Hyperf\Event\Contract\ListenerInterface;
 
 /**
  * 類單一請求監聽
  * Class SeamlessRequestListener
- * @package GiocoPlus\EZAdmin\Listener
+ * @package GiocoPlus\PrismPlus\Listener
  */
 class SeamlessRequestListener implements ListenerInterface
 {

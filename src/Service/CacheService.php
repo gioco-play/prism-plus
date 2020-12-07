@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Service;
+namespace GiocoPlus\PrismPlus\Service;
 
-use GiocoPlus\EZAdmin\Helper\Tool;
-use GiocoPlus\EZAdmin\Repository\DbManager;
+use GiocoPlus\PrismPlus\Helper\Tool;
+use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
-use GiocoPlus\Mongodb\Pool\PoolFactory;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Inject;
@@ -18,7 +17,7 @@ use Psr\Container\ContainerInterface;
 /**
  * 快取
  * Class CacheService
- * @package GiocoPlus\EZAdmin\Service
+ * @package GiocoPlus\PrismPlus\Service
  */
 class CacheService
 {

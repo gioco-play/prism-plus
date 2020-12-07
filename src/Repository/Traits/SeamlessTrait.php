@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace GiocoPlus\EZAdmin\Repository\Traits;
+namespace GiocoPlus\PrismPlus\Repository\Traits;
 
-use GiocoPlus\EZAdmin\Event\SeamlessRequest;
-use GiocoPlus\EZAdmin\Repository\TransactionConst;
-use GuzzleHttp\TransferStats;
+use GiocoPlus\PrismPlus\Event\SeamlessRequest;
+use GiocoPlus\PrismPlus\Repository\TransactionConst;
 use Hyperf\Guzzle\HandlerStackFactory;
+use GuzzleHttp\TransferStats;
 use GuzzleHttp\Client;
 
 /**
  * 類單一錢包
  * Trait SeamlessTrait
- * @package GiocoPlus\EZAdmin\Repository\Traits
+ * @package GiocoPlus\PrismPlus\Repository\Traits
  */
 trait SeamlessTrait
 {
@@ -184,10 +184,13 @@ trait SeamlessTrait
     protected function CallPostAPI($path, $params = []) {
         $factory = new HandlerStackFactory();
         $stack = $factory->create([
-            'max_connections' => config('ezadmin.transaction.seamless.max_connections', 50),
+            'min_connections' => config('prismplus.transaction.seamless.min_connections', 1),
+            'max_connections' => config('prismplus.transaction.seamless.max_connections', 30),
+            'wait_timeout' => config('prismplus.transaction.seamless.wait_timeout', 3.0),
+            'max_idle_time' => config('prismplus.transaction.seamless.max_idle_time', 60),
         ], [
-            'retries' => config('ezadmin.transaction.seamless.retries', 1),
-            'delay' => config('ezadmin.transaction.seamless.delay', 10),
+            'retries' => config('prismplus.transaction.seamless.retries', 1),
+            'delay' => config('prismplus.transaction.seamless.delay', 10),
         ]);
 
         $client = make(Client::class, [
