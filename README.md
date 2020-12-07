@@ -1,5 +1,10 @@
 ## EZAdmin工具
 
+### 偏好設定
+```php
+php bin/hyperf.php vendor:publish "gioco-plus/ezadmin-tools"
+```
+
 ### 快取
 ```php
 # 依赖注入
