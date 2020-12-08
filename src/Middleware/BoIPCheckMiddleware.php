@@ -52,6 +52,10 @@ class BoIPCheckMiddleware implements MiddlewareInterface
             ? $request->getHeader('x-forwarded-for')
             : $request->getServerParams()['remote_addr'];
 
+        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
+            return $handler->handle($request);
+        }
+
         if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
             $comp = null;
             $userInfo = $this->jwt->getParserData();
