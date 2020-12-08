@@ -24,7 +24,6 @@ class CacheFlushService
 
     /**
      * 清除 營運商
-     *
      * @param $code
      * @return bool
      */
@@ -36,7 +35,6 @@ class CacheFlushService
 
     /**
      * 清除 公司
-     *
      * @param $code
      * @return bool
      */
@@ -48,7 +46,6 @@ class CacheFlushService
 
     /**
      * 清除 遊戲商
-     *
      * @param $code
      * @return bool
      */
@@ -60,7 +57,6 @@ class CacheFlushService
 
     /**
      * 清除 遊戲清單
-     *
      * @param $vendorCode
      * @return bool
      */
@@ -72,7 +68,6 @@ class CacheFlushService
 
     /**
      * 清除 營運商 - 公司
-     *
      * @param $code
      * @return bool
      */
@@ -84,7 +79,6 @@ class CacheFlushService
 
     /**
      * 清除 角色選單
-     *
      * @param $role
      * @return bool
      */
@@ -96,7 +90,6 @@ class CacheFlushService
 
     /**
      * 清除 角色選單權限
-     *
      * @param $role
      * @return bool
      */
@@ -108,13 +101,22 @@ class CacheFlushService
 
     /**
      * 清除 玩家
-     *
      * @param $accountOp
      * @return bool
      */
     public function memberInfo($accountOp) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op-member-info-update', [ 'accountOp' => $accountOp]));
 
+        return true;
+    }
+
+    /**
+     * 總開關狀態
+     * @param $slug
+     * @return bool
+     */
+    public function mainSwitch($slug) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('main-switch', [ 'slug' => $slug]));
         return true;
     }
 }

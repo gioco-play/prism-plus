@@ -40,9 +40,7 @@ class CacheService
 
     /**
      * 管理者基本資料
-     *
      * @param string $account
-     *
      * @Cacheable(prefix="admin_user_info", ttl=60, value="_#{account}", listener="admin-user-update")
      */
     public function adminUserInfo(string $account) {
@@ -58,20 +56,16 @@ class CacheService
 
     /**
      * 管理者帳號
-     *
      * @param string $uid
      * @Cacheable(prefix="admin_user", ttl=120, value="_#{uid}", listener="admin-user-update")
      */
     public function adminUser(string $uid) {
-        $user = current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
-        return $user;
+        return current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
     }
 
     /**
      * 營運商
-     *
      * @param string $code
-     *
      * @Cacheable(prefix="op", ttl=300, value="_#{code}", listener="op-update")
      */
     public function operator(string $code) {
@@ -87,9 +81,7 @@ class CacheService
 
     /**
      * 公司
-     *
      * @param string $code
-     *
      * @Cacheable(prefix="comp", ttl=60, value="_#{code}", listener="comp-update")
      */
     public function company(string $code) {
@@ -136,8 +128,6 @@ class CacheService
 
     /**
      * 遊戲商 請求參數列表
-     *
-     *
      * @Cacheable(prefix="list_request_params", ttl=60, listener="vendor-request-param-list")
      */
     public function listRequestParams() {
@@ -153,10 +143,8 @@ class CacheService
 
     /**
      * 營運商 - 公司
-     *
      * @param string $code
      * @return array
-     *
      * @Cacheable(prefix="comp_opcodes", ttl=60, value="_#{code}", listener="comp-opcodes-update")
      */
     public function companyOpCodes(string $code) : array {
@@ -172,7 +160,6 @@ class CacheService
 
     /**
      * 取得公司別的商戶代碼
-     *
      * @param $comp
      */
     private function _subCompanyOpcodes($comp) {
@@ -204,27 +191,22 @@ class CacheService
 
     /**
      * 角色選單
-     *
      * @param string $role
-     *
      * @Cacheable(prefix="role_menu", ttl=60, value="_#{role}", listener="role-menu-update")
      */
     public function roleMenu(string $role) {
 
-        $filter =  ['role' => $role];
-        if ($role === 'supervisor') {
-            $filter = [];
+        $filter = ['role' => $role];
+        $filter_menu = [];
+        if ($role !== 'supervisor') {
+            $roles = $this->mongodb->fetchAll('admin_role_menus', $filter);
+            $menu_codes = collect($roles)->pluck('menu_code')->toArray();
+
+            $filter_menu = ['code' => ['$in' => $menu_codes]];
         }
 
-        $roles = $this->mongodb->fetchAll('admin_role_menus', $filter);
-        $menu_codes = collect($roles)->pluck('menu_code')->toArray();
-
         $data = $this->mongodb->fetchAll('menus',
-            [
-                'code' => [
-                    '$in' => $menu_codes
-                ]
-            ], [
+            $filter_menu, [
                 'sort' => ['sort'=>1]
             ]
         );
@@ -246,9 +228,7 @@ class CacheService
 
     /**
      * 角色選單權限
-     *
      * @param string $role
-     *
      * @Cacheable(prefix="role_menu_permit", ttl=60, value="_#{role}", listener="role-menu-permit-update")
      */
     public function roleMenuPermit(string $role) {
@@ -277,4 +257,21 @@ class CacheService
         }
         return $result;
     }
+
+    /**
+     * 總開關狀態
+     * @param $slug "bo / api"
+     * @return false|mixed
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     * @Cacheable(prefix="main_switch", ttl=300, value="_#{$slug}", listener="main-switch")
+     */
+    public function mainSwitch($slug) {
+        $filter =  ['slug' => $slug];
+        $data = current($this->mongodb->fetchAll('platform', $filter));
+        if ($data) {
+            return $data['status'];
+        }
+        return false;
+    }
+
 }
