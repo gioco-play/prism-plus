@@ -57,7 +57,7 @@ class BoStatusCheckMiddleware implements MiddlewareInterface
         if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
             $comp = null;
             $userInfo = $this->jwt->getParserData();
-            if (trim(strtolower($userInfo['role']), in_array(['supervisor', 'ops', 'dev']))) {
+            if (in_array(trim(strtolower($userInfo['role']), ['supervisor', 'ops', 'dev']))) {
                 return $handler->handle($request);
             }
             $response = $handler->handle($request);
