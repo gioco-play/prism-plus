@@ -61,8 +61,8 @@ class ConfigProvider
                 [
                     'id' => 'BoStatusCheckMiddleware',
                     'description' => 'The bo status checker',
-                    'source' => __DIR__ . '/Middleware/BoIPCheckMiddleware.php',
-                    'destination' => BASE_PATH . '/app/Middleware/BoIPCheckMiddleware.php',
+                    'source' => __DIR__ . '/Middleware/BoStatusCheckMiddleware.php',
+                    'destination' => BASE_PATH . '/app/Middleware/BoStatusCheckMiddleware.php',
                 ],
                 [
                     'id' => 'GlobalBlockIPMiddleware',
