@@ -62,7 +62,7 @@ class BoStatusCheckMiddleware implements MiddlewareInterface
             }
             $response = $handler->handle($request);
             // 後台開關
-            $status = $this->cache->mainSwitch('bo');
+            $status = $this->cache->platformSwitch('bo');
             switch ($status) {
                 case GlobalConst::MAINTAIN :
                     return $response->withBody($this->customResponse([], ApiResponse::MAINTAIN));

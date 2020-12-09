@@ -122,12 +122,12 @@ class CacheFlushService
     }
 
     /**
-     * 總開關狀態
+     * 平台開關狀態
      * @param $slug
      * @return bool
      */
-    public function mainSwitch($slug) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('main-switch', [ 'slug' => $slug]));
+    public function platformSwitch($slug) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('platform-switch-update', [ 'slug' => $slug]));
         return true;
     }
 

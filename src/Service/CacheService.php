@@ -278,9 +278,9 @@ class CacheService
      * @param $slug "bo / api"
      * @return false|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="main_switch", ttl=300, value="_#{$slug}", listener="main-switch")
+     * @Cacheable(prefix="platform_switch", ttl=300, value="_#{$slug}", listener="platform-switch-update")
      */
-    public function mainSwitch($slug) {
+    public function platformSwitch($slug) {
         $filter =  ['slug' => $slug];
         $data = current($this->mongodb->fetchAll('platform', $filter));
         if ($data) {
