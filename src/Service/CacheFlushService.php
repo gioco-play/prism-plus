@@ -34,6 +34,17 @@ class CacheFlushService
     }
 
     /**
+     * 清除 營運商幣值表
+     * @param $code
+     * @return bool
+     */
+    public function operatorCurrencyRate($code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op-currency-rate', [ 'code' => $code]));
+
+        return true;
+    }
+
+    /**
      * 清除 公司
      * @param $code
      * @return bool
@@ -118,5 +129,14 @@ class CacheFlushService
     public function mainSwitch($slug) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('main-switch', [ 'slug' => $slug]));
         return true;
+    }
+
+    /**
+     * 全域封鎖IP名單
+     * @return bool
+     */
+    public function globalBlockIp() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('global-block-ip'));
+        return false;
     }
 }

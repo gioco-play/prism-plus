@@ -17,11 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * API 總開關狀態檢查
+ * 封鎖IP
  * Class IPCheckMiddleware
  * @package App\Middleware
  */
-class ApiStatusCheckMiddleware implements MiddlewareInterface
+class GlobalBlockIPMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface
@@ -52,30 +52,16 @@ class ApiStatusCheckMiddleware implements MiddlewareInterface
             ? $request->getHeader('x-forwarded-for')
             : $request->getServerParams()['remote_addr'];
 
-        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
-            return $handler->handle($request);
-        }
-
-        if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
-            $comp = null;
-            $userInfo = $this->jwt->getParserData();
-            if (trim(strtolower($userInfo['role'])) === 'supervisor') {
-                return $handler->handle($request);
-            }
-            $compCode =  $userInfo['company_code'] ?? "";
-            if ($compCode) {
-                $comp = $this->cache->company($compCode);
-            }
-            // 檢查來源IP
-            if (!Tool::IpWhitelistCheck($ip, $comp['bo_whitelist'])) {
-                $response = $handler->handle($request);
-                return $response->withBody(new SwooleStream(
-                        json_encode(ApiResponse::result([
-                            'ip' => $ip
-                        ], ApiResponse::IP_NOT_ALLOWED))
-                    )
-                );
-            }
+        $blockIP = $this->cache->globalBlockIp();
+        // 檢查來源IP
+        if (Tool::IpWhitelistCheck($ip, $blockIP)) {
+            $response = $handler->handle($request);
+            return $response->withBody(new SwooleStream(
+                    json_encode(ApiResponse::result([
+                        'ip' => $ip
+                    ], ApiResponse::IP_BLOCKED))
+                )
+            );
         }
 
         return $handler->handle($request);

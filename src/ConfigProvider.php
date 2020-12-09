@@ -57,6 +57,24 @@ class ConfigProvider
                     'description' => 'The bo ip checker',
                     'source' => __DIR__ . '/Middleware/BoIPCheckMiddleware.php',
                     'destination' => BASE_PATH . '/app/Middleware/BoIPCheckMiddleware.php',
+                ],
+                [
+                    'id' => 'BoStatusCheckMiddleware',
+                    'description' => 'The bo status checker',
+                    'source' => __DIR__ . '/Middleware/BoIPCheckMiddleware.php',
+                    'destination' => BASE_PATH . '/app/Middleware/BoIPCheckMiddleware.php',
+                ],
+                [
+                    'id' => 'GlobalBlockIPMiddleware',
+                    'description' => 'The global block ip checker',
+                    'source' => __DIR__ . '/Middleware/GlobalBlockIPMiddleware.php',
+                    'destination' => BASE_PATH . '/app/Middleware/GlobalBlockIPMiddleware.php',
+                ],
+                [
+                    'id' => 'VendorCheckMiddleware',
+                    'description' => 'The global block ip checker',
+                    'source' => __DIR__ . '/Middleware/VendorCheckMiddleware.php',
+                    'destination' => BASE_PATH . '/app/Middleware/VendorCheckMiddleware.php',
                 ]
             ],
         ];

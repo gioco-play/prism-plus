@@ -18,11 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * BO後台總開關 角色為supervisor不判斷
+ * Vendor 開關 \ IP 檢查
  * Class IPCheckMiddleware
  * @package App\Middleware
  */
-class BoStatusCheckMiddleware implements MiddlewareInterface
+class VendorCheckMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface
@@ -49,35 +49,34 @@ class BoStatusCheckMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // 請求的url http://{vendor}.playbox.co
 
-        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
-            return $handler->handle($request);
-        }
+        $ip = $request->hasHeader('x-forwarded-for')
+            ? $request->getHeader('x-forwarded-for')
+            : $request->getServerParams()['remote_addr'];
 
-        if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
-            $comp = null;
-            $userInfo = $this->jwt->getParserData();
-            if (trim(strtolower($userInfo['role'])) === 'supervisor') {
-                return $handler->handle($request);
-            }
-            $response = $handler->handle($request);
-            // 後台開關
-            $status = $this->cache->mainSwitch('bo');
-            switch ($status) {
-                case GlobalConst::MAINTAIN :
-                    return $response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
-            }
-            // 商戶開關
-            $comp = $this->cache->company($userInfo['company_code']);
-            switch ($comp['status']) {
+        list($vendorCode, $domain) = explode('.', $request->getUri()->getHost());
+        $response = $handler->handle($request);
+
+        if ($vendorCode) {
+            $vendor = $this->cache->vendor(strtolower($vendorCode));
+            switch ($vendor['status']) {
                 case GlobalConst::MAINTAIN :
                     return $response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
                 case GlobalConst::DECOMMISSION :
                     return $response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
             }
+            // 檢查來源IP
+            if ($vendor['filter_ip'] && !Tool::IpWhitelistCheck($ip, $vendor['ip_whitelist'])) {
+                return $response->withBody($this->customResponse([
+                    'ip' => $ip
+                ], ApiResponse::IP_NOT_ALLOWED));
+            }
+
+            return $handler->handle($request);
         }
 
-        return $handler->handle($request);
+        return $response->withBody($this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL));
     }
 
     /**

@@ -80,6 +80,21 @@ class CacheService
     }
 
     /**
+     * 營運商幣值表
+     * @param string $code
+     * @Cacheable(prefix="op_currency_rate", ttl=300, value="_#{code}", listener="op-currency-rate")
+     */
+    public function operatorCurrencyRate(string $code) {
+        $operator = current($this->operator($code));
+
+        if ($operator) {
+            return collect($operator['currency_rate'])->pluck('rate', 'vendor');
+        }
+
+        return null;
+    }
+
+    /**
      * 公司
      * @param string $code
      * @Cacheable(prefix="comp", ttl=60, value="_#{code}", listener="comp-update")
@@ -270,6 +285,18 @@ class CacheService
         $data = current($this->mongodb->fetchAll('platform', $filter));
         if ($data) {
             return $data['status'];
+        }
+        return false;
+    }
+
+    /**
+     * 全域封鎖IP名單
+     * @Cacheable(prefix="global_block_ip", ttl=300, listener="global-block-ip")
+     */
+    public function globalBlockIp() {
+        $data = $this->mongodb->fetchAll('global_block_ip');
+        if ($data) {
+            return $data;
         }
         return false;
     }

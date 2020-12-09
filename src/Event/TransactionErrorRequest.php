@@ -9,7 +9,7 @@ namespace GiocoPlus\PrismPlus\Event;
  * Class SeamlessRequest
  * @package GiocoPlus\PrismPlus\Event
  */
-class TransactionRequest
+class TransactionErrorRequest
 {
 
     public $response;

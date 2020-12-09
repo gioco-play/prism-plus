@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Listener;
 
-use GiocoPlus\PrismPlus\Event\TransactionRequest;
+use GiocoPlus\PrismPlus\Event\TransactionErrorRequest;
+use GiocoPlus\PrismPlus\Event\TransactionSuccessRequest;
 use Hyperf\Event\Contract\ListenerInterface;
 
 /**
@@ -16,7 +17,8 @@ class TransactionRequestListener implements ListenerInterface
     public function listen(): array
     {
         return [
-             TransactionRequest::class,
+            TransactionErrorRequest::class,
+            TransactionSuccessRequest::class
         ];
     }
 
@@ -25,6 +27,13 @@ class TransactionRequestListener implements ListenerInterface
      */
     public function process(object $event)
     {
-        var_dump($event->response);
+        switch (get_class($event)) {
+            case TransactionSuccessRequest::class :
+                var_dump($event->response);
+                break;
+            case TransactionErrorRequest::class :
+                var_dump($event->response);
+                break;
+        }
     }
 }
