@@ -136,7 +136,7 @@ class CacheFlushService
      * @return bool
      */
     public function globalBlockIp() {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('global-block-ip'));
-        return false;
+        $this->dispatcher->dispatch(new DeleteListenerEvent('global-block-ip', []));
+        return true;
     }
 }
