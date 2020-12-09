@@ -294,7 +294,7 @@ class CacheService
      * @Cacheable(prefix="global_block_ip", ttl=300, listener="global-block-ip")
      */
     public function globalBlockIp() {
-        $data = $this->mongodb->fetchAll('platform', ['slug' => 'block_ip']);
+        $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
         if ($data) {
             return $data;
         }
