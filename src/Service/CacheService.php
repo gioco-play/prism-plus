@@ -153,7 +153,7 @@ class CacheService
             return $data;
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -238,7 +238,7 @@ class CacheService
             return $menus;
         }
 
-        return null;
+        return [];
     }
 
     /**
