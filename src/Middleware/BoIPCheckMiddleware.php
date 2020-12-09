@@ -67,7 +67,7 @@ class BoIPCheckMiddleware implements MiddlewareInterface
                 $comp = $this->cache->company($compCode);
             }
             // 檢查來源IP
-            if (!Tool::IpWhitelistCheck($ip, $comp['bo_whitelist'])) {
+            if (!Tool::IpContainChecker($ip, $comp['bo_whitelist'])) {
                 $response = $handler->handle($request);
                 return $response->withBody(new SwooleStream(
                         json_encode(ApiResponse::result([

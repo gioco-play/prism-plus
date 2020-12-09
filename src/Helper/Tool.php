@@ -12,18 +12,18 @@ namespace GiocoPlus\PrismPlus\Helper;
 class Tool
 {
     /**
-     * 檢查IP是否在白名單
+     * 檢查IP是否在
      *
      * @param $src
-     * @param array $whitelist
+     * @param array $list
      * @return bool
      */
-    public static function IpWhitelistCheck($src, array $whitelist): bool {
+    public static function IpContainChecker($src, array $list): bool {
         $src = is_array($src) ? current($src) : $src;
         $src = str_ireplace(' ', '', $src);
         $ips = explode(',', $src);
         foreach ($ips as $ip) {
-            if (in_array($ip, $whitelist)) {
+            if (in_array($ip, $list)) {
                 return true;
             }
         }

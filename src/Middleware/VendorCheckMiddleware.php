@@ -67,7 +67,7 @@ class VendorCheckMiddleware implements MiddlewareInterface
                     return $response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
             }
             // 檢查來源IP
-            if ($vendor['filter_ip'] && !Tool::IpWhitelistCheck($ip, $vendor['ip_whitelist'])) {
+            if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
                 return $response->withBody($this->customResponse([
                     'ip' => $ip
                 ], ApiResponse::IP_NOT_ALLOWED));

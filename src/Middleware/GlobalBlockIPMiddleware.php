@@ -54,7 +54,7 @@ class GlobalBlockIPMiddleware implements MiddlewareInterface
 
         $blockIP = $this->cache->globalBlockIp();
         // 檢查來源IP
-        if (Tool::IpWhitelistCheck($ip, $blockIP)) {
+        if (Tool::IpContainChecker($ip, $blockIP)) {
             $response = $handler->handle($request);
             return $response->withBody(new SwooleStream(
                     json_encode(ApiResponse::result([
