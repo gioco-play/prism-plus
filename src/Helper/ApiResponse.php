@@ -151,7 +151,7 @@ class ApiResponse {
     ];
 
     const DECOMMISSION = [
-        'code' => 9500,
+        'code' => 9501,
         'msg' => '已停用'
     ];
 
