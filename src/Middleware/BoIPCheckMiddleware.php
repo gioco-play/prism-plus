@@ -10,6 +10,7 @@ use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -40,10 +41,15 @@ class BoIPCheckMiddleware implements MiddlewareInterface
      */
     protected $jwt;
 
+    /**
+     * @var HttpResponse
+     */
+    protected $response;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, HttpResponse $response)
     {
         $this->container = $container;
+        $this->response = $response;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -59,7 +65,7 @@ class BoIPCheckMiddleware implements MiddlewareInterface
         if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
             $comp = null;
             $userInfo = $this->jwt->getParserData();
-            if (in_array(trim(strtolower($userInfo['role'])), ['supervisor', 'ops', 'dev'])) {
+            if (in_array(trim(strtolower($userInfo['role'])), ['supervisor', 'ops', 'dev', 'test'])) {
                 return $handler->handle($request);
             }
             $compCode =  $userInfo['company_code'] ?? "";
@@ -68,8 +74,7 @@ class BoIPCheckMiddleware implements MiddlewareInterface
             }
             // 檢查來源IP
             if (!Tool::IpContainChecker($ip, $comp['bo_whitelist'])) {
-                $response = $handler->handle($request);
-                return $response->withBody(new SwooleStream(
+                return $this->response->withBody(new SwooleStream(
                         json_encode(ApiResponse::result([
                             'ip' => $ip
                         ], ApiResponse::IP_NOT_ALLOWED))

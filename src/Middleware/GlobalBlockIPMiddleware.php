@@ -10,6 +10,7 @@ use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -40,10 +41,15 @@ class GlobalBlockIPMiddleware implements MiddlewareInterface
      */
     protected $jwt;
 
+    /**
+     * @var HttpResponse
+     */
+    protected $response;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, HttpResponse $response)
     {
         $this->container = $container;
+        $this->response = $response;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -55,8 +61,7 @@ class GlobalBlockIPMiddleware implements MiddlewareInterface
         $blockIP = $this->cache->globalBlockIp();
         // 檢查來源IP
         if (Tool::IpContainChecker($ip, $blockIP)) {
-            $response = $handler->handle($request);
-            return $response->withBody(new SwooleStream(
+            return $this->response->withBody(new SwooleStream(
                     json_encode(ApiResponse::result([
                         'ip' => $ip
                     ], ApiResponse::IP_BLOCKED))

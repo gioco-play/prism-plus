@@ -11,6 +11,7 @@ use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -41,10 +42,16 @@ class VendorCheckMiddleware implements MiddlewareInterface
      */
     protected $jwt;
 
+    /**
+     * @var HttpResponse
+     */
+    protected $response;
 
-    public function __construct(ContainerInterface $container)
+
+    public function __construct(ContainerInterface $container, HttpResponse $response)
     {
         $this->container = $container;
+        $this->response = $response;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -56,19 +63,18 @@ class VendorCheckMiddleware implements MiddlewareInterface
             : $request->getServerParams()['remote_addr'];
 
         list($vendorCode, $domain) = explode('.', $request->getUri()->getHost());
-        $response = $handler->handle($request);
 
         if ($vendorCode) {
             $vendor = $this->cache->vendor(strtolower($vendorCode));
             switch ($vendor['status']) {
                 case GlobalConst::MAINTAIN :
-                    return $response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+                    return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
                 case GlobalConst::DECOMMISSION :
-                    return $response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
+                    return $this->response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
             }
             // 檢查來源IP
             if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
-                return $response->withBody($this->customResponse([
+                return $this->response->withBody($this->customResponse([
                     'ip' => $ip
                 ], ApiResponse::IP_NOT_ALLOWED));
             }
@@ -76,11 +82,11 @@ class VendorCheckMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return $response->withBody($this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL));
+        return $this->response->withBody($this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL));
     }
 
     /**
-     * @param $data
+     * @param array $data
      * @param $msg
      * @return SwooleStream
      */
