@@ -207,7 +207,7 @@ class CacheService
     /**
      * 角色選單
      * @param string $role
-     * @Cacheable(prefix="role_menu", ttl=60, value="_#{role}", listener="role-menu-update")
+     * @Cacheable(prefix="role_menu", ttl=1, value="_#{role}", listener="role-menu-update")
      */
     public function roleMenu(string $role) {
 
@@ -215,9 +215,8 @@ class CacheService
         $filter_menu = [];
         if ($role !== 'supervisor') {
             $roles = $this->mongodb->fetchAll('admin_role_menus', $filter);
-            $menu_codes = collect($roles)->pluck('menu_code')->toArray();
-
-            $filter_menu = ['code' => ['$in' => $menu_codes]];
+            $menus = collect($roles)->pluck('menu')->toArray();
+            $filter_menu = ['code' => ['$in' => $menus]];
         }
 
         $data = $this->mongodb->fetchAll('menus',
