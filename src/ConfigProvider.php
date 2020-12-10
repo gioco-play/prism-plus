@@ -75,6 +75,12 @@ class ConfigProvider
                     'description' => 'The global block ip checker',
                     'source' => __DIR__ . '/Middleware/VendorCheckMiddleware.php',
                     'destination' => BASE_PATH . '/app/Middleware/VendorCheckMiddleware.php',
+                ],
+                [
+                    'id' => 'PermissionCheckMiddleware',
+                    'description' => 'The global block ip checker',
+                    'source' => __DIR__ . '/Middleware/PermissionCheckMiddleware.php',
+                    'destination' => BASE_PATH . '/app/Middleware/PermissionCheckMiddleware.php',
                 ]
             ],
         ];

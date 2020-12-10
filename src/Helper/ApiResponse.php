@@ -120,6 +120,11 @@ class ApiResponse {
         'msg' => '黑名單IP存取限制'
     ];
 
+    const ACT_PERMIT_DENY = [
+        'code' => 9203,
+        'msg' => '操作權限不足'
+    ];
+
     const JWT_AUTH_FAIL = [
         'code' => 9300,
         'msg' => 'JWT認證失敗'

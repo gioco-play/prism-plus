@@ -225,11 +225,11 @@ class CacheService
             ]
         );
 
-        $roleMenuPermit = $this->roleMenuPermit($role);
+        $roleMenuPermits = $this->roleMenuPermits($role);
         $menus = [];
         if ($data) {
             foreach ($data as $menu) {
-                $permits = collect($roleMenuPermit)->where('menu', $menu['code'])->first();
+                $permits = collect($roleMenuPermits)->where('menu', $menu['code'])->first();
                 $menu['permits'] = $permits['permits'] ?? [];
                 $menu['hidden_fields'] = $permits['hidden_fields'] ?? [];
                 $menus[] = $menu;
@@ -243,9 +243,9 @@ class CacheService
     /**
      * 角色選單權限
      * @param string $role
-     * @Cacheable(prefix="role_menu_permit", ttl=60, value="_#{role}", listener="role-menu-permit-update")
+     * @Cacheable(prefix="role_menu_permits", ttl=60, value="_#{role}", listener="role-menu-permits-update")
      */
-    public function roleMenuPermit(string $role) {
+    public function roleMenuPermits(string $role) {
         $filter =  ['role' => $role];
         if ($role === 'supervisor') {
             return [];
@@ -312,4 +312,29 @@ class CacheService
         return [];
     }
 
+    /**
+     * 角色單一選單權限
+     * @param string $role
+     * @param string $menu
+     * @return array|mixed
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     * @Cacheable(prefix="role_menu_permit", ttl=300, value="_#{$role}_{$menu}", listener="role-menu-permit")
+     */
+    public function roleMenuPermit(string $role, string $menu) {
+        if ($role === 'supervisor') {
+            return true;
+        }
+
+        $data = current($this->mongodb->fetchAll('admin_role_menu_permissions',
+            [
+                'role' => $role,
+                'menu' => $menu
+            ]
+        ));
+
+        if ($data) {
+            return $data;
+        }
+        return false;
+    }
 }

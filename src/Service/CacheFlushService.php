@@ -104,8 +104,8 @@ class CacheFlushService
      * @param $role
      * @return bool
      */
-    public function roleMenuPermit($role) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-permit-update', [ 'role' => $role]));
+    public function roleMenuPermits($role) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-permits-update', [ 'role' => $role]));
 
         return true;
     }
@@ -145,6 +145,20 @@ class CacheFlushService
      */
     public function fullAccessRoles() {
         $this->dispatcher->dispatch(new DeleteListenerEvent('full-access-roles', []));
+        return true;
+    }
+
+    /**
+     * 角色單一選單權限
+     * @param string $role
+     * @param string $menu
+     * @return bool
+     */
+    public function roleMenuPermit(string $role, string $menu) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-permit', [
+            'role' => $role,
+            'menu' => $menu
+        ]));
         return true;
     }
 }
