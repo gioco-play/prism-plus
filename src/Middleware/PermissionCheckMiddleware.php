@@ -54,7 +54,13 @@ class PermissionCheckMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
+        if (in_array($request->getUri()->getPath(), [
+            '/api/v1/auth/login',
+            '/api/v1/auth/logout',
+            '/api/v1/auth/refresh_token',
+            '/api/v1/auth/change_password',
+            '/api/v1/auth/user_env'
+        ])) {
             return $handler->handle($request);
         }
 
