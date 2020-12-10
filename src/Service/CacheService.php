@@ -277,7 +277,7 @@ class CacheService
      * @param $slug "bo / api"
      * @return false|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="platform_switch", ttl=300, value="_#{$slug}", listener="platform-switch-update")
+     * @Cacheable(prefix="platform_switch", ttl=300, value="_#{slug}", listener="platform-switch-update")
      */
     public function platformSwitch($slug) {
         $filter =  ['slug' => $slug];
@@ -307,7 +307,7 @@ class CacheService
     public function fullAccessRoles() {
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'full_access_role']));
         if ($data) {
-            return $data;
+            return $data['roles'];
         }
         return [];
     }
@@ -318,7 +318,7 @@ class CacheService
      * @param string $menu
      * @return array|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="role_menu_permit", ttl=300, value="_#{$role}_{$menu}", listener="role-menu-permit")
+     * @Cacheable(prefix="role_menu_permit", ttl=300, value="_#{role}_{menu}", listener="role-menu-permit")
      */
     public function roleMenuPermit(string $role, string $menu) {
         if ($role === 'supervisor') {
