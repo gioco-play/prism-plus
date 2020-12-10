@@ -230,7 +230,7 @@ class CacheService
         if ($data) {
             foreach ($data as $menu) {
                 $permits = collect($roleMenuPermit)->where('menu', $menu['code'])->first();
-                $menu['permit'] = $permits['permit'] ?? [];
+                $menu['permits'] = $permits['permits'] ?? [];
                 $menu['hidden_fields'] = $permits['hidden_fields'] ?? [];
                 $menus[] = $menu;
             }
@@ -294,6 +294,18 @@ class CacheService
      */
     public function globalBlockIp() {
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
+        if ($data) {
+            return $data;
+        }
+        return [];
+    }
+
+    /**
+     * 角色白名單
+     * @Cacheable(prefix="full_access_roles", ttl=300, listener="full-access-roles")
+     */
+    public function fullAccessRoles() {
+        $data = current($this->mongodb->fetchAll('platform', ['slug' => 'full_access_role']));
         if ($data) {
             return $data;
         }

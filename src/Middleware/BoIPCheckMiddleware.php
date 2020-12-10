@@ -65,7 +65,7 @@ class BoIPCheckMiddleware implements MiddlewareInterface
         if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
             $comp = null;
             $userInfo = $this->jwt->getParserData();
-            if (in_array(trim(strtolower($userInfo['role'])), ['supervisor', 'ops', 'dev', 'test'])) {
+            if (in_array(trim(strtolower($userInfo['role'])), $this->cache->fullAccessRoles())) {
                 return $handler->handle($request);
             }
             $compCode =  $userInfo['company_code'] ?? "";

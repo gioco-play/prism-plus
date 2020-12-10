@@ -139,4 +139,12 @@ class CacheFlushService
         $this->dispatcher->dispatch(new DeleteListenerEvent('global-block-ip', []));
         return true;
     }
+
+    /**
+     * 角色白名單
+     */
+    public function fullAccessRoles() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('full-access-roles', []));
+        return true;
+    }
 }
