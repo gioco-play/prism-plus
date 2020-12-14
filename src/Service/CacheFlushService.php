@@ -187,4 +187,16 @@ class CacheFlushService
         ]));
         return true;
     }
+
+    /**
+     * 維護計畫
+     * @param string $type
+     * @return bool
+     */
+    public function maintainPlanning(string $type) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('maintain-planning-update', [
+            'type' => $type
+        ]));
+        return true;
+    }
 }

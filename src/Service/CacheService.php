@@ -353,4 +353,22 @@ class CacheService
         }
         return false;
     }
+
+    /**
+     * 維護計畫
+     * @param string $type
+     * @Cacheable(prefix="maintain_planning", ttl=360, value="_#{type}", listener="maintain-planning-update")
+     */
+    public function maintainPlanning(string $type) {
+        $data = $this->mongodb->fetchAll('maintain_planning',
+            [
+                'type' => $type,
+                'valid' => true
+            ]
+        );
+        if ($data) {
+            return $data;
+        }
+        return false;
+    }
 }

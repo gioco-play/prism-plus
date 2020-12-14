@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Middleware;
+namespace App\Middleware\Vendor;
 
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\GlobalConst;
