@@ -466,7 +466,7 @@ class Transaction
                 $wallet = current($pg->fetchAll($result));
                 $beforeBalance = floatval($wallet['balance']);
                 $balance =  floatval(bcadd(strval($beforeBalance), strval($amount), $this->currencyScale));
-                if ($force === false && $balance < 0 && $transType == TransactionConst::TransferOut) {
+                if ($force === false && $balance < 0) {
                     $this->eventDispatcher(new TransactionErrorRequest([
                         'error' => ApiResponse::TRANS_BALANCE_SHORT,
                         'func' => __FUNCTION__,
