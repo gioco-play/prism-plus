@@ -108,11 +108,13 @@ class Transaction
      * Transaction constructor.
      * @param string $accountOp (玩家帳號含商戶代碼)
      * @param string $walletCode
+     * @param string $delimiter
      */
-    public function __construct(string $accountOp, string $walletCode) {
+    public function __construct(string $accountOp, string $walletCode, string $delimiter = '_') {
 
-        list($this->playerName, $this->operatorCode) = array_values(Tool::MemberSplitCode($accountOp));
-        $this->postgres = $this->dbManager->opPostgreDb(strtolower($this->operatorCode));
+        list($this->operatorCode, $player) = array_values($$this->cache->memberInfo($accountOp, $delimiter));
+        $this->playerName = $player->player_name;
+        $this->postgres = $this->dbManager->opPostgreDb($this->operatorCode);
         $this->operator = (array) $this->cache->operator($this->operatorCode);
         $this->walletCode = $walletCode;
         // 根據錢包代碼取得產品商代碼

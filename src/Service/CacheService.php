@@ -283,7 +283,10 @@ class CacheService
         $pg = $dbManager->opPostgreDb(strtolower($op));
         $result = $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
         if ($result) {
-            return current($pg->fetchAll($result));
+            return [
+                'operator_code' => $op,
+                'player' => current($pg->fetchAll($result))
+            ];
         }
         return $result;
     }

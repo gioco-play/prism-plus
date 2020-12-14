@@ -66,7 +66,7 @@ class DbManager
      */
     public function opPostgreDb(string $code, string $dbName = null) {
         try {
-            $op = $this->cache->operator($code);
+            $op = $this->cache->operator(strtoupper($code));
             $dbConn = $op['db']->postgres;
             //
             $host = $dbConn->host;
