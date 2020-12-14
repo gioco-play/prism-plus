@@ -34,6 +34,32 @@ class CacheFlushService
     }
 
     /**
+     * 清除 營運商
+     * @param string $operator_token
+     * @return bool
+     */
+    public function operatorByToken(string $operator_token) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op-token-update', [
+            'operator_token' => $operator_token
+        ]));
+        return true;
+    }
+
+    /**
+     * 清除 運營商封鎖遊戲
+     * @param string $code
+     * @param string $vendorCode
+     * @return bool
+     */
+    public function operatorBlockGames(string $code, string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op-block-game-update"', [
+            'code' => $code,
+            'vendorCode' => $vendorCode
+        ]));
+        return true;
+    }
+
+    /**
      * 清除 營運商幣值表
      * @param $code
      * @return bool

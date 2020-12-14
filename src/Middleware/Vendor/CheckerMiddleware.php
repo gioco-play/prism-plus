@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Middleware;
 
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
+use GiocoPlus\PrismPlus\Helper\GlobalConst;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
@@ -18,11 +19,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * 後台IP白名單過濾 角色為supervisor不判斷
+ * Vendor 狀態 \ IP 檢查
  * Class IPCheckMiddleware
  * @package App\Middleware
  */
-class BoIPCheckMiddleware implements MiddlewareInterface
+class CheckerMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface
@@ -46,6 +47,7 @@ class BoIPCheckMiddleware implements MiddlewareInterface
      */
     protected $response;
 
+
     public function __construct(ContainerInterface $container, HttpResponse $response)
     {
         $this->container = $container;
@@ -54,35 +56,41 @@ class BoIPCheckMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // 請求的url http://{vendor}.playbox.co
+
         $ip = $request->hasHeader('x-forwarded-for')
             ? $request->getHeader('x-forwarded-for')
             : $request->getServerParams()['remote_addr'];
 
-        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
+        list($vendorCode, $domain) = explode('.', $request->getUri()->getHost());
+
+        if ($vendorCode) {
+            $vendor = $this->cache->vendor(strtolower($vendorCode));
+            switch ($vendor['status']) {
+                case GlobalConst::MAINTAIN :
+                    return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+                case GlobalConst::DECOMMISSION :
+                    return $this->response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
+            }
+            // 檢查來源IP
+            if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
+                return $this->response->withBody($this->customResponse([
+                    'ip' => $ip
+                ], ApiResponse::IP_NOT_ALLOWED));
+            }
+
             return $handler->handle($request);
         }
 
-        if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
-            $comp = null;
-            $userInfo = $this->jwt->getParserData();
-            if (in_array(trim(strtolower($userInfo['role'])), $this->cache->fullAccessRoles())) {
-                return $handler->handle($request);
-            }
-            $compCode =  $userInfo['company_code'] ?? "";
-            if ($compCode) {
-                $comp = $this->cache->company($compCode);
-            }
-            // 檢查來源IP
-            if (!Tool::IpContainChecker($ip, $comp['bo_whitelist'])) {
-                return $this->response->withBody(new SwooleStream(
-                        json_encode(ApiResponse::result([
-                            'ip' => $ip
-                        ], ApiResponse::IP_NOT_ALLOWED))
-                    )
-                );
-            }
-        }
+        return $this->response->withBody($this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL));
+    }
 
-        return $handler->handle($request);
+    /**
+     * @param array $data
+     * @param $msg
+     * @return SwooleStream
+     */
+    private function customResponse($data = [], $msg) {
+        return new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
     }
 }

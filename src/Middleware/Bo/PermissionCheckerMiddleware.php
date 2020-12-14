@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Middleware;
+namespace App\Middleware\Bo;
 
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
@@ -19,10 +19,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Class PermissionCheckMiddleware
+ * 權限檢查
+ * Class PermissionCheckerMiddleware
  * @package App\Middleware
  */
-class PermissionCheckMiddleware implements MiddlewareInterface
+class PermissionCheckerMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface

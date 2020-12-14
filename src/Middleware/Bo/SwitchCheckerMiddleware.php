@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Middleware;
+namespace App\Middleware\Bo;
 
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\GlobalConst;
@@ -19,11 +19,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Vendor 開關 \ IP 檢查
+ * BO 後台開關 / 商戶開關
  * Class IPCheckMiddleware
  * @package App\Middleware
  */
-class VendorCheckMiddleware implements MiddlewareInterface
+class SwitchCheckerMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface
@@ -47,7 +47,6 @@ class VendorCheckMiddleware implements MiddlewareInterface
      */
     protected $response;
 
-
     public function __construct(ContainerInterface $container, HttpResponse $response)
     {
         $this->container = $container;
@@ -56,33 +55,34 @@ class VendorCheckMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // 請求的url http://{vendor}.playbox.co
 
-        $ip = $request->hasHeader('x-forwarded-for')
-            ? $request->getHeader('x-forwarded-for')
-            : $request->getServerParams()['remote_addr'];
+        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
+            return $handler->handle($request);
+        }
 
-        list($vendorCode, $domain) = explode('.', $request->getUri()->getHost());
-
-        if ($vendorCode) {
-            $vendor = $this->cache->vendor(strtolower($vendorCode));
-            switch ($vendor['status']) {
+        if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
+            $comp = null;
+            $userInfo = $this->jwt->getParserData();
+            if (in_array(trim(strtolower($userInfo['role'])), $this->cache->fullAccessRoles())) {
+                return $handler->handle($request);
+            }
+            // 後台開關
+            $status = $this->cache->platformSwitch('bo');
+            switch ($status) {
+                case GlobalConst::MAINTAIN :
+                    return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+            }
+            // 商戶開關
+            $comp = $this->cache->company($userInfo['company_code']);
+            switch ($comp['status']) {
                 case GlobalConst::MAINTAIN :
                     return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
                 case GlobalConst::DECOMMISSION :
                     return $this->response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
             }
-            // 檢查來源IP
-            if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
-                return $this->response->withBody($this->customResponse([
-                    'ip' => $ip
-                ], ApiResponse::IP_NOT_ALLOWED));
-            }
-
-            return $handler->handle($request);
         }
 
-        return $this->response->withBody($this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL));
+        return $handler->handle($request);
     }
 
     /**

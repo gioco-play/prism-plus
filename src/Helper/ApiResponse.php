@@ -45,6 +45,11 @@ class ApiResponse {
         'msg' => '更新失敗, 請檢查資料（若資料無異動視為更新失敗）'
     ];
 
+    const OPERATOR_NOT_FOUND = [
+        'code' => 6000,
+        'msg' => '商戶不存在或密鑰錯誤'
+    ];
+
     const PRODUCT_NEED_ACK = [
         'code' => 7100,
         'msg' => '產品尚未配置'

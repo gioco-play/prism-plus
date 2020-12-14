@@ -41,7 +41,7 @@ class CacheService
     /**
      * 管理者基本資料
      * @param string $account
-     * @Cacheable(prefix="admin_user_info", ttl=60, value="_#{account}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user_info", ttl=180, value="_#{account}", listener="admin-user-update")
      */
     public function adminUserInfo(string $account) {
         $role = current($this->mongodb->fetchAll('admin_user_roles', ['account' => $account]));
@@ -57,7 +57,7 @@ class CacheService
     /**
      * 管理者帳號
      * @param string $uid
-     * @Cacheable(prefix="admin_user", ttl=120, value="_#{uid}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user", ttl=180, value="_#{uid}", listener="admin-user-update")
      */
     public function adminUser(string $uid) {
         return current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
@@ -66,7 +66,7 @@ class CacheService
     /**
      * 營運商
      * @param string $code
-     * @Cacheable(prefix="op", ttl=300, value="_#{code}", listener="op-update")
+     * @Cacheable(prefix="op", ttl=180, value="_#{code}", listener="op-update")
      */
     public function operator(string $code) {
 
@@ -80,9 +80,27 @@ class CacheService
     }
 
     /**
+     * 營運商
+     * @param string $operator_token
+     * @Cacheable(prefix="op_token", ttl=180, value="_#{operator_token}", listener="op-token-update")
+     */
+    public function operatorByToken(string $operator_token) {
+
+        $data = current($this->mongodb->fetchAll('operators', [
+            'operator_token' => $operator_token
+        ]));
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
      * 營運商幣值表
      * @param string $code
-     * @Cacheable(prefix="op_currency_rate", ttl=300, value="_#{code}", listener="op-currency-rate")
+     * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op-currency-rate")
      */
     public function operatorCurrencyRate(string $code) {
         $operator = current($this->operator($code));
@@ -95,9 +113,22 @@ class CacheService
     }
 
     /**
+     * 運營商 封鎖遊戲
+     * @param string $code
+     * @param string $vendorCode
+     * @return array
+     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_{vendorCode}", listener="op-block-game-update")
+     */
+    public function operatorBlockGames(string $code, string $vendorCode) {
+        $operator = current($this->operator($code));
+        $blacklist = $operator["game_blacklist"]??[];
+        return $blacklist[$vendorCode] ?? [];
+    }
+
+    /**
      * 公司
      * @param string $code
-     * @Cacheable(prefix="comp", ttl=60, value="_#{code}", listener="comp-update")
+     * @Cacheable(prefix="comp", ttl=180, value="_#{code}", listener="comp-update")
      */
     public function company(string $code) {
 
@@ -113,7 +144,7 @@ class CacheService
     /**
      * 遊戲商
      * @param string $code
-     * @Cacheable(prefix="vendor", ttl=300, value="_#{code}", listener="vendor-update")
+     * @Cacheable(prefix="vendor", ttl=180, value="_#{code}", listener="vendor-update")
      */
     public function vendor(string $code) {
 
@@ -129,7 +160,7 @@ class CacheService
     /**
      * 遊戲清單
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_game", ttl=300, value="_#{vendorCode}", listener="vendor-game-update")
+     * @Cacheable(prefix="vendor_game", ttl=180, value="_#{vendorCode}", listener="vendor-game-update")
      */
     public function games(string $vendorCode) {
         $data = $this->mongodb->fetchAll('games', ['vendor_code' => $vendorCode]);
@@ -142,25 +173,10 @@ class CacheService
     }
 
     /**
-     * 遊戲商 請求參數列表
-     * @Cacheable(prefix="list_request_params", ttl=60, listener="vendor-request-param-list")
-     */
-    public function listRequestParams() {
-
-        $data = $this->mongodb->fetchAll('vendors');
-
-        if ($data) {
-            return $data;
-        }
-
-        return [];
-    }
-
-    /**
      * 營運商 - 公司
      * @param string $code
      * @return array
-     * @Cacheable(prefix="comp_opcodes", ttl=60, value="_#{code}", listener="comp-opcodes-update")
+     * @Cacheable(prefix="comp_opcodes", ttl=180, value="_#{code}", listener="comp-opcodes-update")
      */
     public function companyOpCodes(string $code) : array {
 
@@ -207,7 +223,7 @@ class CacheService
     /**
      * 角色選單
      * @param string $role
-     * @Cacheable(prefix="role_menu", ttl=1, value="_#{role}", listener="role-menu-update")
+     * @Cacheable(prefix="role_menu", ttl=180, value="_#{role}", listener="role-menu-update")
      */
     public function roleMenu(string $role) {
 
@@ -243,7 +259,7 @@ class CacheService
     /**
      * 角色選單權限
      * @param string $role
-     * @Cacheable(prefix="role_menu_permits", ttl=60, value="_#{role}", listener="role-menu-permits-update")
+     * @Cacheable(prefix="role_menu_permits", ttl=180, value="_#{role}", listener="role-menu-permits-update")
      */
     public function roleMenuPermits(string $role) {
         $filter =  ['role' => $role];
@@ -259,7 +275,7 @@ class CacheService
      * @param string $accountOp (含後綴商戶代碼)
      * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
      * @return mixed
-     * @Cacheable(prefix="op_member_info", ttl=60, value="_#{accountOp}", listener="op-member-info-update")
+     * @Cacheable(prefix="op_member_info", ttl=180, value="_#{accountOp}", listener="op-member-info-update")
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
         list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
@@ -277,7 +293,7 @@ class CacheService
      * @param $slug "bo / api"
      * @return false|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="platform_switch", ttl=300, value="_#{slug}", listener="platform-switch-update")
+     * @Cacheable(prefix="platform_switch", ttl=180, value="_#{slug}", listener="platform-switch-update")
      */
     public function platformSwitch($slug) {
         $filter =  ['slug' => $slug];
@@ -290,7 +306,7 @@ class CacheService
 
     /**
      * 全域封鎖IP名單
-     * @Cacheable(prefix="global_block_ip", ttl=300, listener="global-block-ip")
+     * @Cacheable(prefix="global_block_ip", ttl=180, listener="global-block-ip")
      */
     public function globalBlockIp() {
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
@@ -302,7 +318,7 @@ class CacheService
 
     /**
      * 角色白名單
-     * @Cacheable(prefix="full_access_roles", ttl=300, listener="full-access-roles")
+     * @Cacheable(prefix="full_access_roles", ttl=180, listener="full-access-roles")
      */
     public function fullAccessRoles() {
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'full_access_role']));
@@ -318,7 +334,7 @@ class CacheService
      * @param string $menu
      * @return array|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="role_menu_permit", ttl=300, value="_#{role}_{menu}", listener="role-menu-permit")
+     * @Cacheable(prefix="role_menu_permit", ttl=180, value="_#{role}_{menu}", listener="role-menu-permit")
      */
     public function roleMenuPermit(string $role, string $menu) {
         if ($role === 'supervisor') {

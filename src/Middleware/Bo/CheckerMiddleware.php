@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Middleware;
+namespace App\Middleware\Bo;
 
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
@@ -18,11 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * 封鎖IP
+ * 後台IP白名單過濾
  * Class IPCheckMiddleware
  * @package App\Middleware
  */
-class GlobalBlockIPMiddleware implements MiddlewareInterface
+class CheckerMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface
@@ -58,15 +58,29 @@ class GlobalBlockIPMiddleware implements MiddlewareInterface
             ? $request->getHeader('x-forwarded-for')
             : $request->getServerParams()['remote_addr'];
 
-        $blockIP = $this->cache->globalBlockIp();
-        // 檢查來源IP
-        if (Tool::IpContainChecker($ip, $blockIP)) {
-            return $this->response->withBody(new SwooleStream(
-                    json_encode(ApiResponse::result([
-                        'ip' => $ip
-                    ], ApiResponse::IP_BLOCKED))
-                )
-            );
+        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
+            return $handler->handle($request);
+        }
+
+        if (stripos($request->getUri()->getPath(), '/api/v1/') !== false) {
+            $comp = null;
+            $userInfo = $this->jwt->getParserData();
+            if (in_array(trim(strtolower($userInfo['role'])), $this->cache->fullAccessRoles())) {
+                return $handler->handle($request);
+            }
+            $compCode =  $userInfo['company_code'] ?? "";
+            if ($compCode) {
+                $comp = $this->cache->company($compCode);
+            }
+            // 檢查來源IP
+            if (!Tool::IpContainChecker($ip, $comp['bo_whitelist'])) {
+                return $this->response->withBody(new SwooleStream(
+                        json_encode(ApiResponse::result([
+                            'ip' => $ip
+                        ], ApiResponse::IP_NOT_ALLOWED))
+                    )
+                );
+            }
         }
 
         return $handler->handle($request);
