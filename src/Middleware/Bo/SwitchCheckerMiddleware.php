@@ -73,7 +73,7 @@ class SwitchCheckerMiddleware implements MiddlewareInterface
                     return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
             }
             // 商戶開關
-            $comp = $this->cache->company($userInfo['company_code']);
+            $comp = $this->cache->company($userInfo['company']);
             switch ($comp['status']) {
                 case GlobalConst::MAINTAIN :
                     return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));

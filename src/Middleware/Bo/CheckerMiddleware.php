@@ -68,7 +68,7 @@ class CheckerMiddleware implements MiddlewareInterface
             if (in_array(trim(strtolower($userInfo['role'])), $this->cache->fullAccessRoles())) {
                 return $handler->handle($request);
             }
-            $compCode =  $userInfo['company_code'] ?? "";
+            $compCode =  $userInfo['company'] ?? "";
             if ($compCode) {
                 $comp = $this->cache->company($compCode);
             }

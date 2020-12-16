@@ -7,7 +7,6 @@ use GiocoPlus\PrismPlus\Event\TransactionErrorRequest;
 use GiocoPlus\PrismPlus\Event\TransactionSuccessRequest;
 use GiocoPlus\PrismPlus\Exception\TransactionException;
 use GiocoPlus\PrismPlus\Helper\ApiResponse;
-use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\Traits\SeamlessTrait;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use Hyperf\Di\Annotation\Inject;

@@ -46,10 +46,10 @@ class CacheService
     public function adminUserInfo(string $account) {
         $role = current($this->mongodb->fetchAll('admin_user_roles', ['account' => $account]));
         $_company = current($this->mongodb->fetchAll('admin_user_company', ['account' => $account]));
-        $company = $this->company($_company['company_code']??"unknown");
+        $company = $this->company($_company['company']??"unknown");
         return [
             'role' => $role['role']??"unknown-role",
-            'company_code' => $company['code']??"unknown-code",
+            'company' => $company['code']??"unknown-code",
             'company_name' => $company['name']??"unknown-name"
         ];
     }
