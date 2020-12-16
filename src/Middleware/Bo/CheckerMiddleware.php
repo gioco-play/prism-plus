@@ -58,7 +58,10 @@ class CheckerMiddleware implements MiddlewareInterface
             ? $request->getHeader('x-forwarded-for')
             : $request->getServerParams()['remote_addr'];
 
-        if ($request->getUri()->getPath() === '/api/v1/auth/login') {
+        if (in_array($request->getUri()->getPath(), [
+            '/api/v1/auth/login',
+            '/api/v1/auth/user_env'
+        ])) {
             return $handler->handle($request);
         }
 
