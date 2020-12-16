@@ -23,6 +23,16 @@ class CacheFlushService
     protected $dispatcher;
 
     /**
+     * 清除 管理者基本資料
+     * @param string $account
+     */
+    public function adminUserInfo(string $account) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('admin-user-update', [ 'account' => $account]));
+
+        return true;
+    }
+
+    /**
      * 清除 營運商
      * @param $code
      * @return bool
