@@ -41,18 +41,6 @@ class ConfigProvider
                     'destination' => BASE_PATH . '/config/autoload/prismplus.php',
                 ],
                 [
-                    'id' => 'SeamlessListener',
-                    'description' => 'The seamless request listener',
-                    'source' => __DIR__ . '/Listener/SeamlessRequestListener.php',
-                    'destination' => BASE_PATH . '/app/Listener/SeamlessRequestListener.php',
-                ],
-                [
-                    'id' => 'TransactionRequestListener',
-                    'description' => 'The transaction request listener',
-                    'source' => __DIR__ . '/Listener/TransactionRequestListener.php',
-                    'destination' => BASE_PATH . '/app/Listener/TransactionRequestListener.php',
-                ],
-                [
                     'id' => 'BoCheckerMiddleware',
                     'description' => 'The bo ip checker',
                     'source' => __DIR__ . '/Middleware/Bo/CheckerMiddleware.php',
