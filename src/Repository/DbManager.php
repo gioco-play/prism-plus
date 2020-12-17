@@ -73,7 +73,7 @@ class DbManager
             $port = $dbConn->port;
             $user = $dbConn->user;
             $password = $password ?? $dbConn->password;
-            $dbName = strtolower($dbName ?? "{$code}_db");
+            $dbName = $dbName ?? strtolower("{$code}_db");
             //
             $pg = new \Swoole\Coroutine\PostgreSQL();
             $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
