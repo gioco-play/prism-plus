@@ -66,15 +66,14 @@ class DbManager
      */
     public function opPostgreDb(string $code, string $dbName = null) {
         try {
-            $code = strtoupper($code);
-            $op = $this->cache->operator();
+            $op = $this->cache->operator(strtoupper($code));
             $dbConn = $op['db']->postgres;
             //
             $host = $dbConn->host;
             $port = $dbConn->port;
             $user = $dbConn->user;
             $password = $password ?? $dbConn->password;
-            $dbName = $dbName ?? "{$code}_db";
+            $dbName = strtolower($dbName ?? "{$code}_db");
             //
             $pg = new \Swoole\Coroutine\PostgreSQL();
             $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
