@@ -35,12 +35,6 @@ class ConfigProvider
             ],
             'publish' => [
                 [
-                    'id' => 'config',
-                    'description' => 'The config of prismplus client.',
-                    'source' => __DIR__ . '/publish/prismplus.php',
-                    'destination' => BASE_PATH . '/config/autoload/prismplus.php',
-                ],
-                [
                     'id' => 'BoCheckerMiddleware',
                     'description' => 'The bo ip checker',
                     'source' => __DIR__ . '/Middleware/Bo/CheckerMiddleware.php',
