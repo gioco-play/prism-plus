@@ -58,7 +58,7 @@ class GlobalIPBlockMiddleware implements MiddlewareInterface
             ? $request->getHeader('x-forwarded-for')
             : $request->getServerParams()['remote_addr'];
 
-        $blockIP = $this->cache->globalBlockIp();
+        $blockIP = $this->cache->globalIPBlock();
         // 檢查來源IP
         if (Tool::IpContainChecker($ip, $blockIP)) {
             return $this->response->withBody(new SwooleStream(
