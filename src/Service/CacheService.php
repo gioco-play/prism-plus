@@ -103,13 +103,13 @@ class CacheService
      * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op-currency-rate")
      */
     public function operatorCurrencyRate(string $code) {
-        $operator = current($this->operator($code));
+        $operator = $this->operator($code);
 
         if ($operator) {
-            return collect($operator['currency_rate'])->pluck('rate', 'vendor');
+            return collect($operator['currency_rate'])->pluck('rate', 'vendor')->toArray();
         }
 
-        return null;
+        return [];
     }
 
     /**
