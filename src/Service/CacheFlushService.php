@@ -171,7 +171,7 @@ class CacheFlushService
      * 全域封鎖IP名單
      * @return bool
      */
-    public function globalBlockIp() {
+    public function globalIPBlock() {
         $this->dispatcher->dispatch(new DeleteListenerEvent('global-block-ip', []));
         return true;
     }
@@ -208,5 +208,13 @@ class CacheFlushService
             'type' => $type
         ]));
         return true;
+    }
+
+    /**
+     * GF IP 白名單
+     */
+    public function gfIP() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('gf-ip-update', []));
+        return [];
     }
 }

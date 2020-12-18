@@ -311,7 +311,7 @@ class CacheService
      * 全域封鎖IP名單
      * @Cacheable(prefix="global_block_ip", ttl=180, listener="global-block-ip")
      */
-    public function globalBlockIp() {
+    public function globalIPBlock() {
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
         if ($data) {
             return $data;
@@ -373,5 +373,16 @@ class CacheService
             return $data;
         }
         return false;
+    }
+    /**
+     * GF IP 白名單
+     * @Cacheable(prefix="gf_ip", ttl=360, listener="gf-ip-update")
+     */
+    public function gfIP() {
+        $data = current($this->mongodb->fetchAll('global_params', ['code' => 'gf_ip']));
+        if ($data) {
+            return $data['params'];
+        }
+        return [];
     }
 }
