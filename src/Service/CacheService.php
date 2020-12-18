@@ -374,6 +374,7 @@ class CacheService
         }
         return false;
     }
+
     /**
      * GF IP 白名單
      * @Cacheable(prefix="gf_ip", ttl=360, listener="gf-ip-update")
@@ -382,6 +383,19 @@ class CacheService
         $data = current($this->mongodb->fetchAll('global_params', ['code' => 'gf_ip']));
         if ($data) {
             return $data['params'];
+        }
+        return [];
+    }
+
+    /**
+     * 錢包代碼
+     * @Cacheable(prefix="wallet_code", ttl=360, listener="wallet-code-update")
+     */
+    public function walletCodes() {
+        $data = $this->mongodb->fetchAll('vendors');
+        $walletCodes = collect($data)->pluck('wallet_code')->toArray();
+        if ($walletCodes) {
+            return $walletCodes;
         }
         return [];
     }

@@ -217,4 +217,12 @@ class CacheFlushService
         $this->dispatcher->dispatch(new DeleteListenerEvent('gf-ip-update', []));
         return [];
     }
+
+    /**
+     * 錢包代碼
+     */
+    public function walletCodes() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('wallet-code-update', []));
+        return [];
+    }
 }
