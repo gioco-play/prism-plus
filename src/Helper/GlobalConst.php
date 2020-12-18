@@ -34,4 +34,14 @@ class GlobalConst {
      * 停用
      */
     const DECOMMISSION = 'decommission';
+
+    /**
+     * 轉帳錢包
+     */
+    const WALLET_TRANSFER = 'transfer';
+
+    /**
+     * 無縫錢包
+     */
+    const WALLET_SEAMLESS = 'seamless';
 }
