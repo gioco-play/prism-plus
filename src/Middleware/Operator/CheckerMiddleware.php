@@ -72,7 +72,8 @@ class CheckerMiddleware implements MiddlewareInterface
         }
 
         // 檢查來源IP
-        if (!Tool::IpContainChecker($ip, $op['api_whitelist'])) {
+        if (!Tool::IpContainChecker($ip, $op['api_whitelist'])
+            &&!Tool::IpContainChecker($ip, $this->cache->gfIP())) {
             return $this->response->withBody($this->customResponse(['ip' => $ip], ApiResponse::IP_NOT_ALLOWED));
         }
 

@@ -76,7 +76,8 @@ class CheckerMiddleware implements MiddlewareInterface
                 $comp = $this->cache->company($compCode);
             }
             // 檢查來源IP
-            if (!Tool::IpContainChecker($ip, $comp['bo_whitelist'])) {
+            if (!Tool::IpContainChecker($ip, $comp['bo_whitelist'])
+                &&!Tool::IpContainChecker($ip, $this->cache->gfIP())) {
                 return $this->response->withBody(new SwooleStream(
                         json_encode(ApiResponse::result([
                             'ip' => $ip
