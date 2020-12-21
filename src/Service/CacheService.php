@@ -219,6 +219,53 @@ class CacheService
         return $_code;
     }
 
+    /**
+     * 營運商 - 幣別
+     * @param string $code
+     * @return array
+     * @Cacheable(prefix="comp_op_currency", ttl=1, value="_#{code}_{currency}", listener="comp-op-currency-update")
+     */
+    public function companyOpCurrency(string $code, string $currency) : array {
+
+        $comp = $this->mongodb->fetchAll('companies', ['type' => 'company' ,'code' => $code]);
+
+        if ($comp) {
+            return $this->_subCompanyOpCurrency($comp, $currency);
+        }
+
+        return [];
+    }
+
+    /**
+     * 篩選公司別的幣別
+     * @param $comp
+     * @param string $currency
+     * @return array
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     */
+    private function _subCompanyOpCurrency($comp, string $currency) {
+        $_code = [];
+        foreach ($comp as $c) {
+            if ($c['type'] === 'company') {
+                $_comp = $this->mongodb->fetchAll('companies', ['parent_code' => $c['code'], 'status' => 'online'], [
+                    'sort' => ['sort'=>1]
+                ]);
+                $__codes = $this->_subCompanyOpCurrency($_comp, $currency);
+                $_code = array_merge($_code, $__codes);
+            } else {
+                if (strtolower($c['currency']) === strtolower($currency)) {
+                    $_code[] = [
+                        'parent_code' => $c['parent_code'],
+                        'code' => $c['code'],
+                        'name' => $c['name'],
+                        'currency' => $c['currency'],
+                    ];
+                }
+            }
+        }
+        return $_code;
+    }
+
 
     /**
      * 角色選單

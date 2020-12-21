@@ -125,6 +125,21 @@ class CacheFlushService
     }
 
     /**
+     * 清除 營運商 - 幣別
+     * @param string $code
+     * @param string $currency
+     * @return bool
+     */
+    public function companyOpCurrency(string $code, string $currency) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('comp-op-currency-update', [
+            'code' => $code,
+            'currency' => $currency
+        ]));
+
+        return true;
+    }
+
+    /**
      * 清除 角色選單
      * @param $role
      * @return bool
