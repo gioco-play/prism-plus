@@ -128,7 +128,7 @@ class CacheService
     /**
      * 公司
      * @param string $code
-     * @Cacheable(prefix="comp", ttl=180, value="_#{code}", listener="comp-update")
+     * @Cacheable(prefix="company", ttl=180, value="_#{code}", listener="company-update")
      */
     public function company(string $code) {
 
@@ -180,7 +180,7 @@ class CacheService
      */
     public function companyOpCodes(string $code) : array {
 
-        $comp = $this->mongodb->fetchAll('companies', ['type' => 'comp' ,'code' => $code]);
+        $comp = $this->mongodb->fetchAll('companies', ['type' => 'company' ,'code' => $code]);
 
         if ($comp) {
             return $this->_subCompanyOpcodes($comp);
@@ -196,7 +196,7 @@ class CacheService
     private function _subCompanyOpcodes($comp) {
         $_code = [];
         foreach ($comp as $c) {
-            if ($c['type'] === 'comp') {
+            if ($c['type'] === 'company') {
                 $_comp = $this->mongodb->fetchAll('companies', ['parent_code' => $c['code'], 'status' => 'online'], [
                     'sort' => ['sort'=>1]
                 ]);

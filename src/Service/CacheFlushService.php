@@ -86,7 +86,7 @@ class CacheFlushService
      * @return bool
      */
     public function company($code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('comp-update', [ 'code' => $code]));
+        $this->dispatcher->dispatch(new DeleteListenerEvent('company-update', [ 'code' => $code]));
 
         return true;
     }
