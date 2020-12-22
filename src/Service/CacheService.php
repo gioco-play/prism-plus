@@ -117,7 +117,7 @@ class CacheService
      * @param string $code
      * @param string $vendorCode
      * @return array
-     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_{vendorCode}", listener="op-block-game-update")
+     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_#{vendorCode}", listener="op-block-game-update")
      */
     public function operatorBlockGames(string $code, string $vendorCode) {
         $operator = current($this->operator($code));
@@ -212,7 +212,8 @@ class CacheService
                 $_code[] = [
                     'parent_code' => $c['parent_code'],
                     'code' => $c['code'],
-                    'name' => $c['name']
+                    'name' => $c['name'],
+                    'currency' => $c['currency']
                 ];
             }
         }
@@ -222,8 +223,10 @@ class CacheService
     /**
      * 營運商 - 幣別
      * @param string $code
+     * @param string $currency
      * @return array
-     * @Cacheable(prefix="comp_op_currency", ttl=180, value="_#{code}_{currency}", listener="comp-op-currency-update")
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     * @Cacheable(prefix="comp_op_currency", ttl=180, value="_#{code}_#{currency}", listener="comp-op-currency-update")
      */
     public function companyOpCurrency(string $code, string $currency) : array {
 
@@ -384,7 +387,7 @@ class CacheService
      * @param string $menu
      * @return array|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="role_menu_permit", ttl=180, value="_#{role}_{menu}", listener="role-menu-permit")
+     * @Cacheable(prefix="role_menu_permit", ttl=180, value="_#{role}_#{menu}", listener="role-menu-permit")
      */
     public function roleMenuPermit(string $role, string $menu) {
         if ($role === 'supervisor') {
