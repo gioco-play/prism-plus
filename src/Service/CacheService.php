@@ -273,7 +273,7 @@ class CacheService
     /**
      * 角色選單
      * @param string $role
-     * @Cacheable(prefix="role_menu", ttl=180, value="_#{role}", listener="role-menu-update")
+     * @Cacheable(prefix="role_menu", ttl=30, value="_#{role}", listener="role-menu-update")
      */
     public function roleMenu(string $role) {
 
@@ -309,7 +309,7 @@ class CacheService
     /**
      * 角色選單權限
      * @param string $role
-     * @Cacheable(prefix="role_menu_permits", ttl=180, value="_#{role}", listener="role-menu-permits-update")
+     * @Cacheable(prefix="role_menu_permits", ttl=30, value="_#{role}", listener="role-menu-permits-update")
      */
     public function roleMenuPermits(string $role) {
         $filter =  ['role' => $role];
