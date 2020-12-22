@@ -223,7 +223,7 @@ class CacheService
      * 營運商 - 幣別
      * @param string $code
      * @return array
-     * @Cacheable(prefix="comp_op_currency", ttl=1, value="_#{code}_{currency}", listener="comp-op-currency-update")
+     * @Cacheable(prefix="comp_op_currency", ttl=180, value="_#{code}_{currency}", listener="comp-op-currency-update")
      */
     public function companyOpCurrency(string $code, string $currency) : array {
 
