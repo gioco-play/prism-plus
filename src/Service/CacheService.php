@@ -334,7 +334,7 @@ class CacheService
         $result = $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
         if ($result) {
             return [
-                'operator' => $this->operator(strtolower($op)),
+                'operator' => $this->operator(strtoupper($op)),
                 'player' => current($pg->fetchAll($result))
             ];
         }
