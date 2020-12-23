@@ -160,10 +160,25 @@ class CacheService
     /**
      * 遊戲清單
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_game", ttl=180, value="_#{vendorCode}", listener="vendor-game-update")
+     * @Cacheable(prefix="vendor_games", ttl=180, value="_#{vendorCode}", listener="vendor-games-update")
      */
     public function games(string $vendorCode) {
         $data = $this->mongodb->fetchAll('games', ['vendor_code' => $vendorCode]);
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
+     * 遊戲
+     * @param string $gameCode
+     * @Cacheable(prefix="vendor_game", ttl=30, value="_#{vendorCode}", listener="vendor-game-update")
+     */
+    public function game(string $gameCode) {
+        $data = current($this->mongodb->fetchAll('games', ['game_code' => $gameCode]));
 
         if ($data) {
             return $data;

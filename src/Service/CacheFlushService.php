@@ -108,7 +108,7 @@ class CacheFlushService
      * @return bool
      */
     public function games($vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor-game-update', [ 'vendor_code' => $vendorCode]));
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor-games-update', [ 'vendor_code' => $vendorCode]));
 
         return true;
     }
