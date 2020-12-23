@@ -14,7 +14,13 @@
         "gioco-plus/hyperf-cors": "dev-master",
         "gioco-plus/hyperf-jwt-auth": "dev-master",
         "gioco-plus/hyperf-mongodb": "dev-master",
-        "hyperf/guzzle" : "^2.0"
+        "hyperf/guzzle" : "^2.0",
+        "hyperf/validation": "^2.0",
+        "hyperf/redis": "~2.0.0",
+        "hyperf/json-rpc": "~2.0.0",
+        "hyperf/rpc": "~2.0.0",
+        "hyperf/rpc-client": "~2.0.0",
+        "hyperf/rpc-server": "~2.0.0"
     },
     "autoload": {
         "files": [
