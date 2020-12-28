@@ -41,7 +41,7 @@ class DbManager
      */
     public function opMongoDb(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
         try {
-            $dbName = $dbName ?? "{$code}_db";
+            $dbName = strtolower($dbName ?? "{$code}_db");
             $op = $this->cache->operator($code);
             $dbConn = $op['db']->mongodb;
             $dbCfg = mongodb_pool_config(
