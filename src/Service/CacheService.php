@@ -8,10 +8,7 @@ use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
-use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Context;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -35,7 +32,14 @@ class CacheService
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
-        $this->mongodb = $this->mongodb->setPool($this->poolName);
+        $this->dbDefaultPool();
+    }
+
+    /**
+     * 初始化
+     */
+    private function dbDefaultPool() {
+        $this->mongodb->setPool($this->poolName);
     }
 
     /**
@@ -44,6 +48,7 @@ class CacheService
      * @Cacheable(prefix="admin_user_info", ttl=180, value="_#{account}", listener="admin-user-update")
      */
     public function adminUserInfo(string $account) {
+        $this->dbDefaultPool();
         $role = current($this->mongodb->fetchAll('admin_user_roles', ['account' => $account]));
         $_company = current($this->mongodb->fetchAll('admin_user_company', ['account' => $account]));
         $company = $this->company($_company['company']??"unknown");
@@ -60,6 +65,7 @@ class CacheService
      * @Cacheable(prefix="admin_user", ttl=180, value="_#{uid}", listener="admin-user-update")
      */
     public function adminUser(string $uid) {
+        $this->dbDefaultPool();
         return current($this->mongodb->fetchAll('admin_users', ['_id' => $uid]));
     }
 
@@ -69,7 +75,7 @@ class CacheService
      * @Cacheable(prefix="op", ttl=180, value="_#{code}", listener="op-update")
      */
     public function operator(string $code) {
-
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('operators', ['code' => $code]));
 
         if ($data) {
@@ -85,7 +91,7 @@ class CacheService
      * @Cacheable(prefix="op_token", ttl=180, value="_#{operator_token}", listener="op-token-update")
      */
     public function operatorByToken(string $operator_token) {
-
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('operators', [
             'operator_token' => $operator_token
         ]));
@@ -103,6 +109,7 @@ class CacheService
      * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op-currency-rate")
      */
     public function operatorCurrencyRate(string $code) {
+        $this->dbDefaultPool();
         $operator = $this->operator($code);
 
         if ($operator) {
@@ -120,6 +127,7 @@ class CacheService
      * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_#{vendorCode}", listener="op-block-game-update")
      */
     public function operatorBlockGames(string $code, string $vendorCode) {
+        $this->dbDefaultPool();
         $operator = current($this->operator($code));
         $blacklist = $operator["game_blacklist"]??[];
         return $blacklist[$vendorCode] ?? [];
@@ -131,7 +139,7 @@ class CacheService
      * @Cacheable(prefix="company", ttl=180, value="_#{code}", listener="company-update")
      */
     public function company(string $code) {
-
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('companies', ['code' => $code]));
 
         if ($data) {
@@ -147,7 +155,7 @@ class CacheService
      * @Cacheable(prefix="vendor", ttl=180, value="_#{code}", listener="vendor-update")
      */
     public function vendor(string $code) {
-
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('vendors', ['code' => $code]));
 
         if ($data) {
@@ -163,6 +171,7 @@ class CacheService
      * @Cacheable(prefix="vendor_games", ttl=180, value="_#{vendorCode}", listener="vendor-games-update")
      */
     public function games(string $vendorCode) {
+        $this->dbDefaultPool();
         $data = $this->mongodb->fetchAll('games', ['vendor_code' => $vendorCode]);
 
         if ($data) {
@@ -178,6 +187,7 @@ class CacheService
      * @Cacheable(prefix="vendor_game", ttl=30, value="_#{vendorCode}", listener="vendor-game-update")
      */
     public function game(string $gameCode) {
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('games', ['game_code' => $gameCode]));
 
         if ($data) {
@@ -194,7 +204,7 @@ class CacheService
      * @Cacheable(prefix="comp_opcodes", ttl=180, value="_#{code}", listener="comp-opcodes-update")
      */
     public function companyOpCodes(string $code) : array {
-
+        $this->dbDefaultPool();
         $comp = $this->mongodb->fetchAll('companies', ['type' => 'company' ,'code' => $code]);
 
         if ($comp) {
@@ -212,6 +222,7 @@ class CacheService
         $_code = [];
         foreach ($comp as $c) {
             if ($c['type'] === 'company') {
+                $this->dbDefaultPool();
                 $_comp = $this->mongodb->fetchAll('companies', ['parent_code' => $c['code'], 'status' => 'online'], [
                     'sort' => ['sort'=>1]
                 ]);
@@ -244,7 +255,7 @@ class CacheService
      * @Cacheable(prefix="comp_op_currency", ttl=180, value="_#{code}_#{currency}", listener="comp-op-currency-update")
      */
     public function companyOpCurrency(string $code, string $currency) : array {
-
+        $this->dbDefaultPool();
         $comp = $this->mongodb->fetchAll('companies', ['type' => 'company' ,'code' => $code]);
 
         if ($comp) {
@@ -265,6 +276,7 @@ class CacheService
         $_code = [];
         foreach ($comp as $c) {
             if ($c['type'] === 'company') {
+                $this->dbDefaultPool();
                 $_comp = $this->mongodb->fetchAll('companies', ['parent_code' => $c['code'], 'status' => 'online'], [
                     'sort' => ['sort'=>1]
                 ]);
@@ -295,6 +307,7 @@ class CacheService
         $filter = ['role' => $role];
         $filter_menu = [];
         if ($role !== 'supervisor') {
+            $this->dbDefaultPool();
             $roles = $this->mongodb->fetchAll('admin_role_menus', $filter);
             $menus = collect($roles)->pluck('menu')->toArray();
             $filter_menu = ['code' => ['$in' => $menus]];
@@ -327,6 +340,7 @@ class CacheService
      * @Cacheable(prefix="role_menu_permits", ttl=30, value="_#{role}", listener="role-menu-permits-update")
      */
     public function roleMenuPermits(string $role) {
+        $this->dbDefaultPool();
         $filter =  ['role' => $role];
         if ($role === 'supervisor') {
             return [];
@@ -343,6 +357,7 @@ class CacheService
      * @Cacheable(prefix="op_member_info", ttl=180, value="_#{accountOp}", listener="op-member-info-update")
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
+        $this->dbDefaultPool();
         list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
         $dbManager = new DbManager();
         $pg = $dbManager->opPostgreDb(strtolower($op));
@@ -364,6 +379,7 @@ class CacheService
      * @Cacheable(prefix="platform_switch", ttl=180, value="_#{slug}", listener="platform-switch-update")
      */
     public function platformSwitch($slug) {
+        $this->dbDefaultPool();
         $filter =  ['slug' => $slug];
         $data = current($this->mongodb->fetchAll('platform', $filter));
         if ($data) {
@@ -377,6 +393,7 @@ class CacheService
      * @Cacheable(prefix="global_block_ip", ttl=180, listener="global-block-ip")
      */
     public function globalIPBlock() {
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
         if ($data) {
             return $data;
@@ -389,6 +406,7 @@ class CacheService
      * @Cacheable(prefix="full_access_roles", ttl=180, listener="full-access-roles")
      */
     public function fullAccessRoles() {
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'full_access_role']));
         if ($data) {
             return $data['roles'];
@@ -405,6 +423,7 @@ class CacheService
      * @Cacheable(prefix="role_menu_permit", ttl=180, value="_#{role}_#{menu}", listener="role-menu-permit")
      */
     public function roleMenuPermit(string $role, string $menu) {
+        $this->dbDefaultPool();
         if ($role === 'supervisor') {
             return true;
         }
@@ -428,6 +447,7 @@ class CacheService
      * @Cacheable(prefix="maintain_planning", ttl=360, value="_#{type}", listener="maintain-planning-update")
      */
     public function maintainPlanning(string $type) {
+        $this->dbDefaultPool();
         $data = $this->mongodb->fetchAll('maintain_planning',
             [
                 'type' => $type,
@@ -445,6 +465,7 @@ class CacheService
      * @Cacheable(prefix="gf_ip", ttl=360, listener="gf-ip-update")
      */
     public function gfIP() {
+        $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('global_params', ['code' => 'gf_ip']));
         if ($data) {
             return $data['params'];
@@ -457,6 +478,7 @@ class CacheService
      * @Cacheable(prefix="wallet_code", ttl=360, listener="wallet-code-update")
      */
     public function walletCodes() {
+        $this->dbDefaultPool();
         $data = $this->mongodb->fetchAll('vendors');
         $walletCodes = collect($data)->pluck('wallet_code')->toArray();
         if ($walletCodes) {
