@@ -60,6 +60,11 @@ class ApiResponse {
         'msg' => '遊戲維護'
     ];
 
+    const GAME_LAUNCH_FAIL = [
+        'code' => 7200,
+        'msg' => '遊戲啟動失敗'
+    ];
+
     const PRODUCT_GAME_DECOMMISSION = [
         'code' => 7102,
         'msg' => '遊戲停用'
