@@ -16,19 +16,19 @@
         "gioco-plus/hyperf-mongodb": "dev-master",
         "hyperf/guzzle" : "^2.0",
         "hyperf/validation": "^2.0",
-        "hyperf/redis": "~2.0.0",
-        "hyperf/json-rpc": "~2.0.0",
-        "hyperf/rpc": "~2.0.0",
-        "hyperf/rpc-client": "~2.0.0",
-        "hyperf/rpc-server": "~2.0.0"
+        "hyperf/redis": "^2.0.0",
+        "hyperf/json-rpc": "^2.0.0",
+        "hyperf/rpc": "^2.0.0",
+        "hyperf/rpc-client": "^2.0.0",
+        "hyperf/rpc-server": "^2.0.0"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",
         "friendsofphp/php-cs-fixer": "^2.14",
         "mockery/mockery": "^1.0",
         "phpstan/phpstan": "^0.12",
-        "hyperf/devtool": "~2.0.0",
-        "hyperf/testing": "~2.0.0",
+        "hyperf/devtool": "^2.0.0",
+        "hyperf/testing": "^2.0.0",
         "hyperf/watcher": "^2.0"
     },
     "autoload": {
