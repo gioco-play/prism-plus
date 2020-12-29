@@ -68,21 +68,21 @@ class CheckerMiddleware implements MiddlewareInterface
             $vendor = $this->cache->vendor(strtolower($vendorCode));
             switch ($vendor['status']) {
                 case GlobalConst::MAINTAIN :
-                    return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+                    return $this->customResponse([], ApiResponse::MAINTAIN);
                 case GlobalConst::DECOMMISSION :
-                    return $this->response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
+                    return $this->customResponse([], ApiResponse::DECOMMISSION);
             }
             // 檢查來源IP
             if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
-                return $this->response->withBody($this->customResponse([
+                return $this->customResponse([
                     'ip' => $ip
-                ], ApiResponse::IP_NOT_ALLOWED));
+                ], ApiResponse::IP_NOT_ALLOWED);
             }
 
             return $handler->handle($request);
         }
 
-        return $this->response->withBody($this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL));
+        return $this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL);
     }
 
     /**
@@ -91,6 +91,7 @@ class CheckerMiddleware implements MiddlewareInterface
      * @return SwooleStream
      */
     private function customResponse($data = [], $msg) {
-        return new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        $stream = new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        return $this->response->withBody($stream)->withHeader('content-type', 'application/json');
     }
 }

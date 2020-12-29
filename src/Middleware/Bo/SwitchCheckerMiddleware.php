@@ -70,15 +70,15 @@ class SwitchCheckerMiddleware implements MiddlewareInterface
             $status = $this->cache->platformSwitch('bo');
             switch ($status) {
                 case GlobalConst::MAINTAIN :
-                    return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+                    return $this->customResponse([], ApiResponse::MAINTAIN);
             }
             // 商戶開關
             $comp = $this->cache->company($userInfo['company']);
             switch ($comp['status']) {
                 case GlobalConst::MAINTAIN :
-                    return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+                    return $this->customResponse([], ApiResponse::MAINTAIN);
                 case GlobalConst::DECOMMISSION :
-                    return $this->response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
+                    return $this->customResponse([], ApiResponse::DECOMMISSION);
             }
         }
 
@@ -91,6 +91,7 @@ class SwitchCheckerMiddleware implements MiddlewareInterface
      * @return SwooleStream
      */
     private function customResponse($data = [], $msg) {
-        return new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        $stream = new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        return $this->response->withBody($stream)->withHeader('content-type', 'application/json');
     }
 }

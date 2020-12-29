@@ -73,12 +73,12 @@ class PermissionCheckerMiddleware implements MiddlewareInterface
                 }
                 $permit = current($request->getHeader("action"));
                 if ($permit === false) {
-                    return $this->response->withBody($this->customResponse([], ApiResponse::ACT_PERMIT_DENY));
+                    return $this->customResponse([], ApiResponse::ACT_PERMIT_DENY);
                 }
                 $permit = json_decode($permit, true);
                 $check = $this->permitCheck($userInfo['role'], $permit['menu']??"", $permit['permit']??"");
                 if ($check === false) {
-                    return $this->response->withBody($this->customResponse([], ApiResponse::ACT_PERMIT_DENY));
+                    return $this->customResponse([], ApiResponse::ACT_PERMIT_DENY);
                 }
             }
         }
@@ -105,6 +105,7 @@ class PermissionCheckerMiddleware implements MiddlewareInterface
      * @return SwooleStream
      */
     private function customResponse($data = [], $msg) {
-        return new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        $stream = new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        return $this->response->withBody($stream)->withHeader('content-type', 'application/json');
     }
 }

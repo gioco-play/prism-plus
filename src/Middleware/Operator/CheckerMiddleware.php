@@ -60,21 +60,21 @@ class CheckerMiddleware implements MiddlewareInterface
 
         // 密鑰錯誤
         if (empty($op) || $op['secret_key'] !== $secretKey) {
-            return $this->response->withBody($this->customResponse([], ApiResponse::OPERATOR_NOT_FOUND));
+            return $this->customResponse([], ApiResponse::OPERATOR_NOT_FOUND);
         }
 
         // 狀態
         switch ($op['status']) {
             case GlobalConst::MAINTAIN :
-                return $this->response->withBody($this->customResponse([], ApiResponse::MAINTAIN));
+                return $this->customResponse([], ApiResponse::MAINTAIN);
             case GlobalConst::DECOMMISSION :
-                return $this->response->withBody($this->customResponse([], ApiResponse::DECOMMISSION));
+                return $this->customResponse([], ApiResponse::DECOMMISSION);
         }
 
         // 檢查來源IP
         if (!Tool::IpContainChecker($ip, $op['api_whitelist'])
             &&!Tool::IpContainChecker($ip, $this->cache->gfIP())) {
-            return $this->response->withBody($this->customResponse(['ip' => $ip], ApiResponse::IP_NOT_ALLOWED));
+            return $this->customResponse(['ip' => $ip], ApiResponse::IP_NOT_ALLOWED);
         }
 
         return $handler->handle($request);
@@ -86,6 +86,7 @@ class CheckerMiddleware implements MiddlewareInterface
      * @return SwooleStream
      */
     private function customResponse($data = [], $msg) {
-        return new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        $stream = new SwooleStream(json_encode(ApiResponse::result($data, $msg)));
+        return $this->response->withBody($stream)->withHeader('content-type', 'application/json');
     }
 }
