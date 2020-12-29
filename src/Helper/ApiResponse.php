@@ -20,6 +20,11 @@ namespace GiocoPlus\PrismPlus\Helper;
  */
 class ApiResponse {
 
+    const FAIL  = [
+        'code' => 0,
+        'msg' => '失敗'
+    ];
+
     const SUCCESS  = [
         'code' => 1,
         'msg' => '成功'
