@@ -55,19 +55,24 @@ class ApiResponse {
         'msg' => '產品尚未配置'
     ];
 
-    const PRODUCT_GAME_MAINTAIN = [
-        'code' => 7101,
-        'msg' => '遊戲維護'
-    ];
-
     const GAME_LAUNCH_FAIL = [
         'code' => 7200,
         'msg' => '遊戲啟動失敗'
     ];
 
-    const PRODUCT_GAME_DECOMMISSION = [
-        'code' => 7102,
+    const GAME_MAINTAIN = [
+        'code' => 7201,
+        'msg' => '遊戲維護'
+    ];
+
+    const GAME_DECOMMISSION = [
+        'code' => 7202,
         'msg' => '遊戲停用'
+    ];
+
+    const GAME_BLOCKED = [
+        'code' => 7203,
+        'msg' => '遊戲已封鎖'
     ];
 
     const VENDOR_REQUEST_FAIL = [
