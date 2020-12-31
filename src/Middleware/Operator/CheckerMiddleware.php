@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Middleware\Operator;
 
-use GiocoPlus\PrismPlus\Helper\ApiResponse;
-use GiocoPlus\PrismPlus\Helper\GlobalConst;
+
+use GiocoPlus\PrismConst\Constant\GlobalConst;
+use GiocoPlus\PrismConst\State\ApiState;
+use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Service\CacheService;
-use GiocoPlus\JWTAuth\JWT;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
@@ -60,21 +61,21 @@ class CheckerMiddleware implements MiddlewareInterface
 
         // 密鑰錯誤
         if (empty($op) || $op['secret_key'] !== $secretKey) {
-            return $this->customResponse([], ApiResponse::OPERATOR_NOT_FOUND);
+            return $this->customResponse([], ApiState::OPERATOR_NOT_FOUND);
         }
 
         // 狀態
         switch ($op['status']) {
             case GlobalConst::MAINTAIN :
-                return $this->customResponse([], ApiResponse::MAINTAIN);
+                return $this->customResponse([], ApiState::MAINTAIN);
             case GlobalConst::DECOMMISSION :
-                return $this->customResponse([], ApiResponse::DECOMMISSION);
+                return $this->customResponse([], ApiState::DECOMMISSION);
         }
 
         // 檢查來源IP
         if (!Tool::IpContainChecker($ip, $op['api_whitelist'])
             &&!Tool::IpContainChecker($ip, $this->cache->gfIP())) {
-            return $this->customResponse(['ip' => $ip], ApiResponse::IP_NOT_ALLOWED);
+            return $this->customResponse(['ip' => $ip], ApiState::IP_NOT_ALLOWED);
         }
 
         return $handler->handle($request);

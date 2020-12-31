@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Middleware\Bo;
 
-use GiocoPlus\PrismPlus\Helper\ApiResponse;
-use GiocoPlus\PrismPlus\Helper\Tool;
-use GiocoPlus\PrismPlus\Service\CacheFlushService;
+use GiocoPlus\PrismConst\State\ApiState;
+use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
 use Hyperf\Di\Annotation\Inject;
@@ -73,12 +72,12 @@ class PermissionCheckerMiddleware implements MiddlewareInterface
                 }
                 $permit = current($request->getHeader("action"));
                 if ($permit === false) {
-                    return $this->customResponse([], ApiResponse::ACT_PERMIT_DENY);
+                    return $this->customResponse([], ApiState::ACT_PERMIT_DENY);
                 }
                 $permit = json_decode($permit, true);
                 $check = $this->permitCheck($userInfo['role'], $permit['menu']??"", $permit['permit']??"");
                 if ($check === false) {
-                    return $this->customResponse([], ApiResponse::ACT_PERMIT_DENY);
+                    return $this->customResponse([], ApiState::ACT_PERMIT_DENY);
                 }
             }
         }

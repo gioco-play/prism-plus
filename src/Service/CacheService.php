@@ -8,7 +8,6 @@ use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
-use Hyperf\Di\Annotation\Inject;
 use Psr\Container\ContainerInterface;
 
 /**

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Middleware\Bo;
 
-use GiocoPlus\PrismPlus\Helper\ApiResponse;
+use GiocoPlus\PrismConst\State\ApiState;
+use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
@@ -81,7 +82,7 @@ class CheckerMiddleware implements MiddlewareInterface
                 return $this->response->withBody(new SwooleStream(
                         json_encode(ApiResponse::result([
                             'ip' => $ip
-                        ], ApiResponse::IP_NOT_ALLOWED))
+                        ], ApiState::IP_NOT_ALLOWED))
                     )
                 );
             }

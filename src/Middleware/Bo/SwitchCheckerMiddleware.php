@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Middleware\Bo;
 
-use GiocoPlus\PrismPlus\Helper\ApiResponse;
-use GiocoPlus\PrismPlus\Helper\GlobalConst;
-use GiocoPlus\PrismPlus\Helper\Tool;
+use GiocoPlus\PrismConst\Constant\GlobalConst;
+use GiocoPlus\PrismConst\State\ApiState;
+use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
 use Hyperf\Di\Annotation\Inject;
@@ -70,15 +70,15 @@ class SwitchCheckerMiddleware implements MiddlewareInterface
             $status = $this->cache->platformSwitch('bo');
             switch ($status) {
                 case GlobalConst::MAINTAIN :
-                    return $this->customResponse([], ApiResponse::MAINTAIN);
+                    return $this->customResponse([], ApiState::MAINTAIN);
             }
             // 商戶開關
             $comp = $this->cache->company($userInfo['company']);
             switch ($comp['status']) {
                 case GlobalConst::MAINTAIN :
-                    return $this->customResponse([], ApiResponse::MAINTAIN);
+                    return $this->customResponse([], ApiState::MAINTAIN);
                 case GlobalConst::DECOMMISSION :
-                    return $this->customResponse([], ApiResponse::DECOMMISSION);
+                    return $this->customResponse([], ApiState::DECOMMISSION);
             }
         }
 

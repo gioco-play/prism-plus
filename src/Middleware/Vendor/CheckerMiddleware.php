@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Middleware\Vendor;
 
-use GiocoPlus\PrismPlus\Helper\ApiResponse;
-use GiocoPlus\PrismPlus\Helper\GlobalConst;
+use GiocoPlus\PrismConst\Constant\GlobalConst;
+use GiocoPlus\PrismConst\State\ApiState;
+use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
@@ -68,21 +69,21 @@ class CheckerMiddleware implements MiddlewareInterface
             $vendor = $this->cache->vendor(strtolower($vendorCode));
             switch ($vendor['status']) {
                 case GlobalConst::MAINTAIN :
-                    return $this->customResponse([], ApiResponse::MAINTAIN);
+                    return $this->customResponse([], ApiState::MAINTAIN);
                 case GlobalConst::DECOMMISSION :
-                    return $this->customResponse([], ApiResponse::DECOMMISSION);
+                    return $this->customResponse([], ApiState::DECOMMISSION);
             }
             // 檢查來源IP
             if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
                 return $this->customResponse([
                     'ip' => $ip
-                ], ApiResponse::IP_NOT_ALLOWED);
+                ], ApiState::IP_NOT_ALLOWED);
             }
 
             return $handler->handle($request);
         }
 
-        return $this->customResponse([], ApiResponse::VENDOR_REQUEST_FAIL);
+        return $this->customResponse([], ApiState::VENDOR_REQUEST_FAIL);
     }
 
     /**
