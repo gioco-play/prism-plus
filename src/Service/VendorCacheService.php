@@ -52,12 +52,14 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
-            "code" => 1,
-            "status" => 1,
-            "name" => 1,
-            "wallet_code" => 1,
-            "seamless_enable" => 1,
-            "account_delimiter" => 1
+            'projection' => [
+                "code" => 1,
+                "status" => 1,
+                "name" => 1,
+                "wallet_code" => 1,
+                "seamless_enable" => 1,
+                "account_delimiter" => 1
+            ]
         ]));
 
         if ($data) {
@@ -78,7 +80,9 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
-            "request_params" => 1
+            'projection' => [
+                "request_params" => 1
+            ]
         ]));
 
         if ($data) {
@@ -99,7 +103,9 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
-            "betlog_field" => 1
+            'projection' => [
+                "betlog_field" => 1
+            ]
         ]));
 
         if ($data) {
@@ -120,8 +126,10 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
-            "filter_ip" => 1,
-            "ip_whitelist" => 1
+            'projection' => [
+                "filter_ip" => 1,
+                "ip_whitelist" => 1
+            ]
         ]));
 
         if ($data) {
@@ -142,7 +150,9 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
-            "language" => 1
+            'projection' => [
+                "language" => 1
+            ]
         ]));
 
         if ($data) {
@@ -163,7 +173,9 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
-            "currency" => 1
+            'projection' => [
+                "currency" => 1
+            ]
         ]));
 
         if ($data) {
@@ -181,7 +193,12 @@ class VendorCacheService
     public function games(string $code) {
         $this->dbDefaultPool();
         $code = strtolower($code);
-        $data = $this->mongodb->fetchAll('games', ['vendor_code' => $code]);
+        $data = $this->mongodb->fetchAll('games', ['vendor_code' => $code], [
+            'projection' => [
+                "updated_time" => 0,
+                "created_time" => 0
+            ]
+        ]);
 
         if ($data) {
             return $data;
@@ -198,7 +215,12 @@ class VendorCacheService
     public function game(string $gameCode) {
         $this->dbDefaultPool();
         $gameCode = strtolower($gameCode);
-        $data = current($this->mongodb->fetchAll('games', ['game_code' => $gameCode]));
+        $data = current($this->mongodb->fetchAll('games', ['game_code' => $gameCode], [
+            'projection' => [
+                "updated_time" => 0,
+                "created_time" => 0
+            ]
+        ]));
 
         if ($data) {
             return $data;
@@ -218,8 +240,10 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
-            "game_code" => 1,
-            "game_id" => 1
+            'projection' => [
+                "game_code" => 1,
+                "game_id" => 1
+            ]
         ]));
 
         if ($data) {
@@ -240,8 +264,10 @@ class VendorCacheService
         $data = current($this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
-            "game_code" => 1,
-            "name" => 1
+            'projection' => [
+                "game_code" => 1,
+                "name" => 1
+            ]
         ]));
 
         if ($data) {
@@ -258,9 +284,8 @@ class VendorCacheService
     public function walletCodes() {
         $this->dbDefaultPool();
         $data = $this->mongodb->fetchAll('vendors');
-        $walletCodes = collect($data)->pluck('wallet_code')->toArray();
-        if ($walletCodes) {
-            return $walletCodes;
+        if ($data) {
+            return collect($data)->pluck('wallet_code')->toArray();
         }
         return [];
     }
