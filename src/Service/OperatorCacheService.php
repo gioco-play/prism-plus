@@ -81,6 +81,41 @@ class OperatorCacheService
     }
 
     /**
+     * 總開關
+     * @param string $code
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     * @Cacheable(prefix="op_main_switch", ttl=180, value="_#{code}", listener="op_main_switch_cache")
+     */
+    public function mainSwitch(string $code) {
+        $this->dbDefaultPool();
+        $code = strtolower($code);
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "main_switch" => 1
+            ]
+        ]));
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
      * 遊戲商 開關 / 配置
      * @param string $code
      * @param string $vendorCode

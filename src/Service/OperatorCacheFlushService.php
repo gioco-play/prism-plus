@@ -33,7 +33,17 @@ class OperatorCacheFlushService
         ]));
         return true;
     }
-
+    /**
+     * 總開關
+     * @param string $code
+     * @return bool
+     */
+    public function mainSwitch(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_main_switch_cache', [
+            'code' => $code
+        ]));
+        return true;
+    }
     /**
      * 遊戲商 開關 / 配置
      * @param string $code
