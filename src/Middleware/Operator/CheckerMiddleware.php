@@ -10,6 +10,7 @@ use GiocoPlus\PrismConst\State\ApiState;
 use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Service\CacheService;
+use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
@@ -38,6 +39,12 @@ class CheckerMiddleware implements MiddlewareInterface
     protected $cache;
 
     /**
+     * @Inject()
+     * @var OperatorCacheService
+     */
+    protected $opCache;
+
+    /**
      * @var HttpResponse
      */
     protected $response;
@@ -57,7 +64,7 @@ class CheckerMiddleware implements MiddlewareInterface
         $operatorToken = $request->getParsedBody()["operator_token"];
         $secretKey = $request->getParsedBody()["secret_key"];
 
-        $op = $this->cache->operatorByToken($operatorToken);
+        $op = $this->opCache->apiWhitelist($operatorToken);
 
         // 密鑰錯誤
         if (empty($op) || $op['secret_key'] !== $secretKey) {

@@ -1,0 +1,290 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GiocoPlus\PrismPlus\Service;
+
+use GiocoPlus\PrismPlus\Helper\Tool;
+use GiocoPlus\PrismPlus\Repository\DbManager;
+use GiocoPlus\Mongodb\MongoDb;
+use Hyperf\Cache\Annotation\Cacheable;
+use Psr\Container\ContainerInterface;
+
+/**
+ * 運營商快取
+ * Class CacheService
+ * @package GiocoPlus\PrismPlus\Service
+ */
+class OperatorCacheService
+{
+
+    /**
+     * @var MongoDb
+     */
+    protected $mongodb;
+
+    /**
+     * MongoDb 連結池
+     * @var string
+     */
+    protected $poolName = "default";
+
+    public function __construct(ContainerInterface $container) {
+        $this->mongodb = $container->get(MongoDb::class);
+        $this->dbDefaultPool();
+    }
+
+    /**
+     * 初始化
+     */
+    private function dbDefaultPool() {
+        $this->mongodb->setPool($this->poolName);
+    }
+
+    /**
+     * 營運商基本資料
+     * @param string $code
+     * @Cacheable(prefix="op_basic", ttl=180, value="_#{code}", listener="op_basic_cache")
+     */
+    public function basic(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "code" => 1,
+                "name" => 1,
+                "status" => 1,
+                "operator_token" => 1,
+                "secret_key" => 1,
+                "currency" => 1,
+                "website" => 1
+            ]
+        ]));
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
+     * 遊戲商 開關 / 配置
+     * @param string $code
+     * @param string $vendorCode
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     * @Cacheable(prefix="op_vendor", ttl=180, value="_#{code}_#{vendorCode}", listener="op_vendor_cache")
+     */
+    public function vendor(string $code, string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendor = strtolower($vendorCode);
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "vendor_switch.{$vendor}" => 1,
+                "vendors.{$vendor}" => 1,
+            ]
+        ]));
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
+     * 營運商幣值表
+     * @param string $code
+     * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op_currency_rate_cache")
+     */
+    public function currencyRate(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "currency_rate" => 1,
+            ]
+        ]));
+
+        if ($data) {
+            return collect($data['currency_rate'])->pluck('rate', 'vendor')->toArray();
+        }
+
+        return [];
+    }
+
+    /**
+     * 運營商 封鎖遊戲
+     * @param string $code
+     * @param string $vendorCode
+     * @return array
+     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_#{vendorCode}", listener="op_block_game_cache")
+     */
+    public function blockGames(string $code, string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendor = strtolower($vendorCode);
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "game_blacklist.{$vendor}" => 1,
+            ]
+        ]));
+
+        if ($data&&isset($data['game_blacklist'])&&isset($data['game_blacklist']->$vendor)) {
+            return $data['game_blacklist']->$vendor;
+        }
+        return [];
+    }
+
+    /**
+     * 運營商 API 白名單
+     * @param string $code
+     * @return array
+     * @Cacheable(prefix="op_api_whitelist", ttl=180, value="_#{code}", listener="op_api_whitelist_cache")
+     */
+    public function apiWhitelist(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "code" => 1,
+                "operator_token" => 1,
+                "secret_key" => 1,
+                "status" => 1,
+                "api_whitelist" => 1,
+            ]
+        ]));
+
+        if ($data&&isset($data['api_whitelist'])) {
+            return $data['api_whitelist'];
+        }
+        return [];
+    }
+
+    /**
+     * 運營商 DB 配置
+     * @param string $code
+     * @return array
+     * @Cacheable(prefix="op_db_setting", ttl=180, value="_#{code}", listener="op_db_setting_cache")
+     */
+    public function dbSetting(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "db" => 1,
+            ]
+        ]));
+
+        if ($data&&isset($data['db'])) {
+            return $data['db'];
+        }
+        return [];
+    }
+
+    /**
+     * 運營商 類單一錢包配置
+     * @param string $code
+     * @return array
+     * @Cacheable(prefix="op_seamless_setting", ttl=180, value="_#{code}", listener="op_seamless_setting_cache")
+     */
+    public function seamlessSetting(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "seamless_setting" => 1,
+            ]
+        ]));
+
+        if ($data&&isset($data['seamless_setting'])) {
+            return $data['seamless_setting'];
+        }
+        return [];
+    }
+}

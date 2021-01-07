@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Repository;
 
-use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\MongoDbConst;
+use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\ApplicationContext;
-use Psr\Container\ContainerInterface;
 
 /**
  * 資料庫管理
@@ -21,9 +20,9 @@ class DbManager
 
     /**
      * @Inject
-     * @var CacheService
+     * @var OperatorCacheService
      */
-    protected $cache;
+    protected $opCache;
 
     /**
      * @Inject
@@ -42,7 +41,7 @@ class DbManager
     public function opMongoDb(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
         try {
             $dbName = strtolower($dbName ?? "{$code}_db");
-            $op = $this->cache->operator($code);
+            $op = $this->opCache->dbSetting($code);
             $dbConn = $op['db']->mongodb;
             $dbCfg = mongodb_pool_config(
                 $dbConn->host,
@@ -66,7 +65,7 @@ class DbManager
      */
     public function opPostgreDb(string $code, string $dbName = null) {
         try {
-            $op = $this->cache->operator(strtoupper($code));
+            $op = $this->opCache->dbSetting($code);
             $dbConn = $op['db']->postgres;
             //
             $host = $dbConn->host;

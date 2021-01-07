@@ -8,6 +8,7 @@ use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
+use Hyperf\Di\Annotation\Inject;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -22,6 +23,12 @@ class CacheService
      * @var MongoDb
      */
     protected $mongodb;
+
+    /**
+     * @Inject(lazy=true)
+     * @var OperatorCacheService
+     */
+    protected $opCache;
 
     /**
      * MongoDb 連結池
@@ -44,7 +51,7 @@ class CacheService
     /**
      * 管理者基本資料
      * @param string $account
-     * @Cacheable(prefix="admin_user_info", ttl=180, value="_#{account}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user_info", ttl=180, value="_#{account}", listener="admin_user_info_cache")
      */
     public function adminUserInfo(string $account) {
         $this->dbDefaultPool();
@@ -61,7 +68,7 @@ class CacheService
     /**
      * 管理者帳號
      * @param string $uid
-     * @Cacheable(prefix="admin_user", ttl=180, value="_#{uid}", listener="admin-user-update")
+     * @Cacheable(prefix="admin_user", ttl=180, value="_#{uid}", listener="admin_user_cache")
      */
     public function adminUser(string $uid) {
         $this->dbDefaultPool();
@@ -70,8 +77,9 @@ class CacheService
 
     /**
      * 營運商
+     * @deprecated
      * @param string $code
-     * @Cacheable(prefix="op", ttl=180, value="_#{code}", listener="op-update")
+     * @Cacheable(prefix="op", ttl=180, value="_#{code}", listener="op_cache")
      */
     public function operator(string $code) {
         $this->dbDefaultPool();
@@ -86,8 +94,9 @@ class CacheService
 
     /**
      * 營運商
+     * @deprecated
      * @param string $operator_token
-     * @Cacheable(prefix="op_token", ttl=180, value="_#{operator_token}", listener="op-token-update")
+     * @Cacheable(prefix="op_token", ttl=180, value="_#{operator_token}", listener="op_token_cache")
      */
     public function operatorByToken(string $operator_token) {
         $this->dbDefaultPool();
@@ -104,8 +113,9 @@ class CacheService
 
     /**
      * 營運商幣值表
+     * @deprecated
      * @param string $code
-     * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op-currency-rate")
+     * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op_currency_rate_cache")
      */
     public function operatorCurrencyRate(string $code) {
         $this->dbDefaultPool();
@@ -120,10 +130,11 @@ class CacheService
 
     /**
      * 運營商 封鎖遊戲
+     * @deprecated
      * @param string $code
      * @param string $vendorCode
      * @return array
-     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_#{vendorCode}", listener="op-block-game-update")
+     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_#{vendorCode}", listener="op_block_game_cache")
      */
     public function operatorBlockGames(string $code, string $vendorCode) {
         $this->dbDefaultPool();
@@ -135,7 +146,7 @@ class CacheService
     /**
      * 公司
      * @param string $code
-     * @Cacheable(prefix="company", ttl=180, value="_#{code}", listener="company-update")
+     * @Cacheable(prefix="company", ttl=180, value="_#{code}", listener="company_cache")
      */
     public function company(string $code) {
         $this->dbDefaultPool();
@@ -150,8 +161,9 @@ class CacheService
 
     /**
      * 遊戲商
+     * @deprecated
      * @param string $code
-     * @Cacheable(prefix="vendor", ttl=180, value="_#{code}", listener="vendor-update")
+     * @Cacheable(prefix="vendor", ttl=180, value="_#{code}", listener="vendor_cache")
      */
     public function vendor(string $code) {
         $this->dbDefaultPool();
@@ -166,8 +178,9 @@ class CacheService
 
     /**
      * 遊戲清單
+     * @deprecated
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_games", ttl=180, value="_#{vendorCode}", listener="vendor-games-update")
+     * @Cacheable(prefix="vendor_games", ttl=180, value="_#{vendorCode}", listener="vendor_games_cache")
      */
     public function games(string $vendorCode) {
         $this->dbDefaultPool();
@@ -182,8 +195,9 @@ class CacheService
 
     /**
      * 遊戲
+     * @deprecated
      * @param string $gameCode
-     * @Cacheable(prefix="vendor_game", ttl=30, value="_#{vendorCode}", listener="vendor-game-update")
+     * @Cacheable(prefix="vendor_game", ttl=30, value="_#{gameCode}", listener="vendor_game_cache")
      */
     public function game(string $gameCode) {
         $this->dbDefaultPool();
@@ -200,7 +214,7 @@ class CacheService
      * 營運商 - 公司
      * @param string $code
      * @return array
-     * @Cacheable(prefix="comp_opcodes", ttl=180, value="_#{code}", listener="comp-opcodes-update")
+     * @Cacheable(prefix="comp_opcodes", ttl=180, value="_#{code}", listener="comp_opcodes_cache")
      */
     public function companyOpCodes(string $code) : array {
         $this->dbDefaultPool();
@@ -251,7 +265,7 @@ class CacheService
      * @param string $currency
      * @return array
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="comp_op_currency", ttl=180, value="_#{code}_#{currency}", listener="comp-op-currency-update")
+     * @Cacheable(prefix="comp_op_currency", ttl=180, value="_#{code}_#{currency}", listener="comp_op_currency_cache")
      */
     public function companyOpCurrency(string $code, string $currency) : array {
         $this->dbDefaultPool();
@@ -299,7 +313,7 @@ class CacheService
     /**
      * 角色選單
      * @param string $role
-     * @Cacheable(prefix="role_menu", ttl=30, value="_#{role}", listener="role-menu-update")
+     * @Cacheable(prefix="role_menu", ttl=30, value="_#{role}", listener="role_menu_cache")
      */
     public function roleMenu(string $role) {
 
@@ -336,7 +350,7 @@ class CacheService
     /**
      * 角色選單權限
      * @param string $role
-     * @Cacheable(prefix="role_menu_permits", ttl=30, value="_#{role}", listener="role-menu-permits-update")
+     * @Cacheable(prefix="role_menu_permits", ttl=30, value="_#{role}", listener="role_menu_permits_cache")
      */
     public function roleMenuPermits(string $role) {
         $this->dbDefaultPool();
@@ -353,7 +367,7 @@ class CacheService
      * @param string $accountOp (含後綴商戶代碼)
      * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
      * @return mixed
-     * @Cacheable(prefix="op_member_info", ttl=180, value="_#{accountOp}", listener="op-member-info-update")
+     * @Cacheable(prefix="op_member_info", ttl=180, value="_#{accountOp}", listener="op_member_info_cache")
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
         $this->dbDefaultPool();
@@ -363,7 +377,7 @@ class CacheService
         $result = $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
         if ($result) {
             return [
-                'operator' => $this->operator(strtoupper($op)),
+                'operator' => $this->opCache->basic(strtoupper($op)),
                 'player' => current($pg->fetchAll($result))
             ];
         }
@@ -375,7 +389,7 @@ class CacheService
      * @param $slug "bo / api"
      * @return false|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="platform_switch", ttl=180, value="_#{slug}", listener="platform-switch-update")
+     * @Cacheable(prefix="platform_switch", ttl=180, value="_#{slug}", listener="platform_switch_cache")
      */
     public function platformSwitch($slug) {
         $this->dbDefaultPool();
@@ -389,7 +403,7 @@ class CacheService
 
     /**
      * 全域封鎖IP名單
-     * @Cacheable(prefix="global_block_ip", ttl=180, listener="global-block-ip")
+     * @Cacheable(prefix="global_block_ip", ttl=180, listener="global_block_ip_cache")
      */
     public function globalIPBlock() {
         $this->dbDefaultPool();
@@ -402,7 +416,7 @@ class CacheService
 
     /**
      * 角色白名單
-     * @Cacheable(prefix="full_access_roles", ttl=180, listener="full-access-roles")
+     * @Cacheable(prefix="full_access_roles", ttl=180, listener="full_access_roles_cache")
      */
     public function fullAccessRoles() {
         $this->dbDefaultPool();
@@ -419,7 +433,7 @@ class CacheService
      * @param string $menu
      * @return array|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="role_menu_permit", ttl=180, value="_#{role}_#{menu}", listener="role-menu-permit")
+     * @Cacheable(prefix="role_menu_permit", ttl=180, value="_#{role}_#{menu}", listener="role_menu_permit_cache")
      */
     public function roleMenuPermit(string $role, string $menu) {
         $this->dbDefaultPool();
@@ -443,7 +457,7 @@ class CacheService
     /**
      * 維護計畫
      * @param string $type
-     * @Cacheable(prefix="maintain_planning", ttl=360, value="_#{type}", listener="maintain-planning-update")
+     * @Cacheable(prefix="maintain_planning", ttl=360, value="_#{type}", listener="maintain_planning_cache")
      */
     public function maintainPlanning(string $type) {
         $this->dbDefaultPool();
@@ -461,7 +475,7 @@ class CacheService
 
     /**
      * GF IP 白名單
-     * @Cacheable(prefix="gf_ip", ttl=360, listener="gf-ip-update")
+     * @Cacheable(prefix="gf_ip", ttl=360, listener="gf_ip_cache")
      */
     public function gfIP() {
         $this->dbDefaultPool();
@@ -474,7 +488,8 @@ class CacheService
 
     /**
      * 錢包代碼
-     * @Cacheable(prefix="wallet_code", ttl=360, listener="wallet-code-update")
+     * @deprecated
+     * @Cacheable(prefix="wallet_code", ttl=360, listener="wallet_code_cache")
      */
     public function walletCodes() {
         $this->dbDefaultPool();

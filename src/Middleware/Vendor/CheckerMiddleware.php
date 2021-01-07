@@ -10,6 +10,7 @@ use GiocoPlus\PrismConst\Tool\ApiResponse;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Service\CacheService;
 use GiocoPlus\JWTAuth\JWT;
+use GiocoPlus\PrismPlus\Service\VendorCacheService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
@@ -36,6 +37,12 @@ class CheckerMiddleware implements MiddlewareInterface
      * @var CacheService
      */
     protected $cache;
+
+    /**
+     * @Inject()
+     * @var VendorCacheService
+     */
+    protected $vendorCache;
 
     /**
      * @Inject()
@@ -66,7 +73,7 @@ class CheckerMiddleware implements MiddlewareInterface
         list($vendorCode, $domain) = explode('.', $request->getUri()->getHost());
 
         if ($vendorCode) {
-            $vendor = $this->cache->vendor(strtolower($vendorCode));
+            $vendor = $this->vendorCache->basic(strtolower($vendorCode));
             switch ($vendor['status']) {
                 case GlobalConst::MAINTAIN :
                     return $this->customResponse([], ApiState::MAINTAIN);
@@ -74,7 +81,8 @@ class CheckerMiddleware implements MiddlewareInterface
                     return $this->customResponse([], ApiState::DECOMMISSION);
             }
             // 檢查來源IP
-            if ($vendor['filter_ip'] && !Tool::IpContainChecker($ip, $vendor['ip_whitelist'])) {
+            $vendorIp = $this->vendorCache->ipWhitelist(strtolower($vendorCode));
+            if ($vendorIp['filter_ip'] && !Tool::IpContainChecker($ip, $vendorIp['ip_whitelist'])) {
                 return $this->customResponse([
                     'ip' => $ip
                 ], ApiState::IP_NOT_ALLOWED);

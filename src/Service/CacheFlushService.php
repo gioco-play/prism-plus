@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Service;
 
-
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -23,115 +22,165 @@ class CacheFlushService
     protected $dispatcher;
 
     /**
-     * 清除 管理者基本資料
+     * 管理者基本資料
      * @param string $account
-     */
-    public function adminUserInfo(string $account) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('admin-user-update', [ 'account' => $account]));
-
-        return true;
-    }
-
-    /**
-     * 清除 營運商
-     * @param $code
      * @return bool
      */
-    public function operator($code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op-update', [ 'code' => $code]));
+    public function adminUserInfo(string $account) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('admin_user_info_cache', [
+            'account' => $account
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 營運商
+     * 管理者帳號
+     * @param string $uid
+     * @return bool
+     */
+    public function adminUser(string $uid) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('admin_user_info_cache', [
+            'uid' => $uid
+        ]));
+
+        return true;
+    }
+
+    /**
+     * 營運商
+     * @deprecated
+     * @param string $code
+     * @return bool
+     */
+    public function operator(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_cache', [
+            'code' => $code
+        ]));
+
+        return true;
+    }
+
+    /**
+     * 營運商
+     * @deprecated
      * @param string $operator_token
      * @return bool
      */
     public function operatorByToken(string $operator_token) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op-token-update', [
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_token_cache', [
             'operator_token' => $operator_token
         ]));
+
         return true;
     }
 
     /**
-     * 清除 運營商封鎖遊戲
+     * 營運商幣值表
+     * @deprecated
+     * @param string $code
+     * @return bool
+     */
+    public function operatorCurrencyRate(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_rate_cache', [
+            'code' => $code
+        ]));
+
+        return true;
+    }
+
+    /**
+     * 運營商 封鎖遊戲
+     * @deprecated
      * @param string $code
      * @param string $vendorCode
      * @return bool
      */
     public function operatorBlockGames(string $code, string $vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op-block-game-update"', [
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_block_game_cache', [
             'code' => $code,
             'vendorCode' => $vendorCode
         ]));
+
         return true;
     }
 
     /**
-     * 清除 營運商幣值表
-     * @param $code
+     * 公司
+     * @param string $code
      * @return bool
      */
-    public function operatorCurrencyRate($code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op-currency-rate', [ 'code' => $code]));
+    public function company(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('company_cache', [
+            'code' => $code
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 公司
-     * @param $code
+     * 遊戲商
+     * @deprecated
+     * @param string $code
      * @return bool
      */
-    public function company($code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('company-update', [ 'code' => $code]));
+    public function vendor(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_cache', [
+            'code' => $code
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 遊戲商
-     * @param $code
+     * 遊戲清單
+     * @deprecated
+     * @param string $vendorCode
      * @return bool
      */
-    public function vendor($code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor-update', [ 'code' => $code]));
+    public function games(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_games_cache', [
+            'vendorCode' => $vendorCode
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 遊戲清單
-     * @param $vendorCode
+     * 遊戲
+     * @deprecated
+     * @param string $gameCode
      * @return bool
      */
-    public function games($vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor-games-update', [ 'vendor_code' => $vendorCode]));
+    public function game(string $gameCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_cache', [
+            'gameCode' => $gameCode
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 營運商 - 公司
-     * @param $code
+     * 營運商 - 公司
+     * @param string $code
      * @return bool
      */
-    public function companyOpCodes($code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('comp-opcodes-update', [ 'code' => $code]));
+    public function companyOpCodes(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('comp_opcodes_cache', [
+            'code' => $code
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 營運商 - 幣別
+     * 營運商 - 幣別
      * @param string $code
      * @param string $currency
      * @return bool
      */
     public function companyOpCurrency(string $code, string $currency) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('comp-op-currency-update', [
+        $this->dispatcher->dispatch(new DeleteListenerEvent('comp_op_currency_cache', [
             'code' => $code,
             'currency' => $currency
         ]));
@@ -140,45 +189,54 @@ class CacheFlushService
     }
 
     /**
-     * 清除 角色選單
-     * @param $role
+     * 角色選單
+     * @param string $role
      * @return bool
      */
-    public function roleMenu($role) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-update', [ 'role' => $role]));
+    public function roleMenu(string $role) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('role_menu_cache', [
+            'role' => $role
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 角色選單權限
-     * @param $role
+     * 角色選單權限
+     * @param string $role
      * @return bool
      */
-    public function roleMenuPermits($role) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-permits-update', [ 'role' => $role]));
+    public function roleMenuPermits(string $role) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('role_menu_permits_cache', [
+            'role' => $role
+        ]));
 
         return true;
     }
 
     /**
-     * 清除 玩家
-     * @param $accountOp
+     * 查詢會員資料
+     * @param string $accountOp (含後綴商戶代碼)
      * @return bool
      */
-    public function memberInfo($accountOp) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op-member-info-update', [ 'accountOp' => $accountOp]));
+    public function memberInfo(string $accountOp) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_member_info_cache', [
+            'accountOp' => $accountOp
+        ]));
 
         return true;
     }
 
     /**
-     * 平台開關狀態
-     * @param $slug
+     * 總開關狀態
+     * @param $slug "bo / api"
      * @return bool
      */
     public function platformSwitch($slug) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('platform-switch-update', [ 'slug' => $slug]));
+        $this->dispatcher->dispatch(new DeleteListenerEvent('platform_switch_cache', [
+            'slug' => $slug
+        ]));
+
         return true;
     }
 
@@ -187,15 +245,20 @@ class CacheFlushService
      * @return bool
      */
     public function globalIPBlock() {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('global-block-ip', []));
+        $this->dispatcher->dispatch(new DeleteListenerEvent('global_block_ip_cache', [
+        ]));
+
         return true;
     }
 
     /**
      * 角色白名單
+     * @return bool
      */
     public function fullAccessRoles() {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('full-access-roles', []));
+        $this->dispatcher->dispatch(new DeleteListenerEvent('full_access_roles_cache', [
+        ]));
+
         return true;
     }
 
@@ -206,10 +269,11 @@ class CacheFlushService
      * @return bool
      */
     public function roleMenuPermit(string $role, string $menu) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('role-menu-permit', [
+        $this->dispatcher->dispatch(new DeleteListenerEvent('role_menu_permit_cache', [
             'role' => $role,
             'menu' => $menu
         ]));
+
         return true;
     }
 
@@ -219,25 +283,33 @@ class CacheFlushService
      * @return bool
      */
     public function maintainPlanning(string $type) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('maintain-planning-update', [
+        $this->dispatcher->dispatch(new DeleteListenerEvent('maintain_planning_cache', [
             'type' => $type
         ]));
+
         return true;
     }
 
     /**
      * GF IP 白名單
+     * @return bool
      */
     public function gfIP() {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('gf-ip-update', []));
-        return [];
+        $this->dispatcher->dispatch(new DeleteListenerEvent('gf_ip_cache', [
+        ]));
+
+        return true;
     }
 
     /**
      * 錢包代碼
+     * @deprecated
+     * @return bool
      */
     public function walletCodes() {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('wallet-code-update', []));
-        return [];
+        $this->dispatcher->dispatch(new DeleteListenerEvent('wallet_code_cache', [
+        ]));
+
+        return true;
     }
 }
