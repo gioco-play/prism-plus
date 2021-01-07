@@ -109,7 +109,7 @@ class OperatorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return $data['main_switch'];
         }
 
         return null;
@@ -210,12 +210,12 @@ class OperatorCacheService
             ]
         ], [
             'projection' => [
-                "game_blacklist.{$vendor}" => 1,
+                "game_blocklist.{$vendor}" => 1,
             ]
         ]));
 
-        if ($data&&isset($data['game_blacklist'])&&isset($data['game_blacklist']->$vendor)) {
-            return $data['game_blacklist']->$vendor;
+        if ($data&&isset($data['game_blocklist'])&&isset($data['game_blocklist']->$vendor)) {
+            return $data['game_blocklist']->$vendor;
         }
         return [];
     }

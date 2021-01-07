@@ -82,7 +82,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return $data['request_params'];
         }
 
         return null;
@@ -103,7 +103,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return $data['betlog_field'];
         }
 
         return null;
@@ -146,7 +146,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return $data['language'];
         }
 
         return null;
@@ -167,7 +167,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return $data['currency'];
         }
 
         return null;
