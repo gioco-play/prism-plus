@@ -251,8 +251,8 @@ class OperatorCacheService
             ]
         ]));
 
-        if ($data&&isset($data['api_whitelist'])) {
-            return $data['api_whitelist'];
+        if ($data) {
+            return $data;
         }
         return [];
     }
