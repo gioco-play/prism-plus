@@ -50,8 +50,8 @@ class OperatorCacheFlushService
      * @param string $vendorCode
      * @return bool
      */
-    public function vendor(string $code, string $vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_vendor_cache', [
+    public function vendorSetting(string $code, string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_vendor_setting_cache', [
             'code' => $code,
             'vendorCode' => $vendorCode
         ]));

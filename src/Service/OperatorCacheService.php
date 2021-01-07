@@ -120,9 +120,9 @@ class OperatorCacheService
      * @param string $code
      * @param string $vendorCode
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="op_vendor", ttl=180, value="_#{code}_#{vendorCode}", listener="op_vendor_cache")
+     * @Cacheable(prefix="op_vendor_setting", ttl=180, value="_#{code}_#{vendorCode}", listener="op_vendor_setting_cache")
      */
-    public function vendor(string $code, string $vendorCode) {
+    public function vendorSetting(string $code, string $vendorCode) {
         $this->dbDefaultPool();
         $vendor = strtolower($vendorCode);
         $data = current($this->mongodb->fetchAll('operators', [
