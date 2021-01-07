@@ -146,7 +146,10 @@ class OperatorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return [
+                'switch' => $data['vendor_switch']->$vendor,
+                'vendor' => $data['vendors']->$vendor,
+            ];
         }
 
         return null;
