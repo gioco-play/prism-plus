@@ -42,7 +42,7 @@ class DbManager
         try {
             $dbName = strtolower($dbName ?? "{$code}_db");
             $op = $this->opCache->dbSetting($code);
-            $dbConn = $op['db']->mongodb;
+            $dbConn = $op->mongodb;
             $dbCfg = mongodb_pool_config(
                 $dbConn->host,
                 $dbConn->db_name??$dbName,
@@ -66,7 +66,7 @@ class DbManager
     public function opPostgreDb(string $code, string $dbName = null) {
         try {
             $op = $this->opCache->dbSetting($code);
-            $dbConn = $op['db']->postgres;
+            $dbConn = $op->postgres;
             //
             $host = $dbConn->host;
             $port = $dbConn->port;
