@@ -230,6 +230,28 @@ class VendorCacheService
     }
 
     /**
+     * 遊戲代碼與名稱對應
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_gamename_mapping", ttl=180, value="_#{vendorCode}", listener="vendor_gamename_mapping_cache")
+     */
+    public function gameNameMapping(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = current($this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode
+        ], [
+            "game_code" => 1,
+            "name" => 1
+        ]));
+
+        if ($data) {
+            return $walletCodes = collect($data)->pluck('game_code', 'name')->toArray();;
+        }
+
+        return null;
+    }
+
+    /**
      * 錢包代碼
      * @Cacheable(prefix="vendor_wallet_code", ttl=360, listener="vendor_wallet_code_cache")
      */
