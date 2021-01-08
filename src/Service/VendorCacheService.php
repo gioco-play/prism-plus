@@ -223,7 +223,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return json_decode(json_encode($data), true);
         }
 
         return null;
