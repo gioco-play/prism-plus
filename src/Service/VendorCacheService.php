@@ -156,7 +156,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return json_decode($data['language'], true);
+            return json_decode(json_encode($data['language']), true);
         }
 
         return null;
@@ -179,7 +179,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return json_decode($data['currency'], true);
+            return json_decode(json_encode($data['currency']), true);
         }
 
         return null;
