@@ -156,7 +156,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data['language'];
+            return json_decode($data['language'], true);
         }
 
         return null;
@@ -179,7 +179,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data['currency'];
+            return json_decode($data['currency'], true);
         }
 
         return null;
@@ -271,7 +271,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $walletCodes = collect($data)->pluck('game_code', 'name')->toArray();;
+            return collect($data)->pluck('game_code', 'name')->toArray();;
         }
 
         return null;
