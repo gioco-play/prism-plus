@@ -140,6 +140,9 @@ class OperatorCacheService
             ]
         ], [
             'projection' => [
+                "code" => 1,
+                "status" => 1,
+                "currency" => 1,
                 "vendor_switch.{$vendor}" => 1,
                 "vendors.{$vendor}" => 1,
             ]
@@ -147,6 +150,9 @@ class OperatorCacheService
 
         if ($data) {
             return [
+                "code" => $data['code'],
+                "status" => $data['status'],
+                "currency" => $data['currency'],
                 'switch' => $data['vendor_switch']->$vendor,
                 'vendor' => $data['vendors']->$vendor,
             ];
