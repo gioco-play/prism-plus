@@ -104,12 +104,14 @@ class OperatorCacheService
             ]
         ], [
             'projection' => [
+                "code" => 1,
+                "status" => 1,
                 "main_switch" => 1
             ]
         ]));
 
         if ($data) {
-            return $data['main_switch'];
+            return $data;
         }
 
         return null;
