@@ -51,26 +51,29 @@ class PlayerSessionCacheService
 
     /**
      * 建立玩家Session
-     * @param string $operatorCode
-     * @param string $playerName
-     * @param $game
-     * @param string $currency
-     * @Cacheable(prefix="player_session", value="_#{operatorCode}_#{playerName}", listener="player_session_cache")
+     * @param string $key
+     * @param string|null $operatorCode
+     * @param string|null $playerName
+     * @param string|null $currency
+     * @param null $game
+     * @return string
+     * @Cacheable(prefix="player_session", value="_#{key}", listener="player_session_cache")
      */
-    public function create(string $operatorCode, string $playerName, $game, string $currency) {
+    public function create(string $key, string $operatorCode = null, string $playerName = null, string $currency = null, $game = null) {
+        if (empty($operatorCode)) {
+            return null;
+        }
         return base64url_encode("{$playerName}_{$operatorCode}::{$currency}::{$game['game_id']}::{$game['game_code']}::{$game['game_type']}");
     }
 
     /**
      * 清除玩家快取
-     * @param string $operatorCode
-     * @param string $playerName
+     * @param string $key
      * @return bool
      */
-    public function clear(string $operatorCode, string $playerName) {
+    public function clear(string $key) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('player_session_cache', [
-            'operatorCode' => $operatorCode,
-            'playerName' => $playerName
+            'key' => $key
         ]));
 
         return true;
