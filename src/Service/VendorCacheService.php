@@ -232,7 +232,7 @@ class VendorCacheService
     /**
      * 遊戲代碼與ID對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gamecode_mapping", ttl=180, value="_#{vendorCode}", listener="vendor_gamecode_mapping_cache")
+     * @Cacheable(prefix="vendor_gamecode_mapping", ttl=1800, value="_#{vendorCode}", listener="vendor_gamecode_mapping_cache")
      */
     public function gameCodeMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -256,7 +256,7 @@ class VendorCacheService
     /**
      * 遊戲代碼與名稱對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gamename_mapping", ttl=180, value="_#{vendorCode}", listener="vendor_gamename_mapping_cache")
+     * @Cacheable(prefix="vendor_gamename_mapping", ttl=1800, value="_#{vendorCode}", listener="vendor_gamename_mapping_cache")
      */
     public function gameNameMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -272,6 +272,30 @@ class VendorCacheService
 
         if ($data) {
             return collect($data)->pluck('game_code', 'name')->toArray();;
+        }
+
+        return null;
+    }
+
+    /**
+     * 遊戲代碼與類型對應
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_gametype_mapping", ttl=1800, value="_#{vendorCode}", listener="vendor_gametype_mapping_cache")
+     */
+    public function gameTypeMapping(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = current($this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode
+        ], [
+            'projection' => [
+                "game_code" => 1,
+                "game_type" => 1
+            ]
+        ]));
+
+        if ($data) {
+            return collect($data)->pluck('game_code', 'game_type')->toArray();;
         }
 
         return null;

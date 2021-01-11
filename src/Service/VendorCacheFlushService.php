@@ -153,6 +153,18 @@ class VendorCacheFlushService
     }
 
     /**
+     * 遊戲代碼與類型對應
+     * @param string $vendorCode
+     */
+    public function gameTypeMapping(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_gametype_mapping_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
+
+    /**
      * 錢包代碼
      * @return bool
      */
