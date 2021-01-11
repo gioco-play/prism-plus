@@ -55,7 +55,7 @@ class PlayerSessionCacheService
      * @param string $playerName
      * @param $game
      * @param string $currency
-     * @Cacheable(prefix="pg_session", value="_#{operatorCode}_#{playerName}", listener="player_session_cache")
+     * @Cacheable(prefix="player_session", value="_#{operatorCode}_#{playerName}", listener="player_session_cache")
      */
     public function create(string $operatorCode, string $playerName, $game, string $currency) {
         return base64url_encode("{$playerName}_{$operatorCode}::{$game['game_id']}::{$game['game_code']}::{$currency}");
