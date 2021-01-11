@@ -237,17 +237,41 @@ class VendorCacheService
     public function gameCodeMapping(string $vendorCode) {
         $this->dbDefaultPool();
         $vendorCode = strtolower($vendorCode);
-        $data = current($this->mongodb->fetchAll('games', [
+        $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
             'projection' => [
                 "game_code" => 1,
                 "game_id" => 1
             ]
-        ]));
+        ]);
 
         if ($data) {
             return $walletCodes = collect($data)->pluck('game_code', 'game_id')->toArray();;
+        }
+
+        return null;
+    }
+
+    /**
+     * 遊戲ID與代碼對應
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_gameid_mapping", ttl=1800, value="_#{vendorCode}", listener="vendor_gameid_mapping_cache")
+     */
+    public function gameIdMapping(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = $this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode
+        ], [
+            'projection' => [
+                "game_code" => 1,
+                "game_id" => 1
+            ]
+        ]);
+
+        if ($data) {
+            return $walletCodes = collect($data)->pluck('game_id', 'game_code')->toArray();;
         }
 
         return null;
@@ -261,14 +285,14 @@ class VendorCacheService
     public function gameNameMapping(string $vendorCode) {
         $this->dbDefaultPool();
         $vendorCode = strtolower($vendorCode);
-        $data = current($this->mongodb->fetchAll('games', [
+        $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
             'projection' => [
                 "game_code" => 1,
                 "name" => 1
             ]
-        ]));
+        ]);
 
         if ($data) {
             return collect($data)->pluck('game_code', 'name')->toArray();;
@@ -285,14 +309,14 @@ class VendorCacheService
     public function gameTypeMapping(string $vendorCode) {
         $this->dbDefaultPool();
         $vendorCode = strtolower($vendorCode);
-        $data = current($this->mongodb->fetchAll('games', [
+        $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
             'projection' => [
                 "game_code" => 1,
                 "game_type" => 1
             ]
-        ]));
+        ]);
 
         if ($data) {
             return collect($data)->pluck('game_code', 'game_type')->toArray();;
