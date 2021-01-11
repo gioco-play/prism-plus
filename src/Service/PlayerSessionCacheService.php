@@ -58,7 +58,7 @@ class PlayerSessionCacheService
      * @Cacheable(prefix="player_session", value="_#{operatorCode}_#{playerName}", listener="player_session_cache")
      */
     public function create(string $operatorCode, string $playerName, $game, string $currency) {
-        return base64url_encode("{$playerName}_{$operatorCode}::{$game['game_id']}::{$game['game_code']}::{$currency}");
+        return base64url_encode("{$playerName}_{$operatorCode}::{$currency}::{$game['game_id']}::{$game['game_code']}::{$game['game_type']}");
     }
 
     /**
