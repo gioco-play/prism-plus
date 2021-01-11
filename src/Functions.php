@@ -113,10 +113,11 @@ if (!function_exists('base64url_decode')) {
 
     /**
      * URL base64 encode
-     * @param string $data
+     * @param $data
      * @return false|string
      */
-    function base64url_decode(string $data) {
+    function base64url_decode($data) {
+        if (empty($data)) return false;
         return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
     }
 
