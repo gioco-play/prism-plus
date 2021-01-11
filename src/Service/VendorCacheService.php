@@ -247,7 +247,7 @@ class VendorCacheService
         ]);
 
         if ($data) {
-            return $walletCodes = collect($data)->pluck('game_code', 'game_id')->toArray();;
+            return collect($data)->pluck('game_id', 'game_code')->toArray();;
         }
 
         return null;
@@ -271,7 +271,7 @@ class VendorCacheService
         ]);
 
         if ($data) {
-            return $walletCodes = collect($data)->pluck('game_id', 'game_code')->toArray();;
+            return collect($data)->pluck('game_code', 'game_id')->toArray();;
         }
 
         return null;
@@ -295,7 +295,7 @@ class VendorCacheService
         ]);
 
         if ($data) {
-            return collect($data)->pluck('game_code', 'name')->toArray();;
+            return collect($data)->pluck('name', 'game_code')->toArray();;
         }
 
         return null;
@@ -319,7 +319,7 @@ class VendorCacheService
         ]);
 
         if ($data) {
-            return collect($data)->pluck('game_code', 'game_type')->toArray();;
+            return collect($data)->pluck('game_type','game_code')->toArray();;
         }
 
         return null;
