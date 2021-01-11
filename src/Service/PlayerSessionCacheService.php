@@ -57,7 +57,7 @@ class PlayerSessionCacheService
      * @param string $currency
      * @Cacheable(prefix="pg_session", value="_#{operatorCode}_#{playerName}", listener="player_session_cache")
      */
-    public function createPlayerSession(string $operatorCode, string $playerName, $game, string $currency) {
+    public function create(string $operatorCode, string $playerName, $game, string $currency) {
         return base64url_encode("{$playerName}_{$operatorCode}::{$game['game_id']}::{$game['game_code']}::{$currency}");
     }
 
@@ -67,7 +67,7 @@ class PlayerSessionCacheService
      * @param string $playerName
      * @return bool
      */
-    public function clearPlayerSession(string $operatorCode, string $playerName) {
+    public function clear(string $operatorCode, string $playerName) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('player_session_cache', [
             'operatorCode' => $operatorCode,
             'playerName' => $playerName
