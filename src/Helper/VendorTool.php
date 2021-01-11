@@ -37,7 +37,7 @@ class VendorTool
      * @return string
      */
     public function gameLanguageMapping( string $gameCode, string $lang, string $defaultLang):string {
-        $languages = json_decode(json_encode($this->vendorCache->game($gameCode)->language??[]), true);
+        $languages = json_decode(json_encode($this->vendorCache->game($gameCode)['language']??[]), true);
         return $languages[strtolower($lang)] ?? $defaultLang;
     }
 
@@ -62,7 +62,7 @@ class VendorTool
      * @return string
      */
     public function gameCurrencyMapping(string $gameCode, string $currency): string {
-        $currencies = json_decode(json_encode($this->vendorCache->game($gameCode)->currency??[]), true);
+        $currencies = json_decode(json_encode($this->vendorCache->game($gameCode)['currency']??[]), true);
         if (isset($currencies[strtolower($currency)]) == false) {
             throw new \Exception(ProductState::GAME_CURRENCY_NOT_EXIST['msg'], ProductState::GAME_CURRENCY_NOT_EXIST['code']);
         }
