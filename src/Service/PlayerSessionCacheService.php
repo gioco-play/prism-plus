@@ -50,20 +50,18 @@ class PlayerSessionCacheService
     }
 
     /**
-     * 建立玩家Session
+     * 建立玩家session
      * @param string $key
-     * @param string|null $operatorCode
-     * @param string|null $playerName
-     * @param string|null $currency
-     * @param null $game
-     * @return string
+     * @param array $params
+     * @return string|null
      * @Cacheable(prefix="player_session", value="_#{key}", listener="player_session_cache")
      */
-    public function create(string $key, string $operatorCode = null, string $playerName = null, string $currency = null, $game = null) {
-        if (empty($operatorCode)) {
+    public function create(string $key, array $params = []) {
+        if (empty($params)) {
             return null;
         }
-        return base64url_encode("{$playerName}_{$operatorCode}::{$currency}::{$game['game_id']}::{$game['game_code']}::{$game['game_type']}");
+        $sessionStr = implode("::", $params);
+        return base64url_encode($sessionStr);
     }
 
     /**
