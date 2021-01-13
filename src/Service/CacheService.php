@@ -375,13 +375,24 @@ class CacheService
         $dbManager = new DbManager();
         $pg = $dbManager->opPostgreDb(strtolower($op));
         $result = $pg->query("SELECT * FROM members WHERE player_name='{$account}' OR member_code='{$account}'");
-        if ($result) {
+        try {
+            $result = $pg->fetchAll($result);
+            if ($result) {
+                return [
+                    'operator' => $this->opCache->basic(strtoupper($op)),
+                    'player' => current($result)
+                ];
+            }
+        } catch (\Exception $e) {
             return [
-                'operator' => $this->opCache->basic(strtoupper($op)),
-                'player' => current($pg->fetchAll($result))
+                'operator' => false,
+                'player' => false
             ];
         }
-        return $result;
+        return [
+            'operator' => false,
+            'player' => false
+        ];
     }
 
     /**
