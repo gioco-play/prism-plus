@@ -250,7 +250,7 @@ class VendorCacheService
             return collect($data)->pluck('game_id', 'game_code')->toArray();;
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -274,7 +274,7 @@ class VendorCacheService
             return collect($data)->pluck('game_code', 'game_id')->toArray();;
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -298,7 +298,7 @@ class VendorCacheService
             return collect($data)->pluck('name', 'game_code')->toArray();;
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -322,7 +322,59 @@ class VendorCacheService
             return collect($data)->pluck('game_type','game_code')->toArray();;
         }
 
-        return null;
+        return [];
+    }
+
+    /**
+     * 遊戲維護清單
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_game_maintain_list", ttl=1800, value="_#{vendorCode}", listener="vendor_game_maintain_list_cache")
+     */
+    public function gameMaintainList(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = $this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode,
+            'status' => [
+                '$ne' => 'online'
+            ]
+        ], [
+            'projection' => [
+                "game_code" => 1,
+                "game_id" => 1
+            ]
+        ]);
+
+        if ($data) {
+            return collect($data)->pluck('game_id', 'game_code')->toArray();;
+        }
+
+        return [];
+    }
+
+    /**
+     * 遊戲運作清單
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_game_working_list", ttl=1800, value="_#{vendorCode}", listener="vendor_game_working_list_cache")
+     */
+    public function gameWorkingList(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = $this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode,
+            'status' => 'online'
+        ], [
+            'projection' => [
+                "game_code" => 1,
+                "game_id" => 1
+            ]
+        ]);
+
+        if ($data) {
+            return collect($data)->pluck('game_id', 'game_code')->toArray();;
+        }
+
+        return [];
     }
 
     /**

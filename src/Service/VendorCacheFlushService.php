@@ -178,6 +178,30 @@ class VendorCacheFlushService
     }
 
     /**
+     * 遊戲維護清單
+     * @param string $vendorCode
+     */
+    public function gameMaintainList(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_maintain_list_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
+
+    /**
+     * 遊戲運作清單
+     * @param string $vendorCode
+     */
+    public function gameWorkingList(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_working_list_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
+
+    /**
      * 錢包代碼
      * @return bool
      */
