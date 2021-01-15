@@ -1,5 +1,12 @@
 ## PrismPlus工具
 
+### 安裝
+```
+composer require "gioco-plus/prism-plus"
+
+php bin/hyperf.php vendor:publish "gioco-plus/prism-const"
+```
+
 ### 偏好設定
 ```php
 php bin/hyperf.php vendor:publish "gioco-plus/prism-plus"
