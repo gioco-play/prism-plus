@@ -58,7 +58,8 @@ class VendorCacheService
                 "name" => 1,
                 "wallet_code" => 1,
                 "seamless_enable" => 1,
-                "account_delimiter" => 1
+                "account_delimiter" => 1,
+                "wallet_type" => 1
             ]
         ]));
 
