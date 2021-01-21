@@ -89,6 +89,7 @@ class VendorTool
      * @param string $vendorCode
      * @param string $account
      * @param bool $removeLog
+     * @return bool
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
      */
     public function playerGameRegister(string $opCode, string $vendorCode, string $account, bool $removeLog = false) {
