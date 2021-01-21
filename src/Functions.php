@@ -89,16 +89,18 @@ if (!function_exists('gen_timeout_order_log')) {
      * @param string $operator_code
      * @param string $vendor_code
      * @param string $player_name
+     * @param string $member_code
      * @param string $order_no
      * @param float $amount
      * @return array
      */
-    function gen_timeout_order_log(string $action, string $operator_code, string $vendor_code, string $player_name, string $order_no, float $amount): array {
+    function gen_timeout_order_log(string $action, string $operator_code, string $vendor_code, string $player_name, string $member_code, string $order_no, float $amount): array {
         return [
             "action" => $action,
             "operator_code" => $operator_code,
             "vendor_code" => $vendor_code,
             "player_name" => $player_name,
+            "member_code" => $member_code,
             "order_no" => $order_no,
             "amount" => $amount,
             "status" => "fail",
