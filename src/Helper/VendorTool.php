@@ -5,6 +5,8 @@ namespace GiocoPlus\PrismPlus\Helper;
 
 
 use GiocoPlus\PrismConst\State\ProductState;
+use GiocoPlus\PrismPlus\Repository\DbManager;
+use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use GiocoPlus\PrismPlus\Service\VendorCacheService;
 use Hyperf\Di\Annotation\Inject;
 
@@ -15,6 +17,18 @@ class VendorTool
      * @var VendorCacheService
      */
     private $vendorCache;
+
+    /**
+     * @Inject()
+     * @var OperatorCacheService
+     */
+    private $opCache;
+
+    /**
+     * @Inject()
+     * @var DbManager
+     */
+    private $dbManager;
 
     /**
      * Vendor語系對應
@@ -66,5 +80,27 @@ class VendorTool
             throw new \Exception(ProductState::GAME_CURRENCY_NOT_EXIST['msg']."[{$currency}]", ProductState::GAME_CURRENCY_NOT_EXIST['code']);
         }
         return $currencies[strtolower($currency)];
+    }
+
+    /**
+     * 玩家遊戲註冊
+     * @param string $opCode
+     * @param string $vendorCode
+     * @param string $account
+     * @param bool $removeLog
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     */
+    public function playerGameRegister(string $opCode, string $vendorCode, string $account, bool $removeLog = false) {
+        $vendorCode = strtolower($vendorCode);
+        $register = $this->dbManager->opMongoDb($opCode)->fetchAll('player_game_register', ['vendor' => $vendorCode, 'account' => $account]);
+
+        if ($removeLog === true) {
+            $this->dbManager->opMongoDb($opCode)->delete('player_game_register', ['vendor' => $vendorCode, 'account' => $account]);
+        }
+
+        if ($removeLog === false && current($register) === false) {
+            $this->dbManager->opMongoDb($opCode)->insert('player_game_register', ['vendor' => $vendorCode, 'account' => $account]);
+        }
+
     }
 }
