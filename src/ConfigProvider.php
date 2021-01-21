@@ -35,6 +35,19 @@ class ConfigProvider
             ],
             'publish' => [
                 [
+                    'id' => 'VendorRequestListener',
+                    'description' => 'VendorRequestListener',
+                    'source' => __DIR__ . '/Listener/VendorRequestListener.php',
+                    'destination' => BASE_PATH . '/app/Listener/VendorRequestListener.php',
+                ],
+                [
+                    'id' => 'OrderTimeoutRequest',
+                    'description' => 'OrderTimeoutRequest',
+                    'source' => __DIR__ . '/Event/OrderTimeoutRequest.php',
+                    'destination' => BASE_PATH . '/app/Event/OrderTimeoutRequest.php',
+                ],
+                /*
+                [
                     'id' => 'BoCheckerMiddleware',
                     'description' => 'The bo ip checker',
                     'source' => __DIR__ . '/Middleware/Bo/CheckerMiddleware.php',
@@ -70,6 +83,7 @@ class ConfigProvider
                     'source' => __DIR__ . '/Middleware/GlobalIPBlockMiddleware.php',
                     'destination' => BASE_PATH . '/app/Middleware/GlobalIPBlockMiddleware.php',
                 ]
+                */
             ],
         ];
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GiocoPlus\PrismPlus\Listener;
+namespace App\Listener;
 
 use App\Event\OrderTimeoutRequest;
 use GiocoPlus\PrismPlus\Repository\DbManager;
@@ -15,6 +15,7 @@ use Hyperf\Event\Contract\ListenerInterface;
  * 遊戲商請求
  * Class VendorRequestListener
  * @package App\Listener
+ * @Listener()
  */
 class VendorRequestListener implements ListenerInterface
 {
