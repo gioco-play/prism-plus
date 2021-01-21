@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Listener;
+namespace GiocoPlus\PrismPlus\Listener;
 
 use App\Event\OrderTimeoutRequest;
 use GiocoPlus\PrismPlus\Repository\DbManager;
