@@ -9,7 +9,6 @@ use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use GiocoPlus\PrismPlus\Service\VendorCacheService;
 use Hyperf\Di\Annotation\Inject;
-use function Symfony\Component\Translation\t;
 
 class VendorTool
 {

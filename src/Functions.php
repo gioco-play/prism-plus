@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 
+use MongoDB\BSON\UTCDateTime;
+
 if (!function_exists('micro_timestamp')) {
     /**
      * 毫秒時間戳
@@ -75,6 +77,34 @@ if (!function_exists('gen_rand_int')) {
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+}
+
+if (!function_exists('gen_timeout_order_log')) {
+
+    /**
+     * 上 / 下分失敗訂單格式
+     * @param string $action
+     * @param string $operator_code
+     * @param string $vendor_code
+     * @param string $player_name
+     * @param string $order_no
+     * @param float $amount
+     * @return array
+     */
+    function gen_timeout_order_log(string $action, string $operator_code, string $vendor_code, string $player_name, string $order_no, float $amount): array {
+        return [
+            "action" => $action,
+            "operator_code" => $operator_code,
+            "vendor_code" => $vendor_code,
+            "player_name" => $player_name,
+            "order_no" => $order_no,
+            "amount" => $amount,
+            "status" => "fail",
+            "created_at" => new UTCDateTime,
+            "created_date" => date('Y-m-d')
+        ];
     }
 
 }
