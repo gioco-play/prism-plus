@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Listener;
 
 use App\Event\OrderTimeoutRequest;
-use GiocoPlus\PrismPlus\Repository\DbManager;
+use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Annotation\Listener;
 use Psr\Container\ContainerInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 
@@ -25,9 +24,9 @@ class VendorRequestListener implements ListenerInterface
 
     /**
      * @Inject()
-     * @var DbManager
+     * @var MongoDb
      */
-    private $dbManager;
+    private $mongodb;
 
     public function __construct(ContainerInterface $container)
     {
@@ -46,9 +45,8 @@ class VendorRequestListener implements ListenerInterface
      */
     public function process(object $event)
     {
-         co(function () use ($event) {
-            $this->dbManager->opMongoDb($event->orderData['operator_code'])
-                ->insert("transaction_timeout", $event->orderData);
-         });
+        co(function () use ($event) {
+            $this->mongodb->setPool('default')->insert("transaction_timeout", $event->orderData);
+        });
     }
 }
