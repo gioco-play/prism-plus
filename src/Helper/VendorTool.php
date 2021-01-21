@@ -9,6 +9,7 @@ use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use GiocoPlus\PrismPlus\Service\VendorCacheService;
 use Hyperf\Di\Annotation\Inject;
+use function Symfony\Component\Translation\t;
 
 class VendorTool
 {
@@ -96,11 +97,14 @@ class VendorTool
 
         if ($removeLog === true) {
             $this->dbManager->opMongoDb($opCode)->delete('player_game_register', ['vendor' => $vendorCode, 'account' => $account]);
+            return false;
         }
 
         if ($removeLog === false && current($register) === false) {
             $this->dbManager->opMongoDb($opCode)->insert('player_game_register', ['vendor' => $vendorCode, 'account' => $account]);
+            return false;
         }
 
+        return current($register) ? true : false;
     }
 }
