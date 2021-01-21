@@ -12,7 +12,9 @@ use Psr\Container\ContainerInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 
 /**
- * @Listener
+ * 遊戲商請求
+ * Class VendorRequestListener
+ * @package App\Listener
  */
 class VendorRequestListener implements ListenerInterface
 {
