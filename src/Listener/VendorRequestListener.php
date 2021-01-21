@@ -15,7 +15,6 @@ use Hyperf\Event\Contract\ListenerInterface;
  * 遊戲商請求
  * Class VendorRequestListener
  * @package App\Listener
- * @Listener()
  */
 class VendorRequestListener implements ListenerInterface
 {
