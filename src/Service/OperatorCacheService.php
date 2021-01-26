@@ -111,7 +111,11 @@ class OperatorCacheService
         ]));
 
         if ($data) {
-            return $data;
+            return [
+                "code" => $data['code'],
+                "status" => $data['status'],
+                'switch' => json_decode(json_encode($data['main_switch']), true)
+            ];
         }
 
         return null;
