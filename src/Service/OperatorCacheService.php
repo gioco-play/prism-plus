@@ -350,11 +350,9 @@ class OperatorCacheService
         $vendorCode = strtolower($vendorCode);
         $this->dbDefaultPool();
         $data = $this->mongodb->fetchAll('operators', [
-            [
-                "status" => "online",
-                "main_switch.grabber_log_on" => true,
-                "vendor_switch.{$vendorCode}.grabber_log_on" => true
-            ]
+            "status" => "online",
+            "main_switch.grabber_log_on" => true,
+            "vendor_switch.{$vendorCode}.grabber_log_on" => true
         ], [
             'projection' => [
                 "code" => 1,
