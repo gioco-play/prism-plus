@@ -44,7 +44,7 @@ class OperatorCacheService
     /**
      * 營運商基本資料
      * @param string $code
-     * @Cacheable(prefix="op_basic", ttl=180, value="_#{code}", listener="op_basic_cache")
+     * @Cacheable(prefix="op_basic", ttl=600, value="_#{code}", listener="op_basic_cache")
      */
     public function basic(string $code) {
         $this->dbDefaultPool();
@@ -84,7 +84,7 @@ class OperatorCacheService
      * 總開關
      * @param string $code
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="op_main_switch", ttl=180, value="_#{code}", listener="op_main_switch_cache")
+     * @Cacheable(prefix="op_main_switch", ttl=600, value="_#{code}", listener="op_main_switch_cache")
      */
     public function mainSwitch(string $code) {
         $this->dbDefaultPool();
@@ -126,7 +126,7 @@ class OperatorCacheService
      * @param string $code
      * @param string $vendorCode
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="op_vendor_setting", ttl=180, value="_#{code}_#{vendorCode}", listener="op_vendor_setting_cache")
+     * @Cacheable(prefix="op_vendor_setting", ttl=600, value="_#{code}_#{vendorCode}", listener="op_vendor_setting_cache")
      */
     public function vendorSetting(string $code, string $vendorCode) {
         $this->dbDefaultPool();
@@ -172,7 +172,7 @@ class OperatorCacheService
     /**
      * 營運商幣值表
      * @param string $code
-     * @Cacheable(prefix="op_currency_rate", ttl=180, value="_#{code}", listener="op_currency_rate_cache")
+     * @Cacheable(prefix="op_currency_rate", ttl=600, value="_#{code}", listener="op_currency_rate_cache")
      */
     public function currencyRate(string $code) {
         $this->dbDefaultPool();
@@ -207,7 +207,7 @@ class OperatorCacheService
      * @param string $code
      * @param string $vendorCode
      * @return array
-     * @Cacheable(prefix="op_block_game", ttl=180, value="_#{code}_#{vendorCode}", listener="op_block_game_cache")
+     * @Cacheable(prefix="op_block_game", ttl=600, value="_#{code}_#{vendorCode}", listener="op_block_game_cache")
      */
     public function blockGames(string $code, string $vendorCode) {
         $this->dbDefaultPool();
@@ -241,7 +241,7 @@ class OperatorCacheService
      * 運營商 API 白名單
      * @param string $code
      * @return array
-     * @Cacheable(prefix="op_api_whitelist", ttl=180, value="_#{code}", listener="op_api_whitelist_cache")
+     * @Cacheable(prefix="op_api_whitelist", ttl=600, value="_#{code}", listener="op_api_whitelist_cache")
      */
     public function apiWhitelist(string $code) {
         $this->dbDefaultPool();
@@ -278,7 +278,7 @@ class OperatorCacheService
      * 運營商 DB 配置
      * @param string $code
      * @return array
-     * @Cacheable(prefix="op_db_setting", ttl=180, value="_#{code}", listener="op_db_setting_cache")
+     * @Cacheable(prefix="op_db_setting", ttl=600, value="_#{code}", listener="op_db_setting_cache")
      */
     public function dbSetting(string $code) {
         $this->dbDefaultPool();
@@ -311,7 +311,7 @@ class OperatorCacheService
      * 運營商 類單一錢包配置
      * @param string $code
      * @return array
-     * @Cacheable(prefix="op_seamless_setting", ttl=180, value="_#{code}", listener="op_seamless_setting_cache")
+     * @Cacheable(prefix="op_seamless_setting", ttl=600, value="_#{code}", listener="op_seamless_setting_cache")
      */
     public function seamlessSetting(string $code) {
         $this->dbDefaultPool();
@@ -336,6 +336,37 @@ class OperatorCacheService
 
         if ($data&&isset($data['seamless_setting'])) {
             return $data['seamless_setting'];
+        }
+        return [];
+    }
+
+    /**
+     * 營商遊戲拉單開關
+     * @param string $vendorCode
+     * @return array
+     * @Cacheable(prefix="grabber_log_enable", ttl=600, value="_#{vendorCode}", listener="grabber_log_enable_cache")
+     */
+    public function grabberLogEnable(string $vendorCode) {
+        $vendorCode = strtolower($vendorCode);
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            [
+                "status" => "online",
+                "main_switch.grabber_log_on" => true,
+                "vendor_switch.{$vendorCode}.grabber_log_o" => true
+            ]
+        ], [
+            'projection' => [
+                "code" => 1,
+                "vendors.{$vendorCode}" => 1,
+            ]
+        ]));
+
+        if ($data) {
+            return [
+                "code" => $data['code'],
+                "vendor" => json_decode(json_encode($data['vendors']->$vendorCode), true)
+            ];
         }
         return [];
     }

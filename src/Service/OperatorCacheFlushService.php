@@ -119,4 +119,17 @@ class OperatorCacheFlushService
         ]));
         return true;
     }
+
+    /**
+     * 營商遊戲拉單開關
+     * @param string $vendorCode
+     * @return bool
+     */
+    public function grabberLogEnable(string $vendorCode)
+    {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('grabber_log_enable_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+        return true;
+    }
 }
