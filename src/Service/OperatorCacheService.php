@@ -365,7 +365,7 @@ class OperatorCacheService
         if ($data) {
             return [
                 "code" => $data['code'],
-                "vendor" => json_decode(json_encode($data['vendors']->$vendorCode), true)
+                "vendors" => json_decode(json_encode($data['vendors']->$vendorCode), true)
             ];
         }
         return [];
