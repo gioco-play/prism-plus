@@ -353,7 +353,7 @@ class OperatorCacheService
             [
                 "status" => "online",
                 "main_switch.grabber_log_on" => true,
-                "vendor_switch.{$vendorCode}.grabber_log_o" => true
+                "vendor_switch.{$vendorCode}.grabber_log_on" => true
             ]
         ], [
             'projection' => [
