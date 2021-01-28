@@ -349,7 +349,7 @@ class OperatorCacheService
     public function grabberLogEnable(string $vendorCode) {
         $vendorCode = strtolower($vendorCode);
         $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
+        $data = $this->mongodb->fetchAll('operators', [
             [
                 "status" => "online",
                 "main_switch.grabber_log_on" => true,
@@ -360,13 +360,10 @@ class OperatorCacheService
                 "code" => 1,
                 "vendors.{$vendorCode}" => 1,
             ]
-        ]));
+        ]);
 
         if ($data) {
-            return [
-                "code" => $data['code'],
-                "vendors" => json_decode(json_encode($data['vendors']->$vendorCode), true)
-            ];
+            return $data;
         }
         return [];
     }
