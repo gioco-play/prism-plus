@@ -51,3 +51,4 @@ $this->dbManger->opMongoDb('gf')->insert("hyperf_test", [
 # 獲取Config
 $this->config->get("mongodb.{$confName}");
 ```
+2021
