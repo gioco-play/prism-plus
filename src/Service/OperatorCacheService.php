@@ -152,7 +152,7 @@ class OperatorCacheService
                 "website" => 1,
                 "main_switch" => 1,
                 "vendor_switch.{$vendor}" => 1,
-                "vendors.{$vendor}" => 1,
+                "vendors.{$vendor}" => 1
             ]
         ]));
 
@@ -164,7 +164,8 @@ class OperatorCacheService
                 "website" => $data['website'],
                 "main_switch" => json_decode(json_encode($data['main_switch']), true),
                 "switch" => json_decode(json_encode($data['vendor_switch']->$vendor), true),
-                "vendor" => json_decode(json_encode($data['vendors']->$vendor), true)
+                "vendor" => json_decode(json_encode($data['vendors']->$vendor), true),
+                "vendor_code" => $vendor
             ];
         }
 
