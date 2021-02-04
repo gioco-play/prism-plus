@@ -113,29 +113,27 @@ class VendorTool
      * @param string $opCode
      * @param string $vendorCode
      * @param string $account
-     * @param string $oddType
-     * @param bool $removeLog
-     * @return bool
+     * @param string|null $oddType
+     * @return mixed|string
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
      */
-    public function playerGameOddType(string $opCode, string $vendorCode, string $account, string $oddType, bool $removeLog = false) {
+    public function playerGameOddType(string $opCode, string $vendorCode, string $account, string $oddType = null) {
         $vendorCode = strtolower($vendorCode);
-        $register = $this->dbManager->opMongoDb($opCode)->fetchAll('player_game_oddtype', ['vendor' => $vendorCode, 'account' => $account]);
+        $result = $this->dbManager->opMongoDb($opCode)->fetchAll('player_game_oddtype', ['vendor' => $vendorCode, 'account' => $account]);
 
-        if ($removeLog === true) {
-            $this->dbManager->opMongoDb($opCode)->delete('player_game_oddtype', ['vendor' => $vendorCode, 'account' => $account]);
-            return false;
-        }
-
-        if ($removeLog === false && current($register) === false) {
-            $this->dbManager->opMongoDb($opCode)->insert('player_game_oddtype', [
+        if ($oddType) {
+            $this->dbManager->opMongoDb($opCode)->insertOrUpdate('player_game_oddtype', [
                 'vendor' => $vendorCode,
                 'account' => $account,
+            ],[
                 'oddtype' => $oddType
             ]);
-            return true;
         }
 
-        return current($register) ? true : false;
+        if ($rec = current($result)) {
+            return $rec['oddtype'];
+        }
+
+        return $oddType??'';
     }
 }
