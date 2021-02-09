@@ -133,6 +133,19 @@ class VendorCacheFlushService
      * @return bool
      */
     public function gameCodeMapping(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('gamecode_mapping_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
+
+    /**
+     * 遊戲代碼與供應商遊戲代碼對應
+     * @param string $vendorCode
+     * @return bool
+     */
+    public function vendorGameCodeMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_gamecode_mapping_cache', [
             'vendorCode' => $vendorCode
         ]));
