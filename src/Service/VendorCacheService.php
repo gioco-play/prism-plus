@@ -403,6 +403,30 @@ class VendorCacheService
     }
 
     /**
+     * 遊戲狀態對照表
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_game_status_list", ttl=600, value="_#{vendorCode}", listener="vendor_game_status_list_cache")
+     */
+    public function gameStatusList(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = $this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode
+        ], [
+            'projection' => [
+                "game_code" => 1,
+                "status" => 1
+            ]
+        ]);
+
+        if ($data) {
+            return collect($data)->pluck('status', 'game_code')->toArray();;
+        }
+
+        return [];
+    }
+
+    /**
      * 錢包代碼
      * @Cacheable(prefix="vendor_wallet_code", ttl=600, listener="vendor_wallet_code_cache")
      */

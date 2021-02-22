@@ -215,6 +215,18 @@ class VendorCacheFlushService
     }
 
     /**
+     * 遊戲狀態對照表
+     * @param string $vendorCode
+     */
+    public function gameStatusList(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_status_list_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
+
+    /**
      * 錢包代碼
      * @return bool
      */
