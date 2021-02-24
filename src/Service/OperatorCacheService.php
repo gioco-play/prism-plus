@@ -199,7 +199,12 @@ class OperatorCacheService
         ]));
 
         if ($data) {
-            return collect($data['currency_rate'])->pluck('rate', 'vendor')->toArray();
+            $rates = json_decode(json_encode($data['currency_rate']), true);
+            $_rates = [];
+            foreach ($rates as $vendor => $value) {
+                $_rates[$vendor] = $value["rate"];
+            }
+            return $_rates;
         }
 
         return [];
