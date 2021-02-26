@@ -296,7 +296,7 @@ class CacheService
                 $__codes = $this->_subCompanyOpCurrency($_comp, $currency);
                 $_code = array_merge($_code, $__codes);
             } else {
-                if (strtolower($c['currency']) === strtolower($currency)) {
+                if (strtoupper($c['currency']) === strtoupper($currency)) {
                     $_code[] = [
                         'parent_code' => $c['parent_code'],
                         'code' => $c['code'],

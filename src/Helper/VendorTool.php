@@ -62,10 +62,10 @@ class VendorTool
      */
     public function currencyMapping(string $vendorCode, string $currency): string {
         $currencies = $this->vendorCache->currency(strtolower($vendorCode));
-        if (isset($currencies[strtolower($currency)]) == false) {
+        if (isset($currencies[strtoupper($currency)]) == false) {
             throw new \Exception(ProductState::CURRENCY_NOT_EXIST['msg']."[{$currency}]", ProductState::CURRENCY_NOT_EXIST['code']);
         }
-        return $currencies[strtolower($currency)];
+        return $currencies[strtoupper($currency)];
     }
 
     /**
@@ -76,10 +76,10 @@ class VendorTool
      */
     public function gameCurrencyMapping(string $gameCode, string $currency): string {
         $currencies = json_decode(json_encode($this->vendorCache->game($gameCode)['currency']??[]), true);
-        if (isset($currencies[strtolower($currency)]) == false) {
+        if (isset($currencies[strtoupper($currency)]) == false) {
             throw new \Exception(ProductState::GAME_CURRENCY_NOT_EXIST['msg']."[{$currency}]", ProductState::GAME_CURRENCY_NOT_EXIST['code']);
         }
-        return $currencies[strtolower($currency)];
+        return $currencies[strtoupper($currency)];
     }
 
     /**
