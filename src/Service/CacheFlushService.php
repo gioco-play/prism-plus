@@ -48,64 +48,6 @@ class CacheFlushService
     }
 
     /**
-     * 營運商
-     * @deprecated
-     * @param string $code
-     * @return bool
-     */
-    public function operator(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_cache', [
-            'code' => $code
-        ]));
-
-        return true;
-    }
-
-    /**
-     * 營運商
-     * @deprecated
-     * @param string $operator_token
-     * @return bool
-     */
-    public function operatorByToken(string $operator_token) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_token_cache', [
-            'operator_token' => $operator_token
-        ]));
-
-        return true;
-    }
-
-    /**
-     * 營運商幣值表
-     * @deprecated
-     * @param string $code
-     * @return bool
-     */
-    public function operatorCurrencyRate(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_rate_cache', [
-            'code' => $code
-        ]));
-
-        return true;
-    }
-
-    /**
-     * 運營商 封鎖遊戲
-     * @deprecated
-     * @param string $code
-     * @param string $vendorCode
-     * @return bool
-     */
-    public function operatorBlockGames(string $code, string $vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_block_game_cache', [
-            'code' => $code,
-            'vendorCode' => $vendorCode
-        ]));
-
-        return true;
-    }
-
-    /**
      * 公司
      * @param string $code
      * @return bool
@@ -113,48 +55,6 @@ class CacheFlushService
     public function company(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('company_cache', [
             'code' => $code
-        ]));
-
-        return true;
-    }
-
-    /**
-     * 遊戲商
-     * @deprecated
-     * @param string $code
-     * @return bool
-     */
-    public function vendor(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_cache', [
-            'code' => $code
-        ]));
-
-        return true;
-    }
-
-    /**
-     * 遊戲清單
-     * @deprecated
-     * @param string $vendorCode
-     * @return bool
-     */
-    public function games(string $vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_games_cache', [
-            'vendorCode' => $vendorCode
-        ]));
-
-        return true;
-    }
-
-    /**
-     * 遊戲
-     * @deprecated
-     * @param string $gameCode
-     * @return bool
-     */
-    public function game(string $gameCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_cache', [
-            'gameCode' => $gameCode
         ]));
 
         return true;
@@ -302,14 +202,18 @@ class CacheFlushService
     }
 
     /**
-     * 錢包代碼
-     * @deprecated
-     * @return bool
+     * GF幣值
      */
-    public function walletCodes() {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('wallet_code_cache', [
+    public function gfCurrencyRate() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('gf_currency_rate_cache', [
         ]));
+    }
 
-        return true;
+    /**
+     * GF幣值最小交易金額
+     */
+    public function gfCurrencyMinTransfer() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('gf_currency_min_transfer_cache', [
+        ]));
     }
 }

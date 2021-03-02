@@ -76,74 +76,6 @@ class CacheService
     }
 
     /**
-     * 營運商
-     * @deprecated
-     * @param string $code
-     * @Cacheable(prefix="op", ttl=600, value="_#{code}", listener="op_cache")
-     */
-    public function operator(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', ['code' => $code]));
-
-        if ($data) {
-            return $data;
-        }
-
-        return null;
-    }
-
-    /**
-     * 營運商
-     * @deprecated
-     * @param string $operator_token
-     * @Cacheable(prefix="op_token", ttl=600, value="_#{operator_token}", listener="op_token_cache")
-     */
-    public function operatorByToken(string $operator_token) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
-            'operator_token' => $operator_token
-        ]));
-
-        if ($data) {
-            return $data;
-        }
-
-        return null;
-    }
-
-    /**
-     * 營運商幣值表
-     * @deprecated
-     * @param string $code
-     * @Cacheable(prefix="op_currency_rate", ttl=600, value="_#{code}", listener="op_currency_rate_cache")
-     */
-    public function operatorCurrencyRate(string $code) {
-        $this->dbDefaultPool();
-        $operator = $this->operator($code);
-
-        if ($operator) {
-            return collect($operator['currency_rate'])->pluck('rate', 'vendor')->toArray();
-        }
-
-        return [];
-    }
-
-    /**
-     * 運營商 封鎖遊戲
-     * @deprecated
-     * @param string $code
-     * @param string $vendorCode
-     * @return array
-     * @Cacheable(prefix="op_block_game", ttl=600, value="_#{code}_#{vendorCode}", listener="op_block_game_cache")
-     */
-    public function operatorBlockGames(string $code, string $vendorCode) {
-        $this->dbDefaultPool();
-        $operator = current($this->operator($code));
-        $blacklist = $operator["game_blacklist"]??[];
-        return $blacklist[$vendorCode] ?? [];
-    }
-
-    /**
      * 公司
      * @param string $code
      * @Cacheable(prefix="company", ttl=600, value="_#{code}", listener="company_cache")
@@ -151,57 +83,6 @@ class CacheService
     public function company(string $code) {
         $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('companies', ['code' => $code]));
-
-        if ($data) {
-            return $data;
-        }
-
-        return null;
-    }
-
-    /**
-     * 遊戲商
-     * @deprecated
-     * @param string $code
-     * @Cacheable(prefix="vendor", ttl=600, value="_#{code}", listener="vendor_cache")
-     */
-    public function vendor(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('vendors', ['code' => $code]));
-
-        if ($data) {
-            return $data;
-        }
-
-        return null;
-    }
-
-    /**
-     * 遊戲清單
-     * @deprecated
-     * @param string $vendorCode
-     * @Cacheable(prefix="vendor_games", ttl=600, value="_#{vendorCode}", listener="vendor_games_cache")
-     */
-    public function games(string $vendorCode) {
-        $this->dbDefaultPool();
-        $data = $this->mongodb->fetchAll('games', ['vendor_code' => $vendorCode]);
-
-        if ($data) {
-            return $data;
-        }
-
-        return null;
-    }
-
-    /**
-     * 遊戲
-     * @deprecated
-     * @param string $gameCode
-     * @Cacheable(prefix="vendor_game", ttl=600, value="_#{gameCode}", listener="vendor_game_cache")
-     */
-    public function game(string $gameCode) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('games', ['game_code' => $gameCode]));
 
         if ($data) {
             return $data;
@@ -500,17 +381,29 @@ class CacheService
     }
 
     /**
-     * 錢包代碼
-     * @deprecated
-     * @Cacheable(prefix="wallet_code", ttl=600, listener="wallet_code_cache")
+     * GF幣值
+     * @Cacheable(prefix="gf_currency_rate", ttl=600, listener="gf_currency_rate_cache")
      */
-    public function walletCodes() {
+    public function gfCurrencyRate() {
         $this->dbDefaultPool();
-        $data = $this->mongodb->fetchAll('vendors');
-        $walletCodes = collect($data)->pluck('wallet_code')->toArray();
-        if ($walletCodes) {
-            return $walletCodes;
+        $data = current($this->mongodb->fetchAll('gf_exchange_rate'));
+        if ($data) {
+            return collect($data)->pluck('rate', 'code')->toArray();
         }
         return [];
     }
+
+    /**
+     * GF幣值最小交易金額
+     * @Cacheable(prefix="gf_currency_min_transfer", ttl=600, listener="gf_currency_min_transfer_cache")
+     */
+    public function gfCurrencyMinTransfer() {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('gf_exchange_rate'));
+        if ($data) {
+            return collect($data)->pluck('min_transfer', 'code')->toArray();
+        }
+        return [];
+    }
+
 }
