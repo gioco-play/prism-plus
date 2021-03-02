@@ -184,7 +184,7 @@ class VendorCacheService
             $curr = [];
             foreach ($_data as $key => $value) {
                 if (!empty($value['vendor'])&&!empty($value['rate'])) {
-                    $curr[$key] = $value['vendor'];
+                    $curr[strtoupper($key)] = strtoupper($value['vendor']);
                 }
             }
             return $curr;
@@ -214,7 +214,7 @@ class VendorCacheService
             $curr = [];
             foreach ($_data as $key => $value) {
                 if (!empty($value['vendor'])&&!empty($value['rate'])) {
-                    $curr[$key] = $value['rate'];
+                    $curr[$key] = floatval($value['rate']);
                 }
             }
             return $curr;
