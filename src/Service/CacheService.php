@@ -386,7 +386,7 @@ class CacheService
      */
     public function gfCurrencyRate() {
         $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('gf_exchange_rate'));
+        $data = $this->mongodb->fetchAll('gf_exchange_rate');
         if ($data) {
             return collect($data)->pluck('rate', 'code')->toArray();
         }
@@ -399,7 +399,7 @@ class CacheService
      */
     public function gfCurrencyMinTransfer() {
         $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('gf_exchange_rate'));
+        $data = $this->mongodb->fetchAll('gf_exchange_rate');
         if ($data) {
             return collect($data)->pluck('min_transfer', 'code')->toArray();
         }
