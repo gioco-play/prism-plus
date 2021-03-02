@@ -209,6 +209,44 @@ class OperatorCacheService
 
         return [];
     }
+    
+    /**
+     * 營運商幣別對應
+     * @param string $code
+     * @Cacheable(prefix="op_currency", ttl=600, value="_#{code}", listener="op_currency_cache")
+     */
+    public function currency(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "currency_rate" => 1,
+            ]
+        ]));
+
+        if ($data) {
+            $rates = json_decode(json_encode($data['currency_rate']), true);
+            $_currencies = [];
+            foreach ($rates as $vendor => $value) {
+                $_currencies[$vendor] = $value["vendor"];
+            }
+            return $_currencies;
+        }
+
+        return [];
+    }
 
     /**
      * 運營商 封鎖遊戲
