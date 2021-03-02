@@ -102,6 +102,19 @@ class VendorCacheFlushService
     }
 
     /**
+     * 遊戲商 支援幣值
+     * @param string $code
+     * @return bool
+     */
+    public function currencyRate(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_currency_rate_cache', [
+            'code' => $code
+        ]));
+
+        return true;
+    }
+
+    /**
      * 遊戲清單
      * @param string $code
      * @return bool

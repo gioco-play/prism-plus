@@ -69,6 +69,20 @@ class VendorTool
     }
 
     /**
+     * Vendor幣值對應
+     * @param string $vendorCode
+     * @param string $currency
+     * @return string
+     */
+    public function currencyRateMapping(string $vendorCode, string $currency): string {
+        $currencies = $this->vendorCache->currencyRate(strtolower($vendorCode));
+        if (isset($currencies[strtoupper($currency)]) == false) {
+            throw new \Exception(ProductState::CURRENCY_NOT_EXIST['msg']."[{$currency}]", ProductState::CURRENCY_NOT_EXIST['code']);
+        }
+        return $currencies[strtoupper($currency)];
+    }
+
+    /**
      * Game幣別對應
      * @param string $gameCode
      * @param string $currency

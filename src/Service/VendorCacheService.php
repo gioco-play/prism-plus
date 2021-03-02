@@ -180,7 +180,44 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return json_decode(json_encode($data['currency']), true);
+            $_data =  json_decode(json_encode($data['currency']), true);
+            $curr = [];
+            foreach ($_data as $key => $value) {
+                if (!empty($value['vendor'])&&!empty($value['rate'])) {
+                    $curr[$key] = $value['vendor'];
+                }
+            }
+            return $curr;
+        }
+
+        return null;
+    }
+
+    /**
+     * 遊戲商 支援幣值
+     * @param string $code
+     * @Cacheable(prefix="vendor_currency_rate", ttl=600, value="_#{code}", listener="vendor_currency_rate_cache")
+     */
+    public function currencyRate(string $code) {
+        $this->dbDefaultPool();
+        $code = strtolower($code);
+        $data = current($this->mongodb->fetchAll('vendors', [
+            'code' => $code
+        ], [
+            'projection' => [
+                "currency" => 1
+            ]
+        ]));
+
+        if ($data) {
+            $_data =  json_decode(json_encode($data['currency']), true);
+            $curr = [];
+            foreach ($_data as $key => $value) {
+                if (!empty($value['vendor'])&&!empty($value['rate'])) {
+                    $curr[$key] = $value['rate'];
+                }
+            }
+            return $curr;
         }
 
         return null;
