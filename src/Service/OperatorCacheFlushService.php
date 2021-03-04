@@ -69,7 +69,19 @@ class OperatorCacheFlushService
         ]));
         return true;
     }
-
+    
+    /**
+     * 營運商幣別對應
+     * @param string $code
+     * @return bool
+     */
+    public function currency(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_cache', [
+            'code' => $code
+        ]));
+        return true;
+    }
+    
     /**
      * 運營商 封鎖遊戲
      * @param string $code
