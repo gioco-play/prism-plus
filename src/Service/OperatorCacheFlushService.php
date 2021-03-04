@@ -144,4 +144,18 @@ class OperatorCacheFlushService
         ]));
         return true;
     }
+
+    /**
+     * 檢查遊戲類型
+     * @param string $code
+     * @param string $gameType
+     */
+    public function checkGameType(string $code, string $gameType)
+    {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('check_gametype_cache', [
+            'code' => $code,
+            'gameType' => $gameType
+        ]));
+        return true;
+    }
 }

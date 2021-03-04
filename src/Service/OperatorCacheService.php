@@ -411,4 +411,47 @@ class OperatorCacheService
         }
         return [];
     }
+
+    /**
+     * 檢查遊戲類型
+     * @param string $code
+     * @param string $gameType
+     * @Cacheable(prefix="check_gametype", ttl=600, value="_#{$code}_{$gameType}", listener="check_gametype_cache")
+     */
+    public function checkGameType(string $code, string $gameType) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "vendor_switch" => 1,
+            ]
+        ]));
+
+        if ($data) {
+            $vendors = array_keys(json_decode(json_encode($data['vendor_switch']), true));
+            $count = $this->mongodb->count('games', [
+                'vendor_code' => [
+                    '$in' => array_values($vendors),
+                ],
+                'game_type' => $gameType
+            ]);
+
+            if ($count) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
