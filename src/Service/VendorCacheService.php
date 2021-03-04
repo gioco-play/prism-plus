@@ -110,7 +110,7 @@ class VendorCacheService
         ]));
 
         if ($data) {
-            return $data['betlog_field'];
+            return json_decode(json_encode($data['betlog_field']), true);
         }
 
         return null;
