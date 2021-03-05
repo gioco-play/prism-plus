@@ -416,7 +416,7 @@ class OperatorCacheService
      * 檢查遊戲類型
      * @param string $code
      * @param string $gameType
-     * @Cacheable(prefix="check_gametype", ttl=600, value="_#{$code}_{$gameType}", listener="check_gametype_cache")
+     * @Cacheable(prefix="check_gametype", ttl=600, value="_#{code}_#{gameType}", listener="check_gametype_cache")
      */
     public function checkGameType(string $code, string $gameType) {
         $this->dbDefaultPool();
