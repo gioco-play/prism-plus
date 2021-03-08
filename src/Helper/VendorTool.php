@@ -116,7 +116,6 @@ class VendorTool
 
         if ($removeLog === false && current($register) === false) {
             $this->dbManager->opMongoDb($opCode)->insert('player_game_register', ['vendor' => $vendorCode, 'account' => $account]);
-            return true;
         }
 
         return current($register) ? true : false;
