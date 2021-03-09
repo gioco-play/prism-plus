@@ -49,6 +49,21 @@ class CacheService
     }
 
     /**
+     * 角色清單
+     * @return array
+     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
+     * @Cacheable(prefix="admin_user_roles", ttl=600, value="_#{account}", listener="admin_user_roles_cache")
+     */
+    public function adminRoles(){
+        $this->dbDefaultPool();
+        $roles = $this->mongodb->fetchAll('admin_roles', []);
+        if ($roles) {
+            return $roles;
+        }
+        return [];
+    }
+
+    /**
      * 管理者基本資料
      * @param string $account
      * @Cacheable(prefix="admin_user_info", ttl=600, value="_#{account}", listener="admin_user_info_cache")

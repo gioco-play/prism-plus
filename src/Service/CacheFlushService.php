@@ -22,6 +22,17 @@ class CacheFlushService
     protected $dispatcher;
 
     /**
+     * 角色清單
+     * @return bool
+     */
+    public function adminRoles(){
+        $this->dispatcher->dispatch(new DeleteListenerEvent('admin_user_roles_cache', [
+        ]));
+
+        return true;
+    }
+
+    /**
      * 管理者基本資料
      * @param string $account
      * @return bool
