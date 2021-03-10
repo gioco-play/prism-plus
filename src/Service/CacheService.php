@@ -263,7 +263,7 @@ class CacheService
      * @param string $accountOp (含後綴商戶代碼)
      * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
      * @return mixed
-     * @Cacheable(prefix="op_member_info", ttl=600, value="_#{accountOp}", listener="op_member_info_cache")
+     * @Cacheable(prefix="op_member_info", ttl=30, value="_#{accountOp}", listener="op_member_info_cache")
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
         $this->dbDefaultPool();
