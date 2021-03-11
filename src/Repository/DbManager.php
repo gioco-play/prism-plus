@@ -11,6 +11,7 @@ use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\ApplicationContext;
+use Psr\Container\ContainerInterface;
 
 /**
  * 資料庫管理
@@ -19,7 +20,7 @@ class DbManager
 {
 
     /**
-     * @Inject
+     * @Inject(lazy=true)
      * @var OperatorCacheService
      */
     protected $opCache;
@@ -30,6 +31,23 @@ class DbManager
      */
     protected $mongodb;
 
+    /**
+     * MongoDb 連結池
+     * @var string
+     */
+    protected $poolName = "default";
+
+    public function __construct(ContainerInterface $container) {
+        $this->mongodb = $container->get(MongoDb::class);
+        $this->dbDefaultPool();
+    }
+
+    /**
+     * 初始化
+     */
+    private function dbDefaultPool() {
+        $this->mongodb->setPool($this->poolName);
+    }
 
     /**
      * 選擇商戶MongoDb資料庫
@@ -42,6 +60,9 @@ class DbManager
         try {
             $dbName = strtolower($dbName ?? "{$code}_db");
             $op = $this->opCache->dbSetting($code);
+            if (!isset($op->mongodb)) {
+                $op = $this->getDbSetting($code);
+            }
             $dbConn = $op->mongodb;
             $dbCfg = mongodb_pool_config(
                 $dbConn->host,
@@ -67,8 +88,10 @@ class DbManager
     public function opPostgreDb(string $code, string $dbName = null) {
         try {
             $op = $this->opCache->dbSetting($code);
+            if (isset($op->postgres)){
+                $op = $this->getDbSetting($code);
+            }
             $dbConn = $op->postgres;
-            //
             $host = $dbConn->host;
             $port = $dbConn->port;
             $user = $dbConn->user;
@@ -85,5 +108,36 @@ class DbManager
         } catch (\RuntimeException $e) {
             echo sprintf('RuntimeException %s[%s] in %s', $e->getMessage(), $e->getLine(), $e->getFile());
         }
+    }
+
+    /**
+     * 取得DB配置
+     * @param string $code
+     */
+    private function getDbSetting(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "db" => 1,
+            ]
+        ]));
+
+        if ($data&&isset($data['db'])) {
+            return $data['db'];
+        }
+        return [];
     }
 }
