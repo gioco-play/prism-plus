@@ -11,7 +11,6 @@ use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\ApplicationContext;
-use Psr\Container\ContainerInterface;
 
 /**
  * 資料庫管理
@@ -30,24 +29,6 @@ class DbManager
      * @var MongoDb
      */
     protected $mongodb;
-
-    /**
-     * MongoDb 連結池
-     * @var string
-     */
-    protected $poolName = "default";
-
-    public function __construct(ContainerInterface $container) {
-        $this->mongodb = $container->get(MongoDb::class);
-        $this->dbDefaultPool();
-    }
-
-    /**
-     * 初始化
-     */
-    private function dbDefaultPool() {
-        $this->mongodb->setPool($this->poolName);
-    }
 
     /**
      * 選擇商戶MongoDb資料庫
@@ -115,8 +96,9 @@ class DbManager
      * @param string $code
      */
     private function getDbSetting(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
+        $_mongodb = ApplicationContext::getContainer()->get(MongoDb::class);
+        $_mongodb->setPool('default');
+        $data = current($_mongodb->fetchAll('operators', [
             '$or' => [
                 [
                     'code' => [
