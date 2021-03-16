@@ -19,7 +19,7 @@ class DbManager
 {
 
     /**
-     * @Inject(lazy=true)
+     * @Inject()
      * @var OperatorCacheService
      */
     protected $opCache;
