@@ -38,25 +38,24 @@ class DbManager
      * @return MongoDb
      */
     public function opMongoDb(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
-        try {
-            $dbName = strtolower($dbName ?? "{$code}_db");
-            $op = $this->opCache->dbSetting($code);
-            if (!isset($op->mongodb)) {
-                $op = $this->getDbSetting($code);
-            }
-            $dbConn = $op->mongodb;
-            $dbCfg = mongodb_pool_config(
-                $dbConn->host,
-                $dbConn->db_name??$dbName,
-                intval($dbConn->port),
-                $dbConn->replica,
-                $dbConn->read_preference??$readPref);
-            $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
-            $config->set("mongodb.db_{$code}", $dbCfg);
-            return $this->mongodb->setPool("db_{$code}");
-        } catch (\RuntimeException $e) {
-            echo sprintf('RuntimeException %s[%s] in %s', $e->getMessage(), $e->getLine(), $e->getFile());
+        $dbName = strtolower($dbName ?? "{$code}_db");
+        $op = $this->opCache->dbSetting($code);
+        if (!isset($op->mongodb)) {
+            $op = $this->getDbSetting($code);
         }
+        if (!isset($op->mongodb)) {
+            throw new \Exception("[{$code}] 資料庫未配置");
+        }
+        $dbConn = $op->mongodb;
+        $dbCfg = mongodb_pool_config(
+            $dbConn->host,
+            $dbConn->db_name??$dbName,
+            intval($dbConn->port),
+            $dbConn->replica,
+            $dbConn->read_preference??$readPref);
+        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
+        $config->set("mongodb.db_{$code}", $dbCfg);
+        return $this->mongodb->setPool("db_{$code}");
     }
 
     /**
@@ -67,28 +66,27 @@ class DbManager
      * @return \Swoole\Coroutine\PostgreSQL|void
      */
     public function opPostgreDb(string $code, string $dbName = null) {
-        try {
-            $op = $this->opCache->dbSetting($code);
-            if (isset($op->postgres)){
-                $op = $this->getDbSetting($code);
-            }
-            $dbConn = $op->postgres;
-            $host = $dbConn->host;
-            $port = $dbConn->port;
-            $user = $dbConn->user;
-            $password = $password ?? $dbConn->password;
-            $dbName = $dbName ?? strtolower("{$code}_db");
-            //
-            $pg = new \Swoole\Coroutine\PostgreSQL();
-            $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
-            if (!$conn) {
-                var_dump($pg->error);
-                return;
-            }
-            return $pg;
-        } catch (\RuntimeException $e) {
-            echo sprintf('RuntimeException %s[%s] in %s', $e->getMessage(), $e->getLine(), $e->getFile());
+        $op = $this->opCache->dbSetting($code);
+        if (isset($op->postgres)){
+            $op = $this->getDbSetting($code);
         }
+        if (!isset($op->postgres)) {
+            throw new \Exception("[{$code}] 資料庫未配置");
+        }
+        $dbConn = $op->postgres;
+        $host = $dbConn->host;
+        $port = $dbConn->port;
+        $user = $dbConn->user;
+        $password = $password ?? $dbConn->password;
+        $dbName = $dbName ?? strtolower("{$code}_db");
+        //
+        $pg = new \Swoole\Coroutine\PostgreSQL();
+        $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
+        if (!$conn) {
+            var_dump($pg->error);
+            return;
+        }
+        return $pg;
     }
 
     /**
