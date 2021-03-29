@@ -26,6 +26,13 @@ class Tool
             if (in_array($ip, $list)) {
                 return true;
             }
+            foreach($list as $slashIp) {
+                if ( strpos( $slashIp, '/' ) !== false ) {
+                    if (ip_in_range($ip, $slashIp) {
+                        return true;   
+                    }
+                } 
+            }
         }
         return false;
     }
