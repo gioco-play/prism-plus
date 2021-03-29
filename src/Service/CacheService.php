@@ -327,7 +327,7 @@ class CacheService
      * 全域IP白名單
      * @Cacheable(prefix="global_white_ip", ttl=600, listener="global_white_ip_cache")
      */
-    public function globalIPBlock() {
+    public function globalIPWhite() {
         $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'white_ip']));
         if ($data) {
