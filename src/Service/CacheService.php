@@ -318,7 +318,7 @@ class CacheService
         $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
         if ($data) {
-            return $data;
+            return $data['ip'];
         }
         return [];
     }
@@ -388,9 +388,9 @@ class CacheService
      */
     public function gfIP() {
         $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('global_params', ['code' => 'gf_ip']));
+        $data = current($this->mongodb->fetchAll('platform', ['code' => 'gf_ip']));
         if ($data) {
-            return $data['params'];
+            return $data['ip'];
         }
         return [];
     }
