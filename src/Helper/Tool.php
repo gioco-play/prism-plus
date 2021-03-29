@@ -28,8 +28,8 @@ class Tool
             }
             foreach($list as $slashIp) {
                 if ( strpos( $slashIp, '/' ) !== false ) {
-                    if (ip_in_range($ip, $slashIp) {
-                        return true;   
+                    if (ip_in_range($ip, $slashIp)===true) {
+                        return true;
                     }
                 } 
             }
