@@ -154,3 +154,23 @@ if (!function_exists('base64url_decode')) {
     }
 
 }
+
+if (!function_exists('ip_in_range')) {
+    /**
+     * ip_in_range("192.168.168.14", "192.168.168.0/24")
+     * IP範圍檢查
+     * @return bool
+     */
+	function ip_in_range( $ip, $range ) {
+		if ( strpos( $range, '/' ) == false ) {
+			$range .= '/32';
+		}
+		// $range is in IP/CIDR format eg 127.0.0.1/24
+		list( $range, $netmask ) = explode( '/', $range, 2 );
+		$range_decimal = ip2long( $range );
+		$ip_decimal = ip2long( $ip );
+		$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+		$netmask_decimal = ~ $wildcard_decimal;
+		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+	}
+}
