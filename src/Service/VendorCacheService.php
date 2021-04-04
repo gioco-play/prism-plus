@@ -44,7 +44,7 @@ class VendorCacheService
     /**
      * 基本資料
      * @param string $code
-     * @Cacheable(prefix="vendor_basic", ttl=600, value="_#{code}", listener="vendor_basic_cache")
+     * @Cacheable(prefix="vendor_basic", value="_#{code}", listener="vendor_basic_cache")
      */
     public function basic(string $code) {
         $this->dbDefaultPool();
@@ -73,7 +73,7 @@ class VendorCacheService
     /**
      * 遊戲商 請求參數
      * @param string $code
-     * @Cacheable(prefix="vendor_request_params", ttl=600, value="_#{code}", listener="vendor_request_params_cache")
+     * @Cacheable(prefix="vendor_request_params", value="_#{code}", listener="vendor_request_params_cache")
      */
     public function requestParams(string $code) {
         $this->dbDefaultPool();
@@ -96,7 +96,7 @@ class VendorCacheService
     /**
      * 遊戲商 投注紀錄欄位
      * @param string $code
-     * @Cacheable(prefix="vendor_betlog_field", ttl=600, value="_#{code}", listener="vendor_betlog_field_cache")
+     * @Cacheable(prefix="vendor_betlog_field", value="_#{code}", listener="vendor_betlog_field_cache")
      */
     public function betlogField(string $code) {
         $this->dbDefaultPool();
@@ -119,7 +119,7 @@ class VendorCacheService
     /**
      * 遊戲商 IP白名單
      * @param string $code
-     * @Cacheable(prefix="vendor_ip_whitelist", ttl=600, value="_#{code}", listener="vendor_ip_whitelist_cache")
+     * @Cacheable(prefix="vendor_ip_whitelist", value="_#{code}", listener="vendor_ip_whitelist_cache")
      */
     public function ipWhitelist(string $code) {
         $this->dbDefaultPool();
@@ -143,7 +143,7 @@ class VendorCacheService
     /**
      * 遊戲商 支援語系
      * @param string $code
-     * @Cacheable(prefix="vendor_language", ttl=600, value="_#{code}", listener="vendor_language_cache")
+     * @Cacheable(prefix="vendor_language", value="_#{code}", listener="vendor_language_cache")
      */
     public function language(string $code) {
         $this->dbDefaultPool();
@@ -166,7 +166,7 @@ class VendorCacheService
     /**
      * 遊戲商 支援幣別
      * @param string $code
-     * @Cacheable(prefix="vendor_currency", ttl=600, value="_#{code}", listener="vendor_currency_cache")
+     * @Cacheable(prefix="vendor_currency", value="_#{code}", listener="vendor_currency_cache")
      */
     public function currency(string $code) {
         $this->dbDefaultPool();
@@ -196,7 +196,7 @@ class VendorCacheService
     /**
      * 遊戲商 支援幣值
      * @param string $code
-     * @Cacheable(prefix="vendor_currency_rate", ttl=600, value="_#{code}", listener="vendor_currency_rate_cache")
+     * @Cacheable(prefix="vendor_currency_rate", value="_#{code}", listener="vendor_currency_rate_cache")
      */
     public function currencyRate(string $code) {
         $this->dbDefaultPool();
