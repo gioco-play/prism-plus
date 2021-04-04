@@ -52,7 +52,7 @@ class CacheService
      * 角色清單
      * @return array
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="admin_user_roles", ttl=600, value="_#{account}", listener="admin_user_roles_cache")
+     * @Cacheable(prefix="admin_user_roles", value="_#{account}", listener="admin_user_roles_cache")
      */
     public function adminRoles(){
         $this->dbDefaultPool();
@@ -66,7 +66,7 @@ class CacheService
     /**
      * 管理者基本資料
      * @param string $account
-     * @Cacheable(prefix="admin_user_info", ttl=600, value="_#{account}", listener="admin_user_info_cache")
+     * @Cacheable(prefix="admin_user_info", value="_#{account}", listener="admin_user_info_cache")
      */
     public function adminUserInfo(string $account) {
         $this->dbDefaultPool();
@@ -83,7 +83,7 @@ class CacheService
     /**
      * 管理者帳號
      * @param string $uid
-     * @Cacheable(prefix="admin_user", ttl=600, value="_#{uid}", listener="admin_user_cache")
+     * @Cacheable(prefix="admin_user", value="_#{uid}", listener="admin_user_cache")
      */
     public function adminUser(string $uid) {
         $this->dbDefaultPool();
@@ -93,7 +93,7 @@ class CacheService
     /**
      * 公司
      * @param string $code
-     * @Cacheable(prefix="company", ttl=600, value="_#{code}", listener="company_cache")
+     * @Cacheable(prefix="company", value="_#{code}", listener="company_cache")
      */
     public function company(string $code) {
         $this->dbDefaultPool();
@@ -110,7 +110,7 @@ class CacheService
      * 營運商 - 公司
      * @param string $code
      * @return array
-     * @Cacheable(prefix="comp_opcodes", ttl=600, value="_#{code}", listener="comp_opcodes_cache")
+     * @Cacheable(prefix="comp_opcodes", value="_#{code}", listener="comp_opcodes_cache")
      */
     public function companyOpCodes(string $code) : array {
         $this->dbDefaultPool();
@@ -161,7 +161,7 @@ class CacheService
      * @param string $currency
      * @return array
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="comp_op_currency", ttl=600, value="_#{code}_#{currency}", listener="comp_op_currency_cache")
+     * @Cacheable(prefix="comp_op_currency", value="_#{code}_#{currency}", listener="comp_op_currency_cache")
      */
     public function companyOpCurrency(string $code, string $currency) : array {
         $this->dbDefaultPool();
@@ -209,7 +209,7 @@ class CacheService
     /**
      * 角色選單
      * @param string $role
-     * @Cacheable(prefix="role_menu", ttl=600, value="_#{role}", listener="role_menu_cache")
+     * @Cacheable(prefix="role_menu", value="_#{role}", listener="role_menu_cache")
      */
     public function roleMenu(string $role) {
 
@@ -246,7 +246,7 @@ class CacheService
     /**
      * 角色選單權限
      * @param string $role
-     * @Cacheable(prefix="role_menu_permits", ttl=600, value="_#{role}", listener="role_menu_permits_cache")
+     * @Cacheable(prefix="role_menu_permits", value="_#{role}", listener="role_menu_permits_cache")
      */
     public function roleMenuPermits(string $role) {
         $this->dbDefaultPool();
@@ -298,7 +298,7 @@ class CacheService
      * @param $slug "bo / api"
      * @return false|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="platform_switch", ttl=600, value="_#{slug}", listener="platform_switch_cache")
+     * @Cacheable(prefix="platform_switch", value="_#{slug}", listener="platform_switch_cache")
      */
     public function platformSwitch($slug) {
         $this->dbDefaultPool();
@@ -312,7 +312,7 @@ class CacheService
 
     /**
      * 全域封鎖IP名單
-     * @Cacheable(prefix="global_block_ip", ttl=600, listener="global_block_ip_cache")
+     * @Cacheable(prefix="global_block_ip", listener="global_block_ip_cache")
      */
     public function globalIPBlock() {
         $this->dbDefaultPool();
@@ -325,7 +325,7 @@ class CacheService
     
     /**
      * 全域IP白名單
-     * @Cacheable(prefix="global_white_ip", ttl=600, listener="global_white_ip_cache")
+     * @Cacheable(prefix="global_white_ip", listener="global_white_ip_cache")
      */
     public function globalIPWhite() {
         $this->dbDefaultPool();
@@ -338,7 +338,7 @@ class CacheService
 
     /**
      * 角色白名單
-     * @Cacheable(prefix="full_access_roles", ttl=600, listener="full_access_roles_cache")
+     * @Cacheable(prefix="full_access_roles", listener="full_access_roles_cache")
      */
     public function fullAccessRoles() {
         $this->dbDefaultPool();
@@ -355,7 +355,7 @@ class CacheService
      * @param string $menu
      * @return array|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="role_menu_permit", ttl=600, value="_#{role}_#{menu}", listener="role_menu_permit_cache")
+     * @Cacheable(prefix="role_menu_permit", value="_#{role}_#{menu}", listener="role_menu_permit_cache")
      */
     public function roleMenuPermit(string $role, string $menu) {
         $this->dbDefaultPool();
@@ -379,7 +379,7 @@ class CacheService
     /**
      * 維護計畫
      * @param string $type
-     * @Cacheable(prefix="maintain_planning", ttl=600, value="_#{type}", listener="maintain_planning_cache")
+     * @Cacheable(prefix="maintain_planning", value="_#{type}", listener="maintain_planning_cache")
      */
     public function maintainPlanning(string $type) {
         $this->dbDefaultPool();
@@ -397,7 +397,7 @@ class CacheService
 
     /**
      * GF IP 白名單
-     * @Cacheable(prefix="gf_ip", ttl=600, listener="gf_ip_cache")
+     * @Cacheable(prefix="gf_ip", listener="gf_ip_cache")
      */
     public function gfIP() {
         $this->dbDefaultPool();
@@ -410,7 +410,7 @@ class CacheService
 
     /**
      * GF幣值
-     * @Cacheable(prefix="gf_currency_rate", ttl=600, listener="gf_currency_rate_cache")
+     * @Cacheable(prefix="gf_currency_rate", listener="gf_currency_rate_cache")
      */
     public function gfCurrencyRate() {
         $this->dbDefaultPool();
@@ -423,7 +423,7 @@ class CacheService
 
     /**
      * GF幣值最小交易金額
-     * @Cacheable(prefix="gf_currency_min_transfer", ttl=600, listener="gf_currency_min_transfer_cache")
+     * @Cacheable(prefix="gf_currency_min_transfer", listener="gf_currency_min_transfer_cache")
      */
     public function gfCurrencyMinTransfer() {
         $this->dbDefaultPool();
