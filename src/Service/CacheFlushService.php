@@ -161,7 +161,18 @@ class CacheFlushService
 
         return true;
     }
+    
+    /**
+     * 全域IP白名單
+     * @return bool
+     */
+    public function globalIPWhite() {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('global_white_ip_cache', [
+        ]));
 
+        return true;
+    }
+    
     /**
      * 角色白名單
      * @return bool
