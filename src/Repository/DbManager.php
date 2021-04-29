@@ -54,7 +54,9 @@ class DbManager
             $dbConn->replica,
             $dbConn->read_preference??$readPref);
         $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
-        $config->set("mongodb.db_{$code}", $dbCfg);
+        if (!$config->has("mongodb.db_{$code}")) {
+            $config->set("mongodb.db_{$code}", $dbCfg);
+        }
         return $this->mongodb->setPool("db_{$code}");
     }
 
