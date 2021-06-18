@@ -226,7 +226,7 @@ class VendorCacheService
     /**
      * 遊戲清單
      * @param string $code
-     * @Cacheable(prefix="vendor_games", ttl=600, value="_#{code}", listener="vendor_games_cache")
+     * @Cacheable(prefix="vendor_games", value="_#{code}", listener="vendor_games_cache")
      */
     public function games(string $code) {
         $this->dbDefaultPool();
@@ -248,7 +248,7 @@ class VendorCacheService
     /**
      * 遊戲
      * @param string $gameCode
-     * @Cacheable(prefix="vendor_game", ttl=600, value="_#{gameCode}", listener="vendor_game_cache")
+     * @Cacheable(prefix="vendor_game", value="_#{gameCode}", listener="vendor_game_cache")
      */
     public function game(string $gameCode) {
         $this->dbDefaultPool();
@@ -270,7 +270,7 @@ class VendorCacheService
     /**
      * 遊戲代碼與ID對應
      * @param string $vendorCode
-     * @Cacheable(prefix="gamecode_mapping", ttl=600, value="_#{vendorCode}", listener="gamecode_mapping_cache")
+     * @Cacheable(prefix="gamecode_mapping", value="_#{vendorCode}", listener="gamecode_mapping_cache")
      */
     public function gameCodeMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -294,7 +294,7 @@ class VendorCacheService
     /**
      * 遊戲代碼與供應商遊戲代碼對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gamecode_mapping", ttl=600, value="_#{vendorCode}", listener="vendor_gamecode_mapping_cache")
+     * @Cacheable(prefix="vendor_gamecode_mapping", value="_#{vendorCode}", listener="vendor_gamecode_mapping_cache")
      */
     public function vendorGameCodeMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -318,7 +318,7 @@ class VendorCacheService
     /**
      * 遊戲ID與代碼對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gameid_mapping", ttl=600, value="_#{vendorCode}", listener="vendor_gameid_mapping_cache")
+     * @Cacheable(prefix="vendor_gameid_mapping", value="_#{vendorCode}", listener="vendor_gameid_mapping_cache")
      */
     public function gameIdMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -342,7 +342,7 @@ class VendorCacheService
     /**
      * 遊戲代碼與名稱對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gamename_mapping", ttl=600, value="_#{vendorCode}", listener="vendor_gamename_mapping_cache")
+     * @Cacheable(prefix="vendor_gamename_mapping", value="_#{vendorCode}", listener="vendor_gamename_mapping_cache")
      */
     public function gameNameMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -366,7 +366,7 @@ class VendorCacheService
     /**
      * 遊戲代碼與類型對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gametype_mapping", ttl=600, value="_#{vendorCode}", listener="vendor_gametype_mapping_cache")
+     * @Cacheable(prefix="vendor_gametype_mapping", value="_#{vendorCode}", listener="vendor_gametype_mapping_cache")
      */
     public function gameTypeMapping(string $vendorCode) {
         $this->dbDefaultPool();
@@ -388,9 +388,33 @@ class VendorCacheService
     }
 
     /**
+     * GF遊戲代碼與類型對應
+     * @param string $vendorCode
+     * @Cacheable(prefix="gf_gametype_mapping", value="_#{vendorCode}", listener="gf_gametype_mapping_cache")
+     */
+    public function gfGameTypeMapping(string $vendorCode) {
+        $this->dbDefaultPool();
+        $vendorCode = strtolower($vendorCode);
+        $data = $this->mongodb->fetchAll('games', [
+            'vendor_code' => $vendorCode
+        ], [
+            'projection' => [
+                "game_code" => 1,
+                "gf_game_type" => 1
+            ]
+        ]);
+
+        if ($data) {
+            return collect($data)->pluck('gf_game_type','game_code')->toArray();;
+        }
+
+        return [];
+    }
+
+    /**
      * 遊戲維護清單
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_game_maintain_list", ttl=600, value="_#{vendorCode}", listener="vendor_game_maintain_list_cache")
+     * @Cacheable(prefix="vendor_game_maintain_list", value="_#{vendorCode}", listener="vendor_game_maintain_list_cache")
      */
     public function gameMaintainList(string $vendorCode) {
         $this->dbDefaultPool();
@@ -417,7 +441,7 @@ class VendorCacheService
     /**
      * 遊戲運作清單
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_game_working_list", ttl=600, value="_#{vendorCode}", listener="vendor_game_working_list_cache")
+     * @Cacheable(prefix="vendor_game_working_list", value="_#{vendorCode}", listener="vendor_game_working_list_cache")
      */
     public function gameWorkingList(string $vendorCode) {
         $this->dbDefaultPool();
@@ -442,7 +466,7 @@ class VendorCacheService
     /**
      * 遊戲狀態對照表
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_game_status_list", ttl=600, value="_#{vendorCode}", listener="vendor_game_status_list_cache")
+     * @Cacheable(prefix="vendor_game_status_list", value="_#{vendorCode}", listener="vendor_game_status_list_cache")
      */
     public function gameStatusList(string $vendorCode) {
         $this->dbDefaultPool();
@@ -465,7 +489,7 @@ class VendorCacheService
 
     /**
      * 錢包代碼
-     * @Cacheable(prefix="vendor_wallet_code", ttl=600, listener="vendor_wallet_code_cache")
+     * @Cacheable(prefix="vendor_wallet_code", listener="vendor_wallet_code_cache")
      */
     public function walletCodes() {
         $this->dbDefaultPool();

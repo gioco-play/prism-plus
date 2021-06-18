@@ -204,6 +204,18 @@ class VendorCacheFlushService
     }
 
     /**
+     * GF遊戲代碼與類型對應
+     * @param string $vendorCode
+     */
+    public function gfGameTypeMapping(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('gf_gametype_mapping_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
+
+    /**
      * 遊戲維護清單
      * @param string $vendorCode
      */
