@@ -51,7 +51,7 @@ class CacheFlushService
      * @return bool
      */
     public function adminUser(string $uid) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('admin_user_info_cache', [
+        $this->dispatcher->dispatch(new DeleteListenerEvent('admin_user_cache', [
             'uid' => $uid
         ]));
 
