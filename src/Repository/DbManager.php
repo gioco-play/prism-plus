@@ -121,7 +121,7 @@ class DbManager
             'maxWaitTime'       => config('connection_pool.default.pool.min_wait_time', 5),
             'maxIdleTime'       => config('connection_pool.default.pool.max_idle_time', 30),
             'idleCheckInterval' => config('connection_pool.default.pool.idle_check_interval', 15),
-        ], new CoroutinePostgreSQLConnector,[
+        ], new CoroutinePostgreSQLConnector, [
             'connection_strings' => "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}"
         ]);
         
