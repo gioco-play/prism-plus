@@ -138,12 +138,12 @@ class DbManager
                 return;
             }
 
-            return $pool->get();
+            return $pool;
         }, [
             //
         ]);
 
-        return $pool;
+        return $pool->get();
     }
 
     /**
