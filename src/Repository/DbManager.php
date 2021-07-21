@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Repository;
 
+use GiocoPlus\ConnectionPool\ConnectionPool;
+use GiocoPlus\ConnectionPool\Connectors\CoroutinePostgreSQLConnector;
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\MongoDbConst;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
@@ -73,7 +75,7 @@ class DbManager
             $op = $this->getDbSetting($code);
         }
         if (!isset($op->postgres)) {
-            throw new \Exception("[{$code}] 資料庫未配置");
+            throw new \Exception("[{$code}] MongoDb 資料庫未配置");
         }
         $dbConn = $op->postgres;
         $host = $dbConn->host;
@@ -89,6 +91,48 @@ class DbManager
             return;
         }
         return $pg;
+    }
+
+    /**
+     * 選擇商戶PostgreSql資料庫 Pool
+     * \
+     * @param string $code
+     * @param string|null $dbName
+     * @return ConnectionPool|void
+     */
+    public function opPostgreDbPool(string $code, string $dbName = null) {
+        $op = $this->opCache->dbSetting($code);
+        if (isset($op->postgres)){
+            $op = $this->getDbSetting($code);
+        }
+        if (!isset($op->postgres)) {
+            throw new \Exception("[{$code}] Postgres 資料庫未配置");
+        }
+        $dbConn = $op->postgres;
+        $host = $dbConn->host;
+        $port = $dbConn->port;
+        $user = $dbConn->user;
+        $password = $password ?? $dbConn->password;
+        $dbName = $dbName ?? strtolower("{$code}_db");
+        //
+        $pool = new ConnectionPool([
+            'minActive'         => config('connection_pool.default.pool.min_active', 10),
+            'maxActive'         => config('connection_pool.default.pool.max_active', 100),
+            'maxWaitTime'       => config('connection_pool.default.pool.min_wait_time', 5),
+            'maxIdleTime'       => config('connection_pool.default.pool.max_idle_time', 30),
+            'idleCheckInterval' => config('connection_pool.default.pool.idle_check_interval', 15),
+        ], new CoroutinePostgreSQLConnector,[
+            'connection_strings' => "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}"
+        ]);
+        
+        $status = $pool->init();        
+        
+        if (!$status) {
+            throw new \Exception("[{$code}] Connection Pool 配置失敗");
+            return;
+        }
+
+        return $pool;
     }
 
     /**
