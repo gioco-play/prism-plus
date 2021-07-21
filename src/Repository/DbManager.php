@@ -115,22 +115,33 @@ class DbManager
         $password = $password ?? $dbConn->password;
         $dbName = $dbName ?? strtolower("{$code}_db");
         //
-        $pool = new ConnectionPool([
-            'minActive'         => config('connection_pool.default.pool.min_active', 10),
-            'maxActive'         => config('connection_pool.default.pool.max_active', 100),
-            'maxWaitTime'       => config('connection_pool.default.pool.min_wait_time', 5),
-            'maxIdleTime'       => config('connection_pool.default.pool.max_idle_time', 30),
-            'idleCheckInterval' => config('connection_pool.default.pool.idle_check_interval', 15),
-        ], new CoroutinePostgreSQLConnector, [
-            'connection_strings' => "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}"
+
+        $container = ApplicationContext::getContainer();
+
+        $factory = $container->get($dbName);
+
+        $pool = $factory->get($dbName, function () use ($code, $host, $port, $dbName, $user, $password) {
+            $pool = new ConnectionPool([
+                'minActive'         => config('connection_pool.default.pool.min_active', 10),
+                'maxActive'         => config('connection_pool.default.pool.max_active', 100),
+                'maxWaitTime'       => config('connection_pool.default.pool.min_wait_time', 5),
+                'maxIdleTime'       => config('connection_pool.default.pool.max_idle_time', 30),
+                'idleCheckInterval' => config('connection_pool.default.pool.idle_check_interval', 15),
+            ], new CoroutinePostgreSQLConnector, [
+                'connection_strings' => "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}"
+            ]);
+
+            $status = $pool->init();        
+        
+            if (!$status) {
+                throw new \Exception("[{$code}] Connection Pool 配置失敗");
+                return;
+            }
+
+            return $pool->get();
+        }, [
+            //
         ]);
-        
-        $status = $pool->init();        
-        
-        if (!$status) {
-            throw new \Exception("[{$code}] Connection Pool 配置失敗");
-            return;
-        }
 
         return $pool;
     }
