@@ -24,7 +24,6 @@
         "hyperf/rpc": "^2.0.0",
         "hyperf/rpc-client": "^2.0.0",
         "hyperf/rpc-server": "^2.0.0",
-        "gioco-plus/connection-pool": "dev-master",
         "gioco-plus/hyperf-postgres": "master-dev"
     },
     "require-dev": {

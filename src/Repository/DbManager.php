@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Repository;
 
-use GiocoPlus\ConnectionPool\ConnectionPool;
-use GiocoPlus\ConnectionPool\Connectors\CoroutinePostgreSQLConnector;
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\MongoDbConst;
 use GiocoPlus\Postgres\PostgresDb;

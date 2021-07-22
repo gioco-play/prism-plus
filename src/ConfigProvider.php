@@ -46,12 +46,6 @@ class ConfigProvider
                     'source' => __DIR__ . '/Event/OrderTimeoutRequest.php',
                     'destination' => BASE_PATH . '/app/Event/OrderTimeoutRequest.php',
                 ],
-                [
-                    'id' => 'connectionPool',
-                    'description' => 'The config of connectionPool.',
-                    'source' => __DIR__ . '/publish/connection_pool.php',
-                    'destination' => BASE_PATH . '/config/autoload/connection_pool.php',
-                ],
                 /*
                 [
                     'id' => 'BoCheckerMiddleware',
