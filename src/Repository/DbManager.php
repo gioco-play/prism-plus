@@ -8,6 +8,7 @@ use GiocoPlus\ConnectionPool\ConnectionPool;
 use GiocoPlus\ConnectionPool\Connectors\CoroutinePostgreSQLConnector;
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\MongoDbConst;
+use GiocoPlus\Postgres\PostgresDb;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
@@ -31,6 +32,13 @@ class DbManager
      * @var MongoDb
      */
     protected $mongodb;
+
+
+    /**
+     * @Inject
+     * @var PostgresDb
+     */
+    protected $postgresdb;
 
     /**
      * 選擇商戶MongoDb資料庫
@@ -98,11 +106,12 @@ class DbManager
      * \
      * @param string $code
      * @param string|null $dbName
-     * @return ConnectionPool|void
+     * @return PostgresDb
      */
     public function opPostgreDbPool(string $code, string $dbName = null) {
+        $dbName = strtolower($dbName ?? "{$code}_db");
         $op = $this->opCache->dbSetting($code);
-        if (isset($op->postgres)){
+        if (!isset($op->postgres)) {
             $op = $this->getDbSetting($code);
         }
         if (!isset($op->postgres)) {
@@ -114,36 +123,18 @@ class DbManager
         $user = $dbConn->user;
         $password = $password ?? $dbConn->password;
         $dbName = $dbName ?? strtolower("{$code}_db");
-        //
-
-        $container = ApplicationContext::getContainer();
-
-        $factory = $container->get($dbName);
-
-        $pool = $factory->get($dbName, function () use ($code, $host, $port, $dbName, $user, $password) {
-            $pool = new ConnectionPool([
-                'minActive'         => config('connection_pool.default.pool.min_active', 10),
-                'maxActive'         => config('connection_pool.default.pool.max_active', 100),
-                'maxWaitTime'       => config('connection_pool.default.pool.min_wait_time', 5),
-                'maxIdleTime'       => config('connection_pool.default.pool.max_idle_time', 30),
-                'idleCheckInterval' => config('connection_pool.default.pool.idle_check_interval', 15),
-            ], new CoroutinePostgreSQLConnector, [
-                'connection_strings' => "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}"
-            ]);
-
-            $status = $pool->init();        
-        
-            if (!$status) {
-                throw new \Exception("[{$code}] Connection Pool 配置失敗");
-                return;
-            }
-
-            return $pool;
-        }, [
-            //
-        ]);
-
-        return $pool->get();
+        $dbCfg = postgres_pool_config(
+            $host,
+            $dbName,
+            $port,
+            $user,
+            $password
+        );
+        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
+        if (!$config->has("postgres.db_{$code}")) {
+            $config->set("postgres.db_{$code}", $dbCfg);
+        }
+        return $this->postgresdb->setPool("db_{$code}");
     }
 
     /**
