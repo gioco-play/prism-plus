@@ -89,7 +89,7 @@ class DbManager
         $host = $dbConn->host;
         $port = $dbConn->port;
         $user = $dbConn->user;
-        $password = $password ?? $dbConn->password;
+        $password = $dbConn->password;
         $dbName = $dbName ?? strtolower("{$code}_db");
         //
         $pg = new \Swoole\Coroutine\PostgreSQL();
@@ -121,7 +121,7 @@ class DbManager
         $host = $dbConn->host;
         $port = $dbConn->port;
         $user = $dbConn->user;
-        $password = $password ?? $dbConn->password;
+        $password = $dbConn->password;
         $dbName = $dbName ?? strtolower("{$code}_db");
         $dbCfg = postgres_pool_config(
             $host,
