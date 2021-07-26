@@ -23,8 +23,7 @@
         "hyperf/json-rpc": "^2.0.0",
         "hyperf/rpc": "^2.0.0",
         "hyperf/rpc-client": "^2.0.0",
-        "hyperf/rpc-server": "^2.0.0",
-        "gioco-plus/hyperf-postgres": "master-dev"
+        "hyperf/rpc-server": "^2.0.0"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",

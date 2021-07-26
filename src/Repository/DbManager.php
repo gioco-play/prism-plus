@@ -6,7 +6,6 @@ namespace GiocoPlus\PrismPlus\Repository;
 
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\MongoDbConst;
-use GiocoPlus\Postgres\PostgresDb;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
@@ -30,13 +29,6 @@ class DbManager
      * @var MongoDb
      */
     protected $mongodb;
-
-
-    /**
-     * @Inject
-     * @var PostgresDb
-     */
-    protected $postgresdb;
 
     /**
      * 選擇商戶MongoDb資料庫
@@ -70,7 +62,7 @@ class DbManager
 
     /**
      * 選擇商戶PostgreSql資料庫
-     * \
+     * 
      * @param string $code
      * @param string|null $dbName
      * @return \Swoole\Coroutine\PostgreSQL|void
@@ -97,42 +89,6 @@ class DbManager
             return;
         }
         return $pg;
-    }
-
-    /**
-     * 選擇商戶PostgreSql資料庫 Pool
-     * \
-     * @param string $code
-     * @param string|null $dbName
-     * @return PostgresDb
-     */
-    public function opPostgreDbPool(string $code, string $dbName = null) {
-        $dbName = strtolower($dbName ?? "{$code}_db");
-        $op = $this->opCache->dbSetting($code);
-        if (!isset($op->postgres)) {
-            $op = $this->getDbSetting($code);
-        }
-        if (!isset($op->postgres)) {
-            throw new \Exception("[{$code}] Postgres 資料庫未配置");
-        }
-        $dbConn = $op->postgres;
-        $host = $dbConn->host;
-        $port = $dbConn->port;
-        $user = $dbConn->user;
-        $password = $dbConn->password;
-        $dbName = $dbName ?? strtolower("{$code}_db");
-        $dbCfg = postgres_pool_config(
-            $host,
-            $dbName,
-            $port,
-            $user,
-            $password
-        );
-        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
-        if (!$config->has("postgres.db_{$code}")) {
-            $config->set("postgres.db_{$code}", $dbCfg);
-        }
-        return $this->postgresdb->setPool("db_{$code}");
     }
 
     /**
