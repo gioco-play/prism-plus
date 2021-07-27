@@ -60,6 +60,9 @@ class PlayerSessionCacheService
     public function create(string $key, array $params = []) {
         $container = ApplicationContext::getContainer();
         $redis = $container->get(Redis::class);
+        if (empty($params)) {
+            return $redis->get($key);
+        }
         $sessionStr = implode("::", $params);
         $sessionStr = base64url_encode($sessionStr);
         $redis->set($key, $sessionStr);
