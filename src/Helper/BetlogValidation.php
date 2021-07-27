@@ -95,14 +95,12 @@ class BetlogValidation
             'trans_type' => $inputs['trans_type'],
             'game_code' => $inputs['game_code'],
             'game_type' => $inputs['game_type'],
-            'vendor_bet_amount' => floatval($inputs['bet_amount']),
-            'vendor_win_amount' => floatval($inputs['win_amount']),
+            'bet_amount' => floatval($inputs['bet_amount']),
+            'win_amount' => floatval($inputs['win_amount']),
             'game_time' => intval($inputs['game_time']),
             'bet_id' => $inputs['bet_id'],
             'parent_bet_id' => $inputs['parent_bet_id'],
-            'trace_id' => $inputs['trace_id'],
-            'created_time' => micro_timestamp(),
-            'created_date' => date('Y-m-d')
+            'trace_id' => $inputs['trace_id']
         ];
 
         $result = array_merge($record, $extraInputs);
