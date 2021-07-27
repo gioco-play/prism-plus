@@ -55,7 +55,7 @@ class PlayerSessionCacheService
      * 建立玩家session
      * @param string $key
      * @param array $params
-     * @return string|null
+     * @return string
      */
     public function create(string $key, array $params = []) {
         $container = ApplicationContext::getContainer();
