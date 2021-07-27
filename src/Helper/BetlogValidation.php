@@ -59,14 +59,10 @@ class BetlogValidation
 
     /**
      * 小表驗證必填欄位
-     * @param string $operatorCode
-     * @param string $vendorCode
      * @param array $requireInputs
      * @param array $extraInputs
      * @param array $rawData
-     * @param bool $needCreatedAt
      * @return array
-     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
      */
     function betlog(array $requireInputs, array $extraInputs, array $rawData): array
     {
