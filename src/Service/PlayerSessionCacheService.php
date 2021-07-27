@@ -9,6 +9,8 @@ use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Redis\Redis;
+use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -54,14 +56,14 @@ class PlayerSessionCacheService
      * @param string $key
      * @param array $params
      * @return string|null
-     * @Cacheable(prefix="player_session", value="_#{key}", listener="player_session_cache")
      */
     public function create(string $key, array $params = []) {
-        if (empty($params)) {
-            return null;
-        }
+        $container = ApplicationContext::getContainer();
+        $redis = $container->get(Redis::class);
         $sessionStr = implode("::", $params);
-        return base64url_encode($sessionStr);
+        $sessionStr = base64url_encode($sessionStr);
+        $redis->set($key, $sessionStr);
+        return $sessionStr;
     }
 
     /**
@@ -70,11 +72,9 @@ class PlayerSessionCacheService
      * @return bool
      */
     public function clear(string $key) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('player_session_cache', [
-            'key' => $key
-        ]));
-
-        return true;
+        $container = ApplicationContext::getContainer();
+        $redis = $container->get(Redis::class);
+        return $redis->del($key) > 0;
     }
 
 }
