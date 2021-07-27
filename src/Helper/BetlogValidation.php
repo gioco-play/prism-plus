@@ -6,6 +6,7 @@ namespace GiocoPlus\PrismPlus\Helper;
 
 use GiocoPlus\PrismConst\State\ApiState;
 use GiocoPlus\PrismConst\Tool\ApiResponse;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
 /**
