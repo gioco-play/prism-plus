@@ -270,7 +270,7 @@ class CacheService
         $container = ApplicationContext::getContainer();
         $redis = $container->get(Redis::class);
         if ($data = $redis->get($accountOp)) {
-            return $data;
+            return json_decode($data, true);
         }
         $this->dbDefaultPool();
         list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
@@ -286,7 +286,7 @@ class CacheService
                     'operator' => $this->opCache->basic(strtoupper($op)),
                     'player' => current($result)
                 ];
-                $bool = $redis->setex($accountOp, 30, $data);
+                $bool = $redis->setex($accountOp, 30, json_encode($data));
                 if ($bool) {
                     return $data;
                 }
