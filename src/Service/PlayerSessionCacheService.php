@@ -70,6 +70,17 @@ class PlayerSessionCacheService
     }
 
     /**
+     * 取得玩家session
+     * @param string $key
+     * @return bool|mixed|string
+     */
+    public function fetch(string $key) {
+        $container = ApplicationContext::getContainer();
+        $redis = $container->get(Redis::class);
+        return $redis->get($key);
+    }
+
+    /**
      * 清除玩家快取
      * @param string $key
      * @return bool
