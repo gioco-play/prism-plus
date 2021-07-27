@@ -9,6 +9,8 @@ use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Redis\Redis;
+use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -263,9 +265,13 @@ class CacheService
      * @param string $accountOp (含後綴商戶代碼)
      * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
      * @return mixed
-     * @Cacheable(prefix="op_member_info", ttl=30, value="_#{accountOp}", listener="op_member_info_cache")
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
+        $container = ApplicationContext::getContainer();
+        $redis = $container->get(Redis::class);
+        if ($data = $redis->get($accountOp)) {
+            return $data;
+        }
         $this->dbDefaultPool();
         list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
         $dbManager = new DbManager();
@@ -276,10 +282,14 @@ class CacheService
         try {
             $result = $pg->fetchAll($result);
             if ($result) {
-                return [
+                $data = [
                     'operator' => $this->opCache->basic(strtoupper($op)),
                     'player' => current($result)
                 ];
+                $bool = $redis->setex($accountOp, 30, $data);
+                if ($bool) {
+                    return $data;
+                }
             }
         } catch (\Exception $e) {
             return [

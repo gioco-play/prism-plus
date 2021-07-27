@@ -126,19 +126,6 @@ class CacheFlushService
     }
 
     /**
-     * 查詢會員資料
-     * @param string $accountOp (含後綴商戶代碼)
-     * @return bool
-     */
-    public function memberInfo(string $accountOp) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_member_info_cache', [
-            'accountOp' => $accountOp
-        ]));
-
-        return true;
-    }
-
-    /**
      * 總開關狀態
      * @param $slug "bo / api"
      * @return bool
