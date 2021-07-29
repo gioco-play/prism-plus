@@ -44,7 +44,7 @@ class DbManager
             $op = $this->getDbSetting($code);
         }
         if (!isset($op->mongodb)) {
-            throw new \Exception("[{$code}] 資料庫未配置");
+            throw new \Exception("[{$code}] MongoDb 資料庫未配置");
         }
         $dbConn = $op->mongodb;
         $dbCfg = mongodb_pool_config(
@@ -73,7 +73,7 @@ class DbManager
             $op = $this->getDbSetting($code);
         }
         if (!isset($op->postgres)) {
-            throw new \Exception("[{$code}] MongoDb 資料庫未配置");
+            throw new \Exception("[{$code}] Postgres 資料庫未配置");
         }
         $dbConn = $op->postgres;
         $host = $dbConn->host;
