@@ -70,37 +70,6 @@ class VendorCacheService
         return null;
     }
 
-     /**
-     * 遊戲商 channel op列表
-     * @param string $code
-     * @Cacheable(prefix="vendor_channel", value="_#{code}", listener="vendor_channel_cache")
-     */
-    public function vendorChannel(string $code){
-        $this->dbDefaultPool();
-        $code = strtolower($code);
-        $group =[
-            '_id'=>'$vendors.'.$code.'.channel',
-            "name"=>['$first'=>'$vendors.'.$code.'.channel'],
-            "op_list"=>[
-                '$push'=>'$code'
-                ]
-        ];
-
-        $pipeline=[
-            ['$group'=>$group]
-        ];
-        $lineOpGroup = $this->mongodb->command('operators',$pipeline);
-        $data = collect($lineOpGroup)->pluck('op_list','name');
-
-        if ($data) {
-            return $data;
-        }
-
-        return null;
-    }
-
-
-
     /**
      * 遊戲商 請求參數
      * @param string $code

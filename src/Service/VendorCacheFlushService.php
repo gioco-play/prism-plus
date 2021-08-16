@@ -37,20 +37,6 @@ class VendorCacheFlushService
     }
 
     /**
-     * 遊戲商 channel op列表
-     * @param string $code
-     * @return bool
-     */
-    public function vendorChannel(string $code){
-        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_channel_cache', [
-            'code' => $code
-        ]));
-
-        return true;
-    }
-
-
-    /**
      * 遊戲商 請求參數
      * @param string $code
      * @return bool
