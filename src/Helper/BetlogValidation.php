@@ -81,7 +81,7 @@ class BetlogValidation
                 'bet_id' => 'required|string',
                 'parent_bet_id' => 'required|string',
                 'trace_id' => 'required|string',
-                'validbet' => 'required|numeric',
+                'valid_bet' => 'required|numeric',
             ]
         );
 
@@ -102,7 +102,7 @@ class BetlogValidation
             'parent_bet_id' => $inputs['parent_bet_id'],
             'bet_id' => $inputs['bet_id'],
             'trace_id' => $inputs['trace_id'],
-            'validbet' => floatval($inputs['validbet'])
+            'valid_bet' => floatval($inputs['valid_bet'])
         ];
 
         $result = array_merge($record, $extraInputs);
