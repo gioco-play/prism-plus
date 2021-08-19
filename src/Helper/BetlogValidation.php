@@ -43,8 +43,8 @@ class BetlogValidation
                 'wallet_code' => 'required|string',
                 'game_time' => 'required|min:13|max:13',
                 'trans_type' => 'required|string',
-                'bet_id' => 'required|string',
                 'parent_bet_id' => 'required|string',
+                'bet_id' => 'required|string',
                 'trace_id' => 'required|string'
             ]
         );
@@ -80,7 +80,8 @@ class BetlogValidation
                 'game_time' => 'required|min:13|max:13',
                 'bet_id' => 'required|string',
                 'parent_bet_id' => 'required|string',
-                'trace_id' => 'required|string'
+                'trace_id' => 'required|string',
+                'validbet' => 'required|numeric',
             ]
         );
 
@@ -98,9 +99,10 @@ class BetlogValidation
             'bet_amount' => floatval($inputs['bet_amount']),
             'win_amount' => floatval($inputs['win_amount']),
             'game_time' => intval($inputs['game_time']),
-            'bet_id' => $inputs['bet_id'],
             'parent_bet_id' => $inputs['parent_bet_id'],
-            'trace_id' => $inputs['trace_id']
+            'bet_id' => $inputs['bet_id'],
+            'trace_id' => $inputs['trace_id'],
+            'validbet' => floatval($inputs['validbet'])
         ];
 
         $result = array_merge($record, $extraInputs);
