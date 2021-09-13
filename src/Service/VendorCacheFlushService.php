@@ -261,4 +261,17 @@ class VendorCacheFlushService
 
         return true;
     }
+
+    /**
+     * 遊戲商線路群組狀態
+     * @param string $vendorCode
+     * @return bool
+     */
+    public function channelGroupStatus(string $vendorCode) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_channel_group_status_cache', [
+            'vendorCode' => $vendorCode
+        ]));
+
+        return true;
+    }
 }
