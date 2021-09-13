@@ -499,4 +499,26 @@ class VendorCacheService
         }
         return [];
     }
+
+    /**
+     * 遊戲商線路群組狀態
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_channel_group_status", value="_#{vendorCode}", listener="vendor_channel_group_status_cache")
+     */
+    public function channelGroupStatus(string $vendorCode) {
+        $this->dbDefaultPool();
+        $data = $this->mongodb->fetchAll('vendor_channel', [
+            'code' => $vendorCode,
+        ], [
+            'projection' => [
+                "name" => 1,
+                "status" => 1
+            ]
+        ]);
+
+        if ($data) {
+            return collect($data)->pluck('status', 'name')->toArray();
+        }
+        return [];
+    }
 }
