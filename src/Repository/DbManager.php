@@ -61,6 +61,36 @@ class DbManager
     }
 
     /**
+     * 選擇商戶MongoDb 報表資料庫
+     * @param string $code
+     * @param string|null $dbName
+     * @param string $readPref
+     * @return MongoDb
+     */
+    public function opMongoDbRep(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
+        $dbName = strtolower($dbName ?? "{$code}_db");
+        $op = $this->opCache->dbSetting($code);
+        if (!isset($op->mongodb_rep)) {
+            $op = $this->getDbSetting($code);
+        }
+        if (!isset($op->mongodb_rep)) {
+            throw new \Exception("[{$code}] MongoDb 報表資料庫未配置");
+        }
+        $dbConn = $op->mongodb_rep;
+        $dbCfg = mongodb_pool_config(
+            $dbConn->host,
+            $dbConn->db_name??$dbName,
+            intval($dbConn->port),
+            $dbConn->replica,
+            $dbConn->read_preference??$readPref);
+        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
+        if (!$config->has("mongodb.db_{$code}_rep")) {
+            $config->set("mongodb.db_{$code}_rep", $dbCfg);
+        }
+        return $this->mongodb->setPool("db_{$code}_rep");
+    }
+
+    /**
      * 選擇商戶PostgreSql資料庫
      * 
      * @param string $code
