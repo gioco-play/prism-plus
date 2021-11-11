@@ -132,21 +132,21 @@ class VendorTool
      */
     public function playerGameOddType(string $opCode, string $vendorCode, string $account, string $oddType = null) {
         $vendorCode = strtolower($vendorCode);
-        $result = $this->dbManager->opMongoDb($opCode)->fetchAll('player_game_oddtype', ['vendor' => $vendorCode, 'account' => $account]);
+        $result = $this->dbManager->opMongoDb($opCode)->fetchAll('player_game_odd_type', ['vendor_code' => $vendorCode, 'account' => $account]);
 
         if ($oddType) {
-            $this->dbManager->opMongoDb($opCode)->insertOrUpdate('player_game_oddtype', [
-                'vendor' => $vendorCode,
+            $this->dbManager->opMongoDb($opCode)->insertOrUpdate('player_game_odd_type', [
+                'vendor_code' => $vendorCode,
                 'account' => $account,
             ],[
-                'oddtype' => $oddType
+                'odd_type' => $oddType
             ]);
         }
 
         if ($rec = current($result)) {
-            return $rec['oddtype'];
+            return $rec['odd_type'];
         }
 
-        return $oddType??'';
+        return $oddType ?? '';
     }
 }
