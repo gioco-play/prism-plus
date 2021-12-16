@@ -120,6 +120,19 @@ class OperatorCacheFlushService
         return true;
     }
 
+   /**
+    * 運營商 k8s隸屬 配置
+    *
+    * @param string $code
+    * @return bool
+    */
+    public function k8sSetting(string $code) {
+        $this->dispatcher->dispatch(new DeleteListenerEvent('op_k8s_setting_cache', [
+            'code' => $code
+        ]));
+        return true;
+    }
+
     /**
      * 運營商 類單一錢包配置
      * @param string $code
