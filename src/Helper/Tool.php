@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Helper;
 
+use Exception;
 
 /**
  * Class Tool
@@ -44,6 +45,9 @@ class Tool
      * @return array
      */
     public static function MemberSplitCode($accountOp, string $delimiter = '_') {
+        if (strrpos($accountOp, $delimiter) === false) {
+            throw new Exception("PlayerName format not correct");
+        }
         $account = substr($accountOp, 0, strrpos($accountOp, $delimiter));
         $op_code = substr($accountOp, strrpos($accountOp, $delimiter)+1, strlen($accountOp));
         return [
