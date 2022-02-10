@@ -44,7 +44,7 @@ class Tool
      * @param string $delimiter
      * @return array
      */
-    public static function MemberSplitCode($accountOp, string $delimiter = '_') {
+    public static function  MemberSplitCode($accountOp, string $delimiter = '_') {
         if (strrpos($accountOp, $delimiter) === false) {
             throw new Exception("PlayerName format not correct");
         }
