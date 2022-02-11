@@ -89,6 +89,18 @@ class Tool
     }
 
     /**
+     * 小數點無條件捨去
+     * @param $value
+     * @param int $precision
+     * @return float
+     */
+    public static function digitcut($value, $precision = 2) {
+        preg_match("/^[+|-]{0,1}\d*[\.]*\d{0,$precision}/", $value, $output_array);
+        $value = $output_array[0];
+        return floatval($value);
+    }
+
+    /**
      * 子階層
      *
      * @param array $data
@@ -107,5 +119,6 @@ class Tool
         }
         return $_tree;
     }
+
 
 }
