@@ -95,7 +95,7 @@ class Tool
      * @return float
      */
     public static function digitcut($value, $precision = 2) {
-        preg_match("/^[+|-]{0,1}\d*[\.]*\d{0,$precision}/", $value, $output_array);
+        preg_match("/^[+|-]{0,1}\d*[\.]*\d{0,$precision}/", (string)$value, $output_array);
         $value = $output_array[0];
         return floatval($value);
     }
