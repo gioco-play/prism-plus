@@ -13,13 +13,13 @@ class Log
         return ApplicationContext::getContainer()->get(LoggerFactory::class)->get($name, $group);
     }
 
-    public function error(string $message, array $data = []) {
-        $log = $this->get('message', 'message');
+    public static function error(string $message, array $data = []) {
+        $log = Log::get('message', 'message');
         $log->error($message, $data);
     }
 
-    public function info(string $message, array $data = []) {
-        $log = $this->get('message', 'message');
+    public static function info(string $message, array $data = []) {
+        $log = Log::get('message', 'message');
         $log->info($message, $data);
     }
 }
