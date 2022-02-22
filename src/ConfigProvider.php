@@ -14,7 +14,6 @@ class ConfigProvider
                 CacheInterface::class => Cache::class,
                 ConfigInterface::class => Config::class,
                 EventDispatcherInterface::class => EventDispatcher::class,
-                StdoutLoggerInterface::class => \GiocoPlus\PrismPlus\Helper\StdoutLoggerFactory::class
             ],
             'commands' => [
             ],
