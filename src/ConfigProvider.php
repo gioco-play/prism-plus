@@ -13,7 +13,8 @@ class ConfigProvider
             'dependencies' => [
                 CacheInterface::class => Cache::class,
                 ConfigInterface::class => Config::class,
-                EventDispatcherInterface::class => EventDispatcher::class
+                EventDispatcherInterface::class => EventDispatcher::class,
+                \Hyperf\Contract\StdoutLoggerInterface::class => \GiocoPlus\PrismPlus\Helper\StdoutLoggerFactory::class
             ],
             'commands' => [
             ],
