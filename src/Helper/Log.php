@@ -16,7 +16,7 @@ class Log
     public static function error(string $message, $data = []) {
         # 將不是 array 型別的變數直接做處理
         if (!is_array($data)) {
-            $value = [json_encode($data)];
+            $value = [json_encode($data, JSON_UNESCAPED_UNICODE)];
         } else {
             $value = $data;
         }
@@ -28,7 +28,7 @@ class Log
     public static function info(string $message, $data = []) {
         # 將不是 array 型別的變數直接做處理
         if (!is_array($data)) {
-            $value = [json_encode($data)];
+            $value = [json_encode($data, JSON_UNESCAPED_UNICODE)];
         } else {
             $value = $data;
         }
