@@ -354,6 +354,39 @@ class OperatorCacheService
     }
 
     /**
+     * 運營商 k8s隸屬 配置
+     * @param string $code
+     * @return array
+     * @Cacheable(prefix="op_k8s_setting", value="_#{code}", listener="op_k8s_setting_cache")
+     */
+    public function k8sSetting(string $code) {
+        $this->dbDefaultPool();
+        $data = current($this->mongodb->fetchAll('operators', [
+            '$or' => [
+                [
+                    'code' => [
+                        '$eq' => $code
+                    ]
+                ],
+                [
+                    'operator_token' => [
+                        '$eq' => $code
+                    ]
+                ]
+            ]
+        ], [
+            'projection' => [
+                "k8s_group" => 1,
+            ]
+        ]));
+
+        if ($data&&isset($data['k8s_group'])) {
+            return $data['k8s_group'];
+        }
+        return "";
+    }
+
+    /**
      * 運營商 類單一錢包配置
      * @param string $code
      * @return array

@@ -273,13 +273,14 @@ class CacheService
             return json_decode($data, true);
         }
         $this->dbDefaultPool();
-        list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
-        $dbManager = new DbManager();
-        $pg = $dbManager->opPostgreDb($op);
-        $result = $pg->query("SELECT player_name, member_code, currency, status 
+        try {
+            list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
+            $dbManager = new DbManager();
+            $pg = $dbManager->opPostgreDb($op);
+            $result = $pg->query("SELECT player_name, member_code, currency, status 
                                 FROM members 
                             WHERE player_name='{$account}' OR member_code='{$account}'");
-        try {
+
             $result = $pg->fetchAll($result);
             if ($result) {
                 $data = [
