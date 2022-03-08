@@ -158,7 +158,7 @@ class OperatorCacheService
 
         if ($data) {
             return [
-                "code" => $data['code'],
+                "code" => strval($data['code']),
                 "status" => $data['status'],
                 "currency" => $data['currency'],
                 "website" => $data['website'],
