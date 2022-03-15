@@ -69,7 +69,8 @@ class OperatorCacheService
                 "operator_token" => 1,
                 "secret_key" => 1,
                 "currency" => 1,
-                "website" => 1
+                "website" => 1,
+                "member_already"=>1
             ]
         ]));
 
