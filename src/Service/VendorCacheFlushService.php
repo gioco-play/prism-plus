@@ -30,7 +30,7 @@ class VendorCacheFlushService
      */
     public function basic(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_basic_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -43,7 +43,7 @@ class VendorCacheFlushService
      */
     public function requestParams(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_request_params_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -56,7 +56,7 @@ class VendorCacheFlushService
      */
     public function betlogField(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_betlog_field_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -69,7 +69,7 @@ class VendorCacheFlushService
      */
     public function ipWhitelist(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_ip_whitelist_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -82,7 +82,7 @@ class VendorCacheFlushService
      */
     public function language(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_language_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -95,7 +95,7 @@ class VendorCacheFlushService
      */
     public function currency(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_currency_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -108,7 +108,7 @@ class VendorCacheFlushService
      */
     public function currencyRate(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_currency_rate_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -121,7 +121,7 @@ class VendorCacheFlushService
      */
     public function games(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_games_cache', [
-            'code' => $code
+            'code' => strtolower($code)
         ]));
 
         return true;
@@ -147,7 +147,7 @@ class VendorCacheFlushService
      */
     public function gameCodeMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('gamecode_mapping_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -160,7 +160,7 @@ class VendorCacheFlushService
      */
     public function vendorGameCodeMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_gamecode_mapping_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -173,7 +173,7 @@ class VendorCacheFlushService
      */
     public function gameIdMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_gameid_mapping_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -185,7 +185,7 @@ class VendorCacheFlushService
      */
     public function gameNameMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_gamename_mapping_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -197,7 +197,7 @@ class VendorCacheFlushService
      */
     public function gameTypeMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_gametype_mapping_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -209,7 +209,7 @@ class VendorCacheFlushService
      */
     public function gfGameTypeMapping(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('gf_gametype_mapping_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -221,7 +221,7 @@ class VendorCacheFlushService
      */
     public function gameMaintainList(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_maintain_list_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -233,7 +233,7 @@ class VendorCacheFlushService
      */
     public function gameWorkingList(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_working_list_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -245,7 +245,7 @@ class VendorCacheFlushService
      */
     public function gameStatusList(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_game_status_list_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;
@@ -269,7 +269,7 @@ class VendorCacheFlushService
      */
     public function channelGroupStatus(string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('vendor_channel_group_status_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
 
         return true;

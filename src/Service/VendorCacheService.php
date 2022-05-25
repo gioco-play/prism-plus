@@ -29,7 +29,8 @@ class VendorCacheService
      */
     protected $poolName = "default";
 
-    public function __construct(ContainerInterface $container) {
+    public function __construct(ContainerInterface $container)
+    {
         $this->mongodb = $container->get(MongoDb::class);
         $this->dbDefaultPool();
     }
@@ -37,8 +38,18 @@ class VendorCacheService
     /**
      * 初始化
      */
-    private function dbDefaultPool() {
+    private function dbDefaultPool()
+    {
         $this->mongodb->setPool($this->poolName);
+    }
+
+    /**
+     * 基本資料
+     * @param string $code
+     */
+    public function basic(string $code)
+    {
+        return $this->basicCache(strtolower($code));
     }
 
     /**
@@ -46,9 +57,10 @@ class VendorCacheService
      * @param string $code
      * @Cacheable(prefix="vendor_basic", value="_#{code}", listener="vendor_basic_cache")
      */
-    public function basic(string $code) {
+    private function basicCache(string $code)
+    {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -73,11 +85,21 @@ class VendorCacheService
     /**
      * 遊戲商 請求參數
      * @param string $code
+     */
+    public function requestParams(string $code)
+    {
+        return $this->requestParamsCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲商 請求參數
+     * @param string $code
      * @Cacheable(prefix="vendor_request_params", value="_#{code}", listener="vendor_request_params_cache")
      */
-    public function requestParams(string $code) {
+    private function requestParamsCache(string $code)
+    {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -96,11 +118,20 @@ class VendorCacheService
     /**
      * 遊戲商 投注紀錄欄位
      * @param string $code
+     */
+    public function betlogField(string $code)
+    {
+        return $this->betlogFieldCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲商 投注紀錄欄位
+     * @param string $code
      * @Cacheable(prefix="vendor_betlog_field", value="_#{code}", listener="vendor_betlog_field_cache")
      */
-    public function betlogField(string $code) {
+    private function betlogFieldCache(string $code) {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -119,11 +150,19 @@ class VendorCacheService
     /**
      * 遊戲商 IP白名單
      * @param string $code
-     * @Cacheable(prefix="vendor_ip_whitelist", value="_#{code}", listener="vendor_ip_whitelist_cache")
      */
     public function ipWhitelist(string $code) {
+        return $this->ipWhitelistCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲商 IP白名單
+     * @param string $code
+     * @Cacheable(prefix="vendor_ip_whitelist", value="_#{code}", listener="vendor_ip_whitelist_cache")
+     */
+    private function ipWhitelistCache(string $code) {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -143,11 +182,20 @@ class VendorCacheService
     /**
      * 遊戲商 支援語系
      * @param string $code
+     */
+    public function language(string $code)
+    {
+        return $this->languageCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲商 支援語系
+     * @param string $code
      * @Cacheable(prefix="vendor_language", value="_#{code}", listener="vendor_language_cache")
      */
-    public function language(string $code) {
+    private function languageCache(string $code) {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -166,11 +214,20 @@ class VendorCacheService
     /**
      * 遊戲商 支援幣別
      * @param string $code
+     */
+    public function currency(string $code)
+    {
+        return $this->currencyCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲商 支援幣別
+     * @param string $code
      * @Cacheable(prefix="vendor_currency", value="_#{code}", listener="vendor_currency_cache")
      */
-    public function currency(string $code) {
+    private function currencyCache(string $code) {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -196,11 +253,19 @@ class VendorCacheService
     /**
      * 遊戲商 支援幣值
      * @param string $code
-     * @Cacheable(prefix="vendor_currency_rate", value="_#{code}", listener="vendor_currency_rate_cache")
      */
     public function currencyRate(string $code) {
+        return $this->currencyRateCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲商 支援幣值
+     * @param string $code
+     * @Cacheable(prefix="vendor_currency_rate", value="_#{code}", listener="vendor_currency_rate_cache")
+     */
+    public function currencyRateCache(string $code) {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = current($this->mongodb->fetchAll('vendors', [
             'code' => $code
         ], [
@@ -226,11 +291,19 @@ class VendorCacheService
     /**
      * 遊戲清單
      * @param string $code
-     * @Cacheable(prefix="vendor_games", value="_#{code}", listener="vendor_games_cache")
      */
     public function games(string $code) {
+        return $this->gamesCache(strtolower($code));
+    }
+
+    /**
+     * 遊戲清單
+     * @param string $code
+     * @Cacheable(prefix="vendor_games", value="_#{code}", listener="vendor_games_cache")
+     */
+    private function gamesCache(string $code) {
         $this->dbDefaultPool();
-        $code = strtolower($code);
+//        $code = strtolower($code);
         $data = $this->mongodb->fetchAll('games', ['vendor_code' => $code], [
             'projection' => [
                 "updated_time" => 0,
@@ -270,11 +343,20 @@ class VendorCacheService
     /**
      * 遊戲代碼與ID對應
      * @param string $vendorCode
+     */
+    public function gameCodeMapping(string $vendorCode)
+    {
+        return $this->gameCodeMappingCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲代碼與ID對應
+     * @param string $vendorCode
      * @Cacheable(prefix="gamecode_mapping", value="_#{vendorCode}", listener="gamecode_mapping_cache")
      */
-    public function gameCodeMapping(string $vendorCode) {
+    private function gameCodeMappingCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -294,11 +376,19 @@ class VendorCacheService
     /**
      * 遊戲代碼與供應商遊戲代碼對應
      * @param string $vendorCode
-     * @Cacheable(prefix="vendor_gamecode_mapping", value="_#{vendorCode}", listener="vendor_gamecode_mapping_cache")
      */
     public function vendorGameCodeMapping(string $vendorCode) {
+        return $this->vendorGameCodeMappingCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲代碼與供應商遊戲代碼對應
+     * @param string $vendorCode
+     * @Cacheable(prefix="vendor_gamecode_mapping", value="_#{vendorCode}", listener="vendor_gamecode_mapping_cache")
+     */
+    private function vendorGameCodeMappingCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -318,11 +408,21 @@ class VendorCacheService
     /**
      * 遊戲ID與代碼對應
      * @param string $vendorCode
+     * @return array
+     */
+    public function gameIdMapping(string $vendorCode): array
+    {
+        return $this->gameIdMappingCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲ID與代碼對應
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_gameid_mapping", value="_#{vendorCode}", listener="vendor_gameid_mapping_cache")
      */
-    public function gameIdMapping(string $vendorCode) {
+    private function gameIdMappingCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -342,11 +442,21 @@ class VendorCacheService
     /**
      * 遊戲代碼與名稱對應
      * @param string $vendorCode
+     * @return array
+     */
+    public function gameNameMapping(string $vendorCode): array
+    {
+        return $this->gameNameMappingCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲代碼與名稱對應
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_gamename_mapping", value="_#{vendorCode}", listener="vendor_gamename_mapping_cache")
      */
-    public function gameNameMapping(string $vendorCode) {
+    private function gameNameMappingCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -366,11 +476,21 @@ class VendorCacheService
     /**
      * 遊戲代碼與類型對應
      * @param string $vendorCode
+     * @return array
+     */
+    public function gameTypeMapping(string $vendorCode): array
+    {
+        return $this->gameTypeMappingCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲代碼與類型對應
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_gametype_mapping", value="_#{vendorCode}", listener="vendor_gametype_mapping_cache")
      */
-    public function gameTypeMapping(string $vendorCode) {
+    private function gameTypeMappingCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -390,11 +510,21 @@ class VendorCacheService
     /**
      * GF遊戲代碼與類型對應
      * @param string $vendorCode
+     * @return array
+     */
+    public function gfGameTypeMapping(string $vendorCode): array
+    {
+        return $this->gfGameTypeMappingCache(strtolower($vendorCode));
+    }
+
+    /**
+     * GF遊戲代碼與類型對應
+     * @param string $vendorCode
      * @Cacheable(prefix="gf_gametype_mapping", value="_#{vendorCode}", listener="gf_gametype_mapping_cache")
      */
-    public function gfGameTypeMapping(string $vendorCode) {
+    private function gfGameTypeMappingCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -414,11 +544,21 @@ class VendorCacheService
     /**
      * 遊戲維護清單
      * @param string $vendorCode
+     * @return array
+     */
+    public function gameMaintainList(string $vendorCode): array
+    {
+        return $this->gameMaintainListCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲維護清單
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_game_maintain_list", value="_#{vendorCode}", listener="vendor_game_maintain_list_cache")
      */
-    public function gameMaintainList(string $vendorCode) {
+    private function gameMaintainListCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode,
             'status' => [
@@ -441,11 +581,21 @@ class VendorCacheService
     /**
      * 遊戲運作清單
      * @param string $vendorCode
+     * @return array
+     */
+    public function gameWorkingList(string $vendorCode): array
+    {
+        return $this->gameWorkingListCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲運作清單
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_game_working_list", value="_#{vendorCode}", listener="vendor_game_working_list_cache")
      */
-    public function gameWorkingList(string $vendorCode) {
+    private function gameWorkingListCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode,
             'status' => 'online'
@@ -466,11 +616,21 @@ class VendorCacheService
     /**
      * 遊戲狀態對照表
      * @param string $vendorCode
+     * @return array
+     */
+    public function gameStatusList(string $vendorCode): array
+    {
+        return $this->gameStatusListCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲狀態對照表
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_game_status_list", value="_#{vendorCode}", listener="vendor_game_status_list_cache")
      */
-    public function gameStatusList(string $vendorCode) {
+    private function gameStatusListCache(string $vendorCode) {
         $this->dbDefaultPool();
-        $vendorCode = strtolower($vendorCode);
+//        $vendorCode = strtolower($vendorCode);
         $data = $this->mongodb->fetchAll('games', [
             'vendor_code' => $vendorCode
         ], [
@@ -503,9 +663,19 @@ class VendorCacheService
     /**
      * 遊戲商線路群組狀態
      * @param string $vendorCode
+     * @return array
+     */
+    public function channelGroupStatus(string $vendorCode): array
+    {
+        return $this->channelGroupStatusCache(strtolower($vendorCode));
+    }
+
+    /**
+     * 遊戲商線路群組狀態
+     * @param string $vendorCode
      * @Cacheable(prefix="vendor_channel_group_status", value="_#{vendorCode}", listener="vendor_channel_group_status_cache")
      */
-    public function channelGroupStatus(string $vendorCode) {
+    private function channelGroupStatusCache(string $vendorCode) {
         $this->dbDefaultPool();
         $data = $this->mongodb->fetchAll('vendor_channel', [
             'code' => $vendorCode,

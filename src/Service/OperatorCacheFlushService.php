@@ -29,7 +29,7 @@ class OperatorCacheFlushService
      */
     public function basic(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_basic_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -40,7 +40,7 @@ class OperatorCacheFlushService
      */
     public function mainSwitch(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_main_switch_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -52,8 +52,8 @@ class OperatorCacheFlushService
      */
     public function vendorSetting(string $code, string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_vendor_setting_cache', [
-            'code' => $code,
-            'vendorCode' => $vendorCode
+            'code' => strtoupper($code),
+            'vendorCode' => strtolower($vendorCode)
         ]));
         return true;
     }
@@ -65,7 +65,7 @@ class OperatorCacheFlushService
      */
     public function currencyRate(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_rate_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -77,7 +77,7 @@ class OperatorCacheFlushService
      */
     public function currency(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -90,8 +90,8 @@ class OperatorCacheFlushService
      */
     public function blockGames(string $code, string $vendorCode) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_block_game_cache', [
-            'code' => $code,
-            'vendorCode' => $vendorCode
+            'code' => strtoupper($code),
+            'vendorCode' => strtolower($vendorCode)
         ]));
         return true;
     }
@@ -103,7 +103,7 @@ class OperatorCacheFlushService
      */
     public function apiWhitelist(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_api_whitelist_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -115,7 +115,7 @@ class OperatorCacheFlushService
      */
     public function dbSetting(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_db_setting_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -128,7 +128,7 @@ class OperatorCacheFlushService
     */
     public function k8sSetting(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_k8s_setting_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -140,7 +140,7 @@ class OperatorCacheFlushService
      */
     public function seamlessSetting(string $code) {
         $this->dispatcher->dispatch(new DeleteListenerEvent('op_seamless_setting_cache', [
-            'code' => $code
+            'code' => strtoupper($code)
         ]));
         return true;
     }
@@ -153,7 +153,7 @@ class OperatorCacheFlushService
     public function grabberLogEnable(string $vendorCode)
     {
         $this->dispatcher->dispatch(new DeleteListenerEvent('grabber_log_enable_cache', [
-            'vendorCode' => $vendorCode
+            'vendorCode' => strtolower($vendorCode)
         ]));
         return true;
     }
@@ -166,7 +166,7 @@ class OperatorCacheFlushService
     public function checkGameType(string $code, string $gameType)
     {
         $this->dispatcher->dispatch(new DeleteListenerEvent('check_gametype_cache', [
-            'code' => $code,
+            'code' => strtoupper($code),
             'gameType' => $gameType
         ]));
         return true;
