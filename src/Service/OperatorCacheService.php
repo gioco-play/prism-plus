@@ -163,7 +163,7 @@ class OperatorCacheService
      */
     private function vendorSettingCache(string $code, string $vendorCode) {
         $this->dbDefaultPool();
-        $vendor = strtolower($vendorCode);
+//        $vendor = strtolower($vendorCode);
         $data = current($this->mongodb->fetchAll('operators', [
             '$or' => [
                 [
@@ -319,7 +319,7 @@ class OperatorCacheService
      */
     private function blockGamesCache(string $code, string $vendorCode) {
         $this->dbDefaultPool();
-        $vendor = strtolower($vendorCode);
+//        $vendor = strtolower($vendorCode);
         $data = current($this->mongodb->fetchAll('operators', [
             '$or' => [
                 [
@@ -335,12 +335,12 @@ class OperatorCacheService
             ]
         ], [
             'projection' => [
-                "game_blocklist.{$vendor}" => 1,
+                "game_blocklist.{$vendorCode}" => 1,
             ]
         ]));
 
-        if ($data&&isset($data['game_blocklist'])&&isset($data['game_blocklist']->$vendor)) {
-            return $data['game_blocklist']->$vendor;
+        if ($data&&isset($data['game_blocklist'])&&isset($data['game_blocklist']->$vendorCode)) {
+            return $data['game_blocklist']->$vendorCode;
         }
         return [];
     }
