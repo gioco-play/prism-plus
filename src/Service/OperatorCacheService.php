@@ -163,7 +163,7 @@ class OperatorCacheService
      */
     private function vendorSettingCache(string $code, string $vendorCode) {
         $this->dbDefaultPool();
-//        $vendor = strtolower($vendorCode);
+        $vendor = strtolower($vendorCode);
         $data = current($this->mongodb->fetchAll('operators', [
             '$or' => [
                 [
