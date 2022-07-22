@@ -174,3 +174,27 @@ if (!function_exists('ip_in_range')) {
 		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
 	}
 }
+
+if (!function_exists('exchange_rate')) {
+    /**
+     * 幣值轉換
+     * @param float $amount 交易金額
+     * @param string $operator  * | /
+     * @param float $currencyRate 幣別比例
+     * @param int $currencyScale 小數位允許位數
+     */
+    function exchange_rate(float $amount, string $operator, float $currencyRate, int $currencyScale = 4)
+    {
+        $amount = strval($amount);
+        $rate = strval($currencyRate);
+
+        switch ($operator) {
+            case '*':
+                return floatval(bcmul($amount, $rate, $currencyScale));
+            case '/':
+                return floatval(bcdiv($amount, $rate, $currencyScale));
+            default :
+                return  false;
+        }
+    }
+}
