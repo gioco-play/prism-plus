@@ -489,7 +489,7 @@ class OperatorCacheService
     /**
      * 運營商 類單一錢包配置
      * @param string $code
-     * @return array
+     * @return mixed
      * @Cacheable(prefix="op_seamless_setting", value="_#{code}", listener="op_seamless_setting_cache")
      */
     private function seamlessSettingCache(string $code) {
