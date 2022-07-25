@@ -481,7 +481,7 @@ class OperatorCacheService
      * @param string $code
      * @return mixed
      */
-    public function seamlessSetting(string $code): array
+    public function seamlessSetting(string $code)
     {
         return $this->seamlessSettingCache(strtoupper($code));
     }
