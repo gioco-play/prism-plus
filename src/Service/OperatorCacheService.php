@@ -479,7 +479,7 @@ class OperatorCacheService
     /**
      * 運營商 類單一錢包配置
      * @param string $code
-     * @return array
+     * @return mixed
      */
     public function seamlessSetting(string $code): array
     {
