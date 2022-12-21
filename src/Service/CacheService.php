@@ -27,7 +27,7 @@ class CacheService
     protected $mongodb;
 
     /**
-     * @Inject(lazy=true)
+     * @Inject()
      * @var OperatorCacheService
      */
     protected $opCache;
