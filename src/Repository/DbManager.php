@@ -116,7 +116,7 @@ class DbManager
         $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}";
         $conn = $pg->connect($pgConnect);
         if (!$conn) {
-            var_dump($pg->error);
+            var_dump('pgConn:', $pg->error);
 
             $conn = $pg->connect($pgConnect);
             if (!$conn) {
