@@ -116,6 +116,7 @@ class DbManager
         $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
         if (!$conn) {
             var_dump($pg->error);
+            throw new \Exception("[{$code}] Postgres 未連線成功");
             return;
         }
         return $pg;
