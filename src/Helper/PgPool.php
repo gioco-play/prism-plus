@@ -60,13 +60,14 @@ class PgPool
 
     public function check($db) : bool
     {
+        $res = $db->query("SELECT 1");
         try {
-            $res = $db->query("SELECT 1");
-            if ($res->errCode === 0) {
+            if ($res !== false) {
                 var_dump("success");
                 return true;
             }
         }catch (\Throwable $th) {
+            var_dump($res);
             var_dump($th->getMessage());
         }
 
