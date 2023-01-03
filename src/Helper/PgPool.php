@@ -23,7 +23,7 @@ class PgPool
 
             $res = $pg->connect($dsn);
             if ($res === false) {
-                throw new \RuntimeException("failed to connect postgres.");
+                throw new \RuntimeException("failed to connect postgres. $dsn");
             } else {
                 $this->dsn = $dsn;
                 $this->put($pg);
