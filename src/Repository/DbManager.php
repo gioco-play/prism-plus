@@ -194,4 +194,22 @@ class DbManager
         }
         return $pgPool;
     }
+
+    /**
+     * 取得Postgres連線資訊
+     * @param string $code
+     * @return mixed
+     * @throws \Exception
+     */
+    public function opPostgresDSN(string $code)
+    {
+        $op = $this->opCache->dbSetting($code);
+        if (isset($op->postgres)) {
+            $op = $this->getDbSetting($code);
+        }
+        if (!isset($op->postgres)) {
+            throw new \Exception("[{$code}] Postgres 資料庫未配置");
+        }
+        return $op->postgres;
+    }
 }
