@@ -11,6 +11,7 @@ use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Cache\Cache;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\ApplicationContext;
+use Hyperf\Di\Annotation\Inject;
 
 /**
  * 資料庫管理
@@ -19,7 +20,7 @@ class DbManager
 {
 
     /**
-     * @Inject()
+     * @Inject
      * @var OperatorCacheService
      */
     protected $opCache;
