@@ -20,9 +20,9 @@ class PgPool
         $this->pool = new \Swoole\Coroutine\Channel($size);
         for ($i = 0; $i < $size; $i++) {
             $pg = new PostgreSQL();
-
-            $res = $pg->connect($dsn);
-            if ($res === false) {
+            $conn = $pg->connect($dsn);
+            if (!$conn) {
+                var_dump('pgConn:', $pg->error);
                 throw new \RuntimeException("failed to connect postgres. $dsn");
             } else {
                 $this->dsn = $dsn;
