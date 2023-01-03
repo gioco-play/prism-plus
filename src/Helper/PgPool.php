@@ -63,11 +63,10 @@ class PgPool
         $res = $db->query("SELECT 1");
         try {
             if ($res !== false) {
-                var_dump("success");
                 return true;
             }
         }catch (\Throwable $th) {
-            var_dump($res);
+            var_dump("pool: " .$this->length());
             var_dump($th->getMessage());
         }
 
