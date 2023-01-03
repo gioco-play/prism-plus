@@ -113,10 +113,16 @@ class DbManager
         $dbName = $dbName ?? strtolower("{$code}_db");
         //
         $pg = new \Swoole\Coroutine\PostgreSQL();
-        $conn = $pg->connect("host={$host} port={$port} dbname={$dbName} user={$user} password={$password}");
+        $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}";
+        $conn = $pg->connect($pgConnect);
         if (!$conn) {
-            var_dump($pg->error);
-            return;
+            var_dump('pgConn:', $pg->error);
+
+            $conn = $pg->connect($pgConnect);
+            if (!$conn) {
+                throw new \Exception("[{$code}] Postgres 未連線成功");
+                return;
+            }
         }
         return $pg;
     }
