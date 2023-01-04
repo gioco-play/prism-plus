@@ -41,6 +41,31 @@ if (!function_exists('gen_trace_id')) {
 
 }
 
+if (!function_exists('gen_trace_id_v2')) {
+
+    /**
+     * 注單流水號
+     * @param string $player_name
+     * @param string $vendor_code
+     * @param string $game_time
+     * @param string $action
+     * @param string $vendor_unique_id
+     * @param bool $ts
+     * @return string
+     */
+    function gen_trace_id_v2(string $player_name, string $vendor_code, string $game_time, string $action, string $vendor_unique_id, bool $ts = false): string {
+        $verdorCode = strtoupper($vendor_code);
+        $action = strtoupper($action);
+
+        if ($ts === false) {
+            return "{$player_name}::{$verdorCode}::{$action}::{$game_time}::{$vendor_unique_id}";
+        } else {
+            return "{$player_name}::{$verdorCode}::{$action}::{$game_time}::{$vendor_unique_id}-" . (int) round(microtime(true) * 1000);
+        }
+    }
+
+}
+
 if (!function_exists('gen_rand_string')) {
 
     /**
