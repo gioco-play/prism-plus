@@ -65,7 +65,10 @@ class PlayerSessionCacheService
         }
         $sessionStr = implode("::", $params);
         $sessionStr = base64url_encode($sessionStr);
-        $redis->set($key, $sessionStr);
+//        $redis->set($key, $sessionStr);
+
+        $redis->setex($key, 10368000, $sessionStr);
+
         return $sessionStr;
     }
 
