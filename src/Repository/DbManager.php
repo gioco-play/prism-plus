@@ -99,7 +99,7 @@ class DbManager
      */
     public function opPostgreDb(string $code, string $dbName = null) {
         $op = $this->opCache->dbSetting($code);
-        if (isset($op->postgres)){
+        if (!isset($op->postgres)){
             $op = $this->getDbSetting($code);
         }
         if (!isset($op->postgres)) {
