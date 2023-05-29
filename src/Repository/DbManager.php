@@ -134,6 +134,7 @@ class DbManager
             if (!$conn) {
                 Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
                     "exec_time" => ((micro_timestamp() - $st) / 1000),
+                    "message" => $pg->error,
                 ]);
                 throw new \Exception("[{$code}] Postgres 未連線成功");
                 return;
