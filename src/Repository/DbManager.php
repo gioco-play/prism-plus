@@ -106,7 +106,7 @@ class DbManager
             $op = $this->getDbSetting($code);
         }
 
-        Log::info(__FUNCTION__ . " getDbSetting ", [
+        Log::info(__FUNCTION__ . " [{$code}] getDbSetting ", [
             "exec_time" => ((micro_timestamp() - $st) / 1000),
         ]);
 
@@ -128,18 +128,18 @@ class DbManager
         $conn = $pg->connect($pgConnect);
         if (!$conn) {
 //            var_dump('pgConn:', $pg->error);
-            Log::info('pgConn Fail: ' . $pg->error);
+            Log::info("[{$code}] pgConn Fail: " . $pg->error);
 
             $conn = $pg->connect($pgConnect);
             if (!$conn) {
-                Log::info(__FUNCTION__ . " pg conn fail ", [
+                Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
                     "exec_time" => ((micro_timestamp() - $st) / 1000),
                 ]);
                 throw new \Exception("[{$code}] Postgres 未連線成功");
                 return;
             }
         }
-        Log::info(__FUNCTION__ . " pg conn complete ", [
+        Log::info(__FUNCTION__ . " pg conn complete [{$code}]", [
             "exec_time" => ((micro_timestamp() - $st) / 1000),
         ]);
         return $pg;
