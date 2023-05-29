@@ -6,6 +6,7 @@ namespace GiocoPlus\PrismPlus\Repository;
 
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\Mongodb\MongoDbConst;
+use GiocoPlus\PrismPlus\Helper\Log;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Cache\Cache;
 use Hyperf\Di\Annotation\Inject;
@@ -98,13 +99,23 @@ class DbManager
      * @return \Swoole\Coroutine\PostgreSQL|void
      */
     public function opPostgreDb(string $code, string $dbName = null) {
+        $st = micro_timestamp();
+
         $op = $this->opCache->dbSetting($code);
         if (!isset($op->postgres)){
             $op = $this->getDbSetting($code);
         }
+
+        Log::info(__FUNCTION__ . " getDbSetting ", [
+            "exec_time" => ((micro_timestamp() - $st) / 1000),
+        ]);
+
         if (!isset($op->postgres)) {
             throw new \Exception("[{$code}] Postgres 資料庫未配置");
         }
+
+        $st = micro_timestamp();
+
         $dbConn = $op->postgres;
         $host = $dbConn->host;
         $port = $dbConn->port;
@@ -116,14 +127,21 @@ class DbManager
         $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}";
         $conn = $pg->connect($pgConnect);
         if (!$conn) {
-            var_dump('pgConn:', $pg->error);
+//            var_dump('pgConn:', $pg->error);
+            Log::info('pgConn Fail: ' . $pg->error);
 
             $conn = $pg->connect($pgConnect);
             if (!$conn) {
+                Log::info(__FUNCTION__ . " pg conn fail ", [
+                    "exec_time" => ((micro_timestamp() - $st) / 1000),
+                ]);
                 throw new \Exception("[{$code}] Postgres 未連線成功");
                 return;
             }
         }
+        Log::info(__FUNCTION__ . " pg conn complete ", [
+            "exec_time" => ((micro_timestamp() - $st) / 1000),
+        ]);
         return $pg;
     }
 
