@@ -305,6 +305,55 @@ class CacheService
     }
 
     /**
+     * 查詢會員資料
+     * @param string $accountOp (含後綴商戶代碼)
+     * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
+     * @return mixed
+     */
+    public function memberInfoKeep(string $accountOp, string $delimiter = '_') {
+        $container = ApplicationContext::getContainer();
+
+        $key = $accountOp . '_keep';
+
+        $redis = $container->get(Redis::class);
+        if ($data = $redis->get($key)) {
+            return json_decode($data, true);
+        }
+        $this->dbDefaultPool();
+        try {
+            list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
+            $dbManager = new DbManager();
+            $pg = $dbManager->opPostgreDb($op);
+            $result = $pg->query("SELECT player_name, member_code, currency, status 
+                                FROM members 
+                            WHERE player_name='{$account}' OR member_code='{$account}'");
+
+            $result = $pg->fetchAll($result);
+            if ($result) {
+                $data = [
+                    'operator' => $this->opCache->basic(strtoupper($op)),
+                    'player' => current($result)
+                ];
+                // 保留三天
+                $bool = $redis->setex($key, 259200, json_encode($data));
+                if ($bool) {
+                    return $data;
+                }
+            }
+        } catch (\Exception $e) {
+            return [
+                'operator' => false,
+                'player' => false
+            ];
+        }
+        return [
+            'operator' => false,
+            'player' => false
+        ];
+    }
+
+
+    /**
      * 總開關狀態
      * @param $slug "bo / api"
      * @return false|mixed
