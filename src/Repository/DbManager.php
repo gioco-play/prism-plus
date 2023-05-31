@@ -99,22 +99,22 @@ class DbManager
      * @return \Swoole\Coroutine\PostgreSQL|void
      */
     public function opPostgreDb(string $code, string $dbName = null) {
-        $st = micro_timestamp();
+//        $st = micro_timestamp();
 
         $op = $this->opCache->dbSetting($code);
         if (!isset($op->postgres)){
             $op = $this->getDbSetting($code);
         }
 
-        Log::info(__FUNCTION__ . " [{$code}] getDbSetting ", [
-            "exec_time" => ((micro_timestamp() - $st) / 1000),
-        ]);
+//        Log::info(__FUNCTION__ . " [{$code}] getDbSetting ", [
+//            "exec_time" => ((micro_timestamp() - $st) / 1000),
+//        ]);
 
         if (!isset($op->postgres)) {
             throw new \Exception("[{$code}] Postgres 資料庫未配置");
         }
 
-        $st = micro_timestamp();
+//        $st = micro_timestamp();
 
         $dbConn = $op->postgres;
         $host = $dbConn->host;
@@ -128,21 +128,21 @@ class DbManager
         $conn = $pg->connect($pgConnect);
         if (!$conn) {
 //            var_dump('pgConn:', $pg->error);
-            Log::info("[{$code}] pgConn Fail: " . $pg->error);
+//            Log::info("[{$code}] pgConn Fail: " . $pg->error);
 
             $conn = $pg->connect($pgConnect);
             if (!$conn) {
-                Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
-                    "exec_time" => ((micro_timestamp() - $st) / 1000),
-                    "message" => $pg->error,
-                ]);
+//                Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
+//                    "exec_time" => ((micro_timestamp() - $st) / 1000),
+//                    "message" => $pg->error,
+//                ]);
                 throw new \Exception("[{$code}] Postgres 未連線成功");
                 return;
             }
         }
-        Log::info(__FUNCTION__ . " pg conn complete [{$code}]", [
-            "exec_time" => ((micro_timestamp() - $st) / 1000),
-        ]);
+//        Log::info(__FUNCTION__ . " pg conn complete [{$code}]", [
+//            "exec_time" => ((micro_timestamp() - $st) / 1000),
+//        ]);
         return $pg;
     }
 
