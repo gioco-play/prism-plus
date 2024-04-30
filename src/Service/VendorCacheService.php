@@ -49,37 +49,35 @@ class VendorCacheService
      */
     public function basic(string $code)
     {
-        return $this->basicCache(strtolower($code));
-    }
+        $code = strtolower($code);
+        $key = 'vendor_basic_' . $code;
 
-    /**
-     * 基本資料
-     * @param string $code
-     * @Cacheable(prefix="vendor_basic", value="_#{code}", listener="vendor_basic_cache")
-     */
-    private function basicCache(string $code)
-    {
-        $this->dbDefaultPool();
-//        $code = strtolower($code);
-        $data = current($this->mongodb->fetchAll('vendors', [
-            'code' => $code
-        ], [
-            'projection' => [
-                "code" => 1,
-                "status" => 1,
-                "name" => 1,
-                "wallet_code" => 1,
-                "seamless_enable" => 1,
-                "account_delimiter" => 1,
-                "wallet_type" => 1
-            ]
-        ]));
-
-        if ($data) {
-            return $data;
+        if (! ApplicationContext::getContainer()->has(CacheInterface::class)){
+            throw new \Exception('Please make sure if there is "CacheInterface" in the container');
         }
+        $redis = ApplicationContext::getContainer()->get(CacheInterface::class);
+        if (!$redis->has($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('vendors', [
+                'code' => $code
+            ], [
+                'projection' => [
+                    "code" => 1,
+                    "status" => 1,
+                    "name" => 1,
+                    "wallet_code" => 1,
+                    "seamless_enable" => 1,
+                    "account_delimiter" => 1,
+                    "wallet_type" => 1
+                ]
+            ]));
+            if ($data) {
+                return $data;
+            }
 
-        return null;
+            return null;
+        }
+        return $redis->get($key);
     }
 
     /**
