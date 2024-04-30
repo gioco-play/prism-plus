@@ -8,6 +8,7 @@ use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
+use Hyperf\Redis\Redis;
 use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 
@@ -53,10 +54,10 @@ class VendorCacheService
         $code = strtolower($code);
         $key = 'vendor_basic_' . $code;
 
-        if (! ApplicationContext::getContainer()->has(CacheInterface::class)){
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
             throw new \Exception('Please make sure if there is "CacheInterface" in the container');
         }
-        $redis = ApplicationContext::getContainer()->get(CacheInterface::class);
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
         if (!$redis->has($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
