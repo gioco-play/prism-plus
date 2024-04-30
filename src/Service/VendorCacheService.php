@@ -80,7 +80,7 @@ class VendorCacheService
 
             return null;
         }
-        return $redis->get($key);
+        return json_decode($redis->get($key), true);
     }
 
     /**
