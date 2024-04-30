@@ -74,7 +74,7 @@ class VendorCacheService
                 ]
             ]));
             if ($data) {
-                $redis->setex($data, 60*60*1, json_encode($data));
+                $redis->setex($key, 60*60*1, $data);
                 return $data;
             }
 
