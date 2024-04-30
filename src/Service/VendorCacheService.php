@@ -58,7 +58,7 @@ class VendorCacheService
             throw new \Exception('Please make sure if there is "CacheInterface" in the container');
         }
         $redis = ApplicationContext::getContainer()->get(Redis::class);
-        if (!$redis->has($key)) {
+        if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
