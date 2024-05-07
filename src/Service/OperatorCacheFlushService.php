@@ -7,6 +7,8 @@ namespace GiocoPlus\PrismPlus\Service;
 
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Redis\Redis;
+use Hyperf\Utils\ApplicationContext;
 use Psr\EventDispatcher\EventDispatcherInterface;
 /**
  * 運營商清除快取
@@ -26,23 +28,43 @@ class OperatorCacheFlushService
      * 營運商基本資料
      * @param string $code
      * @return bool
+     * @throws \Exception
      */
     public function basic(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_basic_cache', [
-            'code' => strtoupper($code)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_basic_cache', [
+//            'code' => strtoupper($code)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $key = 'op_basic_' . $code;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        return $redis->del($key);
     }
+
     /**
      * 總開關
      * @param string $code
      * @return bool
+     * @throws \Exception
      */
     public function mainSwitch(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_main_switch_cache', [
-            'code' => strtoupper($code)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_main_switch_cache', [
+//            'code' => strtoupper($code)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $key = 'op_main_switch_' . $code;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        return $redis->del($key);
     }
     /**
      * 遊戲商 開關 / 配置
@@ -51,11 +73,20 @@ class OperatorCacheFlushService
      * @return bool
      */
     public function vendorSetting(string $code, string $vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_vendor_setting_cache', [
-            'code' => strtoupper($code),
-            'vendorCode' => strtolower($vendorCode)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_vendor_setting_cache', [
+//            'code' => strtoupper($code),
+//            'vendorCode' => strtolower($vendorCode)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $vendorCode = strtolower($vendorCode);
+        $key = 'op_vendor_setting_' . $code . '_' . $vendorCode;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        return $redis->del($key);
     }
 
     /**
@@ -64,10 +95,18 @@ class OperatorCacheFlushService
      * @return bool
      */
     public function currencyRate(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_rate_cache', [
-            'code' => strtoupper($code)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_rate_cache', [
+//            'code' => strtoupper($code)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $key = 'op_currency_rate_' . $code;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis->del($key);
     }
     
     /**
@@ -76,10 +115,19 @@ class OperatorCacheFlushService
      * @return bool
      */
     public function currency(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_cache', [
-            'code' => strtoupper($code)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_currency_cache', [
+//            'code' => strtoupper($code)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $key = 'op_currency_' . $code;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        return $redis->del($key);
     }
     
     /**
@@ -89,11 +137,21 @@ class OperatorCacheFlushService
      * @return bool
      */
     public function blockGames(string $code, string $vendorCode) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_block_game_cache', [
-            'code' => strtoupper($code),
-            'vendorCode' => strtolower($vendorCode)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_block_game_cache', [
+//            'code' => strtoupper($code),
+//            'vendorCode' => strtolower($vendorCode)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $vendorCode = strtolower($vendorCode);
+        $key = 'op_block_game_' . $code . '_' . $vendorCode;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        return $redis->del($key);
     }
 
     /**
@@ -102,10 +160,16 @@ class OperatorCacheFlushService
      * @return bool
      */
     public function apiWhitelist(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_api_whitelist_cache', [
-            'code' => strtoupper($code)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_api_whitelist_cache', [
+//            'code' => strtoupper($code)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $key = 'op_api_whitelist_' . $code;
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        return $redis->del($key);
     }
 
     /**
@@ -139,10 +203,19 @@ class OperatorCacheFlushService
      * @return bool
      */
     public function seamlessSetting(string $code) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('op_seamless_setting_cache', [
-            'code' => strtoupper($code)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('op_seamless_setting_cache', [
+//            'code' => strtoupper($code)
+//        ]));
+//        return true;
+
+        $code = strtoupper($code);
+        $key = 'op_seamless_setting_' . $code;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        return $redis->del($key);
     }
 
     /**
@@ -152,10 +225,19 @@ class OperatorCacheFlushService
      */
     public function grabberLogEnable(string $vendorCode)
     {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('grabber_log_enable_cache', [
-            'vendorCode' => strtolower($vendorCode)
-        ]));
-        return true;
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('grabber_log_enable_cache', [
+//            'vendorCode' => strtolower($vendorCode)
+//        ]));
+//        return true;
+
+        $vendorCode = strtolower($vendorCode);
+        $key = 'grabber_log_enable_' . $vendorCode;
+        if (! ApplicationContext::getContainer()->has(Redis::class)){
+            throw new \Exception('Please make sure if there is "Redis" in the container');
+        }
+        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        return $redis->del($key);
     }
 
     /**
