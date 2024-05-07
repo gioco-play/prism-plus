@@ -232,7 +232,7 @@ class VendorCacheService
         }
         $redis = ApplicationContext::getContainer()->get(Redis::class);
         if (!$redis->get($key)) {
-            this->dbDefaultPool();
+            $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
             ], [
@@ -321,6 +321,7 @@ class VendorCacheService
             ]);
 
             if ($data) {
+                $redis->setex($key, 60*60*1, json_encode($data));
                 return $data;
             }
 
