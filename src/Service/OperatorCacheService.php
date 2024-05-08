@@ -213,8 +213,6 @@ class OperatorCacheService
      */
     public function currencyRate(string $code)
     {
-        return $this->currencyRateCache(strtoupper($code));
-
         $code = strtoupper($code);
         $key = 'op_currency_rate_' . $code;
         if (! ApplicationContext::getContainer()->has(Redis::class)){
