@@ -378,7 +378,7 @@ class CacheService
             }
             return false;
         }
-        return $redis->get($key, true);
+        return $redis->get($key);
     }
 
     /**
