@@ -81,7 +81,8 @@ class OperatorCacheService
                     "secret_key" => 1,
                     "currency" => 1,
                     "website" => 1,
-                    "member_already" => 1
+                    "member_already" => 1,
+                    "version" => 1,
                 ]
             ]));
             if ($data) {
@@ -548,6 +549,9 @@ class OperatorCacheService
             $data = $this->mongodb->fetchAll('operators', [
                 "status" => "online",
                 "main_switch.grabber_log_on" => true,
+                "vendor_switch.{$vendorCode}.status" => [
+                    '$ne' => 'decommission',
+                ],
                 "vendor_switch.{$vendorCode}.grabber_log_on" => true
             ], [
                 'projection' => [
