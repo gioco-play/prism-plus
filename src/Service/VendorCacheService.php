@@ -252,7 +252,7 @@ class VendorCacheService
                 }
                 $redisData = json_encode($curr);
                 $redis->setex($key, 60*60*1, $redisData);
-                return $redisData;
+                return json_decode($redisData, true);
             }
 
             return null;
