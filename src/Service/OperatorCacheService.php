@@ -317,8 +317,6 @@ class OperatorCacheService
      */
     public function blockGames(string $code, string $vendorCode): array
     {
-        return $this->blockGamesCache(strtoupper($code), strtolower($vendorCode));
-
         $code = strtoupper($code);
         $vendorCode = strtolower($vendorCode);
 
