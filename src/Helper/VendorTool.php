@@ -62,6 +62,7 @@ class VendorTool
      */
     public function currencyMapping(string $vendorCode, string $currency): string {
         $currencies = $this->vendorCache->currency(strtolower($vendorCode));
+        var_dump(__FUNCTION__ . " : " . json_encode($currencies));
         if (isset($currencies[strtoupper($currency)]) === false) {
             throw new \Exception(ProductState::CURRENCY_NOT_EXIST['msg']."[{$currency}]", ProductState::CURRENCY_NOT_EXIST['code']);
         }
