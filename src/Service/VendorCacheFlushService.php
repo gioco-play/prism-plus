@@ -413,7 +413,7 @@ class VendorCacheFlushService
             throw new \Exception('Please make sure if there is "Redis" in the container');
         }
         $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+        return $redis->del($key) && $redis->del($key. "_v3");
     }
 
     /**
