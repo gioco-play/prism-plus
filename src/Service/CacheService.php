@@ -10,6 +10,7 @@ use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\Redis;
+use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 
@@ -20,7 +21,6 @@ use Psr\Container\ContainerInterface;
  */
 class CacheService
 {
-
     /**
      * @var MongoDb
      */
@@ -37,6 +37,11 @@ class CacheService
      * @var string
      */
     protected $poolName = "default";
+
+    /**
+     * @var RedisFactory
+     */
+    protected $redisFactory;
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
@@ -267,11 +272,14 @@ class CacheService
      * @return mixed
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
-        $container = ApplicationContext::getContainer();
-        $redis = $container->get(Redis::class);
+//        $container = ApplicationContext::getContainer();
+//        $redis = $container->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if ($data = $redis->get($accountOp)) {
             return json_decode($data, true);
         }
+
         $this->dbDefaultPool();
         try {
             list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
@@ -363,10 +371,11 @@ class CacheService
      */
     public function platformSwitch($slug) {
         $key = 'platform_switch_' . strtolower($slug);
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $filter =  ['slug' => $slug];
@@ -386,10 +395,12 @@ class CacheService
      */
     public function globalIPBlock() {
         $key = 'global_block_ip';
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
@@ -408,10 +419,12 @@ class CacheService
      */
     public function globalIPWhite() {
         $key = 'global_white_ip';
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('platform', ['slug' => 'white_ip']));
@@ -500,10 +513,12 @@ class CacheService
      */
     public function gfCurrencyRate() {
         $key = 'gf_currency_rate';
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('gf_exchange_rate');
@@ -522,10 +537,12 @@ class CacheService
      */
     public function gfCurrencyMinTransfer() {
         $key = 'gf_currency_min_transfer';
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('gf_exchange_rate');

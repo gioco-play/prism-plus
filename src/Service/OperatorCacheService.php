@@ -9,6 +9,7 @@ use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Redis\Redis;
+use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 
@@ -30,6 +31,11 @@ class OperatorCacheService
      * @var string
      */
     protected $poolName = "default";
+
+    /**
+     * @var RedisFactory
+     */
+    protected $redisFactory;
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
@@ -53,10 +59,13 @@ class OperatorCacheService
         $code = strtoupper($code);
         $key = 'op_basic_' . $code;
 
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -103,10 +112,13 @@ class OperatorCacheService
     {
         $code = strtoupper($code);
         $key = 'op_main_switch_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -156,10 +168,14 @@ class OperatorCacheService
         $code = strtoupper($code);
         $vendorCode = strtolower($vendorCode);
         $key = 'op_vendor_setting_' . $code . '_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $vendor = strtolower($vendorCode);
@@ -216,10 +232,12 @@ class OperatorCacheService
     {
         $code = strtoupper($code);
         $key = 'op_currency_rate_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -254,7 +272,6 @@ class OperatorCacheService
             return [];
         }
         return json_decode($redis->get($key), true);
-
     }
 
 
@@ -269,10 +286,12 @@ class OperatorCacheService
         $code = strtoupper($code);
         $key = 'op_currency_' . $code;
 
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -321,10 +340,12 @@ class OperatorCacheService
         $vendorCode = strtolower($vendorCode);
 
         $key = 'op_block_game_' . $code . '_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -363,10 +384,11 @@ class OperatorCacheService
      */
     public function apiWhitelist(string $code): array
     {
-//        return $this->apiWhitelistCache(strtoupper($code));
         $code = strtoupper($code);
         $key = 'op_api_whitelist_' . $code;
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -494,10 +516,12 @@ class OperatorCacheService
     {
         $code = strtoupper($code);
         $key = 'op_seamless_setting_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -538,10 +562,12 @@ class OperatorCacheService
     {
         $vendorCode = strtolower($vendorCode);
         $key = 'grabber_log_enable_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('operators', [

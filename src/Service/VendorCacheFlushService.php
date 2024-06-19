@@ -8,6 +8,7 @@ namespace GiocoPlus\PrismPlus\Service;
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\Redis;
+use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -26,6 +27,11 @@ class VendorCacheFlushService
     protected $dispatcher;
 
     /**
+     * @var RedisFactory
+     */
+    protected $redisFactory;
+
+    /**
      * 基本資料
      * @param string $code
      * @return bool
@@ -39,11 +45,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_basic_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key) && $redis->del($key . "_v3");
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -60,12 +70,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_request_params_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -82,11 +95,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_betlog_field_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -103,11 +120,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_ip_whitelist_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -124,11 +145,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_language_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -145,11 +170,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_currency_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -166,11 +195,15 @@ class VendorCacheFlushService
 
         $code = strtolower($code);
         $key = 'vendor_currency_rate_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -186,11 +219,15 @@ class VendorCacheFlushService
 //        return true;
 
         $key = 'vendor_games_' . $code;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -207,11 +244,15 @@ class VendorCacheFlushService
 
         $gameCode = strtolower($gameCode);
         $key = 'vendor_game_' . $gameCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -227,11 +268,15 @@ class VendorCacheFlushService
 //        return true;
 
         $key = 'gamecode_mapping_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -248,11 +293,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gamecode_mapping_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -269,11 +318,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gameid_mapping_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -289,11 +342,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gamename_mapping_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -309,11 +366,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gametype_mapping_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -329,11 +390,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'gf_gametype_mapping_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -349,11 +414,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_game_maintain_list_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -369,11 +438,15 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_game_working_list_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -390,11 +463,15 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_game_status_list_' . $vendorCode;
 
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -409,11 +486,15 @@ class VendorCacheFlushService
 
         $key = 'vendor_wallet_code';
 
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        return $redis->del($key) && $redis->del($key. "_v3");
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 
     /**
@@ -430,11 +511,14 @@ class VendorCacheFlushService
 
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_channel_group_status_' . $vendorCode;
-        if (! ApplicationContext::getContainer()->has(Redis::class)){
-            throw new \Exception('Please make sure if there is "Redis" in the container');
-        }
-        $redis = ApplicationContext::getContainer()->get(Redis::class);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        return $redis->del($key);
+        $redisV3 = $this->redisFactory->get('v3');
+        $redis = $this->redisFactory->get('default');
+
+        return $redis->del($key) && $redisV3->del($key);
     }
 }
