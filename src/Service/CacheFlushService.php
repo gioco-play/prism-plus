@@ -153,11 +153,10 @@ class CacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -177,10 +176,10 @@ class CacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
     
     /**
@@ -199,10 +198,10 @@ class CacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
     
     /**
@@ -268,10 +267,10 @@ class CacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -287,9 +286,9 @@ class CacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 }

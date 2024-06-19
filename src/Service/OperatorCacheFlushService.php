@@ -50,10 +50,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -75,10 +75,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
     /**
      * 遊戲商 開關 / 配置
@@ -100,10 +100,10 @@ class OperatorCacheFlushService
 //            throw new \Exception('Please make sure if there is "Redis" in the container');
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -124,10 +124,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
     
     /**
@@ -148,10 +148,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
     
     /**
@@ -175,10 +175,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -196,10 +196,10 @@ class OperatorCacheFlushService
         $key = 'op_api_whitelist_' . $code;
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -245,10 +245,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -270,13 +270,10 @@ class OperatorCacheFlushService
 //        }
 //        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $redisV3 = $this->redisFactory->get('v3');
-        $redis = $this->redisFactory->get('default');
+        $v3Del = $this->redisFactory->get('v3')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        var_dump(__FUNCTION__ ." v3 " . $redisV3->del($key));
-        var_dump(__FUNCTION__ . " v2 " . $redis->del($key));
-
-        return $redis->del($key) && $redisV3->del($key);
+        return $v3Del && $v2Del;
     }
 
     /**
