@@ -273,7 +273,8 @@ class OperatorCacheFlushService
         $redisV3 = $this->redisFactory->get('v3');
         $redis = $this->redisFactory->get('default');
 
-        var_dump(__FUNCTION__ . $redisV3->del($key));
+        var_dump(__FUNCTION__ ." v3 " . $redisV3->del($key));
+        var_dump(__FUNCTION__ . " v2 " . $redis->del($key));
 
         return $redis->del($key) && $redisV3->del($key);
     }
