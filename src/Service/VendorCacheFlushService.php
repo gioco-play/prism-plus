@@ -27,6 +27,7 @@ class VendorCacheFlushService
     protected $dispatcher;
 
     /**
+     * @Inject()
      * @var RedisFactory
      */
     protected $redisFactory;

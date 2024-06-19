@@ -26,6 +26,7 @@ class OperatorCacheFlushService
     protected $dispatcher;
 
     /**
+     * @Inject()
      * @var RedisFactory
      */
     protected $redisFactory;

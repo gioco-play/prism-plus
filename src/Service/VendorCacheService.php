@@ -8,6 +8,7 @@ use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\Redis;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
@@ -33,6 +34,7 @@ class VendorCacheService
     protected $poolName = "default";
 
     /**
+     * @Inject()
      * @var RedisFactory
      */
     protected $redisFactory;

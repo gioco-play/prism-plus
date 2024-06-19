@@ -39,6 +39,7 @@ class CacheService
     protected $poolName = "default";
 
     /**
+     * @Inject()
      * @var RedisFactory
      */
     protected $redisFactory;
