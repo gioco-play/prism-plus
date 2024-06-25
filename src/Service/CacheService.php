@@ -10,6 +10,7 @@ use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\Redis;
+use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 
@@ -20,7 +21,6 @@ use Psr\Container\ContainerInterface;
  */
 class CacheService
 {
-
     /**
      * @var MongoDb
      */
@@ -37,6 +37,12 @@ class CacheService
      * @var string
      */
     protected $poolName = "default";
+
+    /**
+     * @Inject()
+     * @var RedisFactory
+     */
+    protected $redisFactory;
 
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
@@ -267,11 +273,14 @@ class CacheService
      * @return mixed
      */
     public function memberInfo(string $accountOp, string $delimiter = '_') {
-        $container = ApplicationContext::getContainer();
-        $redis = $container->get(Redis::class);
+//        $container = ApplicationContext::getContainer();
+//        $redis = $container->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
         if ($data = $redis->get($accountOp)) {
             return json_decode($data, true);
         }
+
         $this->dbDefaultPool();
         try {
             list($account, $op) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
@@ -306,6 +315,7 @@ class CacheService
 
     /**
      * 查詢會員資料
+     * @deprecated
      * @param string $accountOp (含後綴商戶代碼)
      * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
      * @return mixed
@@ -358,42 +368,73 @@ class CacheService
      * @param $slug "bo / api"
      * @return false|mixed
      * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="platform_switch", value="_#{slug}", listener="platform_switch_cache")
+     * @throws \Exception
      */
     public function platformSwitch($slug) {
-        $this->dbDefaultPool();
-        $filter =  ['slug' => $slug];
-        $data = current($this->mongodb->fetchAll('platform', $filter));
-        if ($data) {
-            return $data['status'];
+        $key = 'platform_switch_' . strtolower($slug);
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $filter =  ['slug' => $slug];
+            $data = current($this->mongodb->fetchAll('platform', $filter));
+            if (isset($data['status'])) {
+                $redisData = $data['status'];
+                $redis->setex($key, 60*60*1, $redisData);
+                return $data['status'];
+            }
+            return false;
         }
-        return false;
+        return $redis->get($key);
     }
 
     /**
      * 全域封鎖IP名單
-     * @Cacheable(prefix="global_block_ip", listener="global_block_ip_cache")
      */
     public function globalIPBlock() {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
-        if ($data) {
-            return $data['ip'];
+        $key = 'global_block_ip';
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
+            if (isset($data['ip'])) {
+                $redisData = json_encode($data['ip']);
+                $redis->setex($key, 60*60*1, $redisData);
+                return $data['ip'];
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
     
     /**
      * 全域IP白名單
-     * @Cacheable(prefix="global_white_ip", listener="global_white_ip_cache")
      */
     public function globalIPWhite() {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('platform', ['slug' => 'white_ip']));
-        if ($data) {
-            return $data['ip'];
+        $key = 'global_white_ip';
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('platform', ['slug' => 'white_ip']));
+            if ($data) {
+                return $data['ip'];
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key),true);
     }
 
     /**
@@ -469,29 +510,49 @@ class CacheService
     }
 
     /**
-     * GF幣值
-     * @Cacheable(prefix="gf_currency_rate", listener="gf_currency_rate_cache")
+     * GF 幣值
      */
     public function gfCurrencyRate() {
-        $this->dbDefaultPool();
-        $data = $this->mongodb->fetchAll('gf_exchange_rate');
-        if ($data) {
-            return collect($data)->pluck('rate', 'code')->toArray();
+        $key = 'gf_currency_rate';
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = $this->mongodb->fetchAll('gf_exchange_rate');
+            if ($data) {
+                $redisData = json_encode(collect($data)->pluck('rate', 'code')->toArray());
+                $redis->setex($key, 60*60*1, $redisData);
+                return json_decode($redisData, true);
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
 
     /**
      * GF幣值最小交易金額
-     * @Cacheable(prefix="gf_currency_min_transfer", listener="gf_currency_min_transfer_cache")
      */
     public function gfCurrencyMinTransfer() {
-        $this->dbDefaultPool();
-        $data = $this->mongodb->fetchAll('gf_exchange_rate');
-        if ($data) {
-            return collect($data)->pluck('min_transfer', 'code')->toArray();
+        $key = 'gf_currency_min_transfer';
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = $this->mongodb->fetchAll('gf_exchange_rate');
+            if ($data) {
+                return collect($data)->pluck('min_transfer', 'code')->toArray();
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
 
 }

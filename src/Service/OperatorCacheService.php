@@ -8,6 +8,10 @@ use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Redis\Redis;
+use Hyperf\Redis\RedisFactory;
+use Hyperf\Utils\ApplicationContext;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -29,6 +33,12 @@ class OperatorCacheService
      */
     protected $poolName = "default";
 
+    /**
+     * @Inject()
+     * @var RedisFactory
+     */
+    protected $redisFactory;
+
     public function __construct(ContainerInterface $container) {
         $this->mongodb = $container->get(MongoDb::class);
         $this->dbDefaultPool();
@@ -48,47 +58,51 @@ class OperatorCacheService
      */
     public function basic(string $code)
     {
-        return $this->basicCache(strtoupper($code));
-    }
+        $code = strtoupper($code);
+        $key = 'op_basic_' . $code;
 
-    /**
-     * 營運商基本資料
-     * @param string $code
-     * @Cacheable(prefix="op_basic", value="_#{code}", listener="op_basic_cache")
-     */
-    private function basicCache(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "code" => 1,
-                "name" => 1,
-                "status" => 1,
-                "operator_token" => 1,
-                "secret_key" => 1,
-                "currency" => 1,
-                "website" => 1,
-                "member_already"=>1
-            ]
-        ]));
-
-        if ($data) {
-            return $data;
+            ], [
+                'projection' => [
+                    "code" => 1,
+                    "name" => 1,
+                    "status" => 1,
+                    "operator_token" => 1,
+                    "secret_key" => 1,
+                    "currency" => 1,
+                    "website" => 1,
+                    "member_already" => 1,
+                    "version" => 1,
+                ]
+            ]));
+            if ($data) {
+                $redis->setex($key, 60*60*1, json_encode($data));
+                return $data;
+            }
+            return null;
         }
-
-        return null;
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -98,48 +112,50 @@ class OperatorCacheService
      */
     public function mainSwitch(string $code)
     {
-        return $this->mainSwitchCache(strtoupper($code));
-    }
+        $code = strtoupper($code);
+        $key = 'op_main_switch_' . $code;
 
-    /**
-     * 總開關
-     * @param string $code
-     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="op_main_switch", value="_#{code}", listener="op_main_switch_cache")
-     */
-    private function mainSwitchCache(string $code) {
-        $this->dbDefaultPool();
-//        $code = strtolower($code);
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "code" => 1,
-                "status" => 1,
-                "main_switch" => 1
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "code" => 1,
+                    "status" => 1,
+                    "main_switch" => 1
+                ]
+            ]));
 
-        if ($data) {
-            return [
-                "code" => $data['code'],
-                "status" => $data['status'],
-                'switch' => json_decode(json_encode($data['main_switch']), true)
-            ];
+            if ($data) {
+                $redisData = [
+                    "code" => $data['code'],
+                    "status" => $data['status'],
+                    'switch' => json_decode(json_encode($data['main_switch']), true)
+                ];
+                $redis->setex($key, 60*60*1, json_encode($redisData));
+                return $redisData;
+            }
+            return null;
         }
-
-        return null;
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -151,58 +167,63 @@ class OperatorCacheService
      */
     public function vendorSetting(string $code, string $vendorCode)
     {
-        return $this->vendorSettingCache(strtoupper($code), strtolower($vendorCode));
-    }
+        $code = strtoupper($code);
+        $vendorCode = strtolower($vendorCode);
+        $key = 'op_vendor_setting_' . $code . '_' . $vendorCode;
 
-    /**
-     * 遊戲商 開關 / 配置
-     * @param string $code
-     * @param string $vendorCode
-     * @throws \GiocoPlus\Mongodb\Exception\MongoDBException
-     * @Cacheable(prefix="op_vendor_setting", value="_#{code}_#{vendorCode}", listener="op_vendor_setting_cache")
-     */
-    private function vendorSettingCache(string $code, string $vendorCode) {
-        $this->dbDefaultPool();
-        $vendor = strtolower($vendorCode);
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $vendor = strtolower($vendorCode);
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "code" => 1,
-                "status" => 1,
-                "currency" => 1,
-                "website" => 1,
-                "main_switch" => 1,
-                "vendor_switch.{$vendor}" => 1,
-                "vendors.{$vendor}" => 1
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "code" => 1,
+                    "status" => 1,
+                    "currency" => 1,
+                    "website" => 1,
+                    "main_switch" => 1,
+                    "vendor_switch.{$vendor}" => 1,
+                    "vendors.{$vendor}" => 1
+                ]
+            ]));
 
-        if ($data) {
-            return [
-                "code" => $data['code'],
-                "status" => $data['status'],
-                "currency" => $data['currency'],
-                "website" => $data['website'],
-                "main_switch" => json_decode(json_encode($data['main_switch']), true),
-                "switch" => json_decode(json_encode($data['vendor_switch']->$vendor), true),
-                "vendor" => json_decode(json_encode($data['vendors']->$vendor), true),
-                "vendor_code" => $vendor
-            ];
+            if ($data) {
+                $redisData = [
+                    "code" => $data['code'],
+                    "status" => $data['status'],
+                    "currency" => $data['currency'],
+                    "website" => $data['website'],
+                    "main_switch" => json_decode(json_encode($data['main_switch']), true),
+                    "switch" => json_decode(json_encode($data['vendor_switch']->$vendor), true),
+                    "vendor" => json_decode(json_encode($data['vendors']->$vendor), true),
+                    "vendor_code" => $vendor
+                ];
+                $redis->setex($key, 60*60*1, json_encode($redisData));
+                return $redisData;
+            }
+
+            return null;
         }
-
-        return null;
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -211,46 +232,50 @@ class OperatorCacheService
      */
     public function currencyRate(string $code)
     {
-        return $this->currencyRateCache(strtoupper($code));
-    }
+        $code = strtoupper($code);
+        $key = 'op_currency_rate_' . $code;
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
 
-    /**
-     * 營運商幣值表
-     * @param string $code
-     * @Cacheable(prefix="op_currency_rate", value="_#{code}", listener="op_currency_rate_cache")
-     */
-    private function currencyRateCache(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "currency_rate" => 1,
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "currency_rate" => 1,
+                ]
+            ]));
 
-        if ($data) {
-            $rates = json_decode(json_encode($data['currency_rate']), true);
-            $_rates = [];
-            foreach ($rates as $vendor => $value) {
-                $_rates[$vendor] = $value["rate"];
+            if ($data) {
+                $rates = json_decode(json_encode($data['currency_rate']), true);
+                $_rates = [];
+                foreach ($rates as $vendor => $value) {
+                    $_rates[$vendor] = $value["rate"];
+                }
+                $redis->setex($key, 60*60*1, json_encode($_rates));
+                return $_rates;
             }
-            return $_rates;
-        }
 
-        return [];
+            return [];
+        }
+        return json_decode($redis->get($key), true);
     }
+
 
     /**
      * 營運商幣別對應
@@ -259,44 +284,50 @@ class OperatorCacheService
     public function currency(string $code)
     {
         return $this->currencyCache(strtoupper($code));
-    }
 
-    /**
-     * 營運商幣別對應
-     * @param string $code
-     * @Cacheable(prefix="op_currency", value="_#{code}", listener="op_currency_cache")
-     */
-    private function currencyCache(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+        $code = strtoupper($code);
+        $key = 'op_currency_' . $code;
+
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "currency_rate" => 1,
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "currency_rate" => 1,
+                ]
+            ]));
 
-        if ($data) {
-            $rates = json_decode(json_encode($data['currency_rate']), true);
-            $_currencies = [];
-            foreach ($rates as $vendor => $value) {
-                $_currencies[$vendor] = $value["vendor"];
+            if ($data) {
+                $rates = json_decode(json_encode($data['currency_rate']), true);
+                $_currencies = [];
+                foreach ($rates as $vendor => $value) {
+                    $_currencies[$vendor] = $value["vendor"];
+                }
+                $redis->setex($key, 60*60*1, json_encode($_currencies));
+                return $_currencies;
             }
-            return $_currencies;
-        }
 
-        return [];
+            return [];
+        }
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -307,42 +338,45 @@ class OperatorCacheService
      */
     public function blockGames(string $code, string $vendorCode): array
     {
-        return $this->blockGamesCache(strtoupper($code), strtolower($vendorCode));
-    }
+        $code = strtoupper($code);
+        $vendorCode = strtolower($vendorCode);
 
-    /**
-     * 運營商 封鎖遊戲
-     * @param string $code
-     * @param string $vendorCode
-     * @return array
-     * @Cacheable(prefix="op_block_game", value="_#{code}_#{vendorCode}", listener="op_block_game_cache")
-     */
-    private function blockGamesCache(string $code, string $vendorCode) {
-        $this->dbDefaultPool();
-//        $vendor = strtolower($vendorCode);
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+        $key = 'op_block_game_' . $code . '_' . $vendorCode;
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
+
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "game_blocklist.{$vendorCode}" => 1,
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "game_blocklist.{$vendorCode}" => 1,
+                ]
+            ]));
 
-        if ($data&&isset($data['game_blocklist'])&&isset($data['game_blocklist']->$vendorCode)) {
-            return $data['game_blocklist']->$vendorCode;
+            if ($data&&isset($data['game_blocklist'])&&isset($data['game_blocklist']->$vendorCode)) {
+                $redisData = $data['game_blocklist']->$vendorCode;
+                $redis->setex($key, 60*60*1, json_encode($redisData));
+                return $redisData;
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -352,44 +386,43 @@ class OperatorCacheService
      */
     public function apiWhitelist(string $code): array
     {
-        return $this->apiWhitelistCache(strtoupper($code));
-    }
+        $code = strtoupper($code);
+        $key = 'op_api_whitelist_' . $code;
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
 
-    /**
-     * 運營商 API 白名單
-     * @param string $code
-     * @return array
-     * @Cacheable(prefix="op_api_whitelist", value="_#{code}", listener="op_api_whitelist_cache")
-     */
-    private function apiWhitelistCache(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "code" => 1,
-                "operator_token" => 1,
-                "secret_key" => 1,
-                "status" => 1,
-                "api_whitelist" => 1,
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "code" => 1,
+                    "operator_token" => 1,
+                    "secret_key" => 1,
+                    "status" => 1,
+                    "api_whitelist" => 1,
+                ]
+            ]));
 
-        if ($data) {
-            return $data;
+            if ($data) {
+                $redis->setex($key, 60*60*1, json_encode($data));
+                return $data;
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -483,40 +516,43 @@ class OperatorCacheService
      */
     public function seamlessSetting(string $code)
     {
-        return $this->seamlessSettingCache(strtoupper($code));
-    }
+        $code = strtoupper($code);
+        $key = 'op_seamless_setting_' . $code;
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
 
-    /**
-     * 運營商 類單一錢包配置
-     * @param string $code
-     * @return mixed
-     * @Cacheable(prefix="op_seamless_setting", value="_#{code}", listener="op_seamless_setting_cache")
-     */
-    private function seamlessSettingCache(string $code) {
-        $this->dbDefaultPool();
-        $data = current($this->mongodb->fetchAll('operators', [
-            '$or' => [
-                [
-                    'code' => [
-                        '$eq' => $code
-                    ]
-                ],
-                [
-                    'operator_token' => [
-                        '$eq' => strtolower($code)
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('operators', [
+                '$or' => [
+                    [
+                        'code' => [
+                            '$eq' => $code
+                        ]
+                    ],
+                    [
+                        'operator_token' => [
+                            '$eq' => strtolower($code)
+                        ]
                     ]
                 ]
-            ]
-        ], [
-            'projection' => [
-                "seamless_setting" => 1,
-            ]
-        ]));
+            ], [
+                'projection' => [
+                    "seamless_setting" => 1,
+                ]
+            ]));
 
-        if ($data&&isset($data['seamless_setting'])) {
-            return $data['seamless_setting'];
+            if ($data && isset($data['seamless_setting'])) {
+                $redisData = json_encode($data['seamless_setting']);
+                $redis->setex($key, 60*60*1, $redisData);
+                return $data['seamless_setting'];
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
 
     /**
@@ -526,33 +562,38 @@ class OperatorCacheService
      */
     public function grabberLogEnable(string $vendorCode)
     {
-        return $this->grabberLogEnableCache(strtolower($vendorCode));
-    }
+        $vendorCode = strtolower($vendorCode);
+        $key = 'grabber_log_enable_' . $vendorCode;
+//        if (! ApplicationContext::getContainer()->has(Redis::class)){
+//            throw new \Exception('Please make sure if there is "Redis" in the container');
+//        }
+//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        $redis = $this->redisFactory->get('default');
 
-    /**
-     * 營商遊戲拉單開關
-     * @param string $vendorCode
-     * @return array
-     * @Cacheable(prefix="grabber_log_enable", value="_#{vendorCode}", listener="grabber_log_enable_cache")
-     */
-    private function grabberLogEnableCache(string $vendorCode) {
-//        $vendorCode = strtolower($vendorCode);
-        $this->dbDefaultPool();
-        $data = $this->mongodb->fetchAll('operators', [
-            "status" => "online",
-            "main_switch.grabber_log_on" => true,
-            "vendor_switch.{$vendorCode}.grabber_log_on" => true
-        ], [
-            'projection' => [
-                "code" => 1,
-                "vendors.{$vendorCode}" => 1,
-            ]
-        ]);
+        if (!$redis->get($key)) {
+            $this->dbDefaultPool();
+            $data = $this->mongodb->fetchAll('operators', [
+                "status" => "online",
+                "main_switch.grabber_log_on" => true,
+                "vendor_switch.{$vendorCode}.status" => [
+                    '$ne' => 'decommission',
+                ],
+                "vendor_switch.{$vendorCode}.grabber_log_on" => true
+            ], [
+                'projection' => [
+                    "code" => 1,
+                    "vendors.{$vendorCode}" => 1,
+                ]
+            ]);
 
-        if ($data) {
-            return json_decode(json_encode($data), true);
+            if ($data) {
+                $redisData = json_encode($data);
+                $redis->setex($key, 60*60*1, $redisData);
+                return json_decode($redisData, true);
+            }
+            return [];
         }
-        return [];
+        return json_decode($redis->get($key), true);
     }
 
     /**
