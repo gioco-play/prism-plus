@@ -6,9 +6,7 @@ namespace GiocoPlus\PrismPlus\Service;
 
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Redis\Redis;
 use Hyperf\Redis\RedisFactory;
-use Hyperf\Utils\ApplicationContext;
 use Psr\EventDispatcher\EventDispatcherInterface;
 /**
  * 清除快取
@@ -17,7 +15,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
  */
 class CacheFlushService
 {
-
     /**
      * @Inject()
      * @var EventDispatcherInterface
@@ -140,23 +137,14 @@ class CacheFlushService
      * @return bool
      */
     public function platformSwitch($slug) {
-//        $this->dispatcher->dispatch(new DeleteListenerEvent('platform_switch_cache', [
-//            'slug' => $slug
-//        ]));
-//
-//        return true;
-
         $key = 'platform_switch_' . strtolower($slug);
 
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $this->redisFactory->get('v3')->del($key);
+        }
+        $this->redisFactory->get('default')->del($key);
 
-        $v3Del = $this->redisFactory->get('v3')->del($key);
-        $v2Del = $this->redisFactory->get('default')->del($key);
-
-        return $v3Del && $v2Del;
+        return true;
     }
 
     /**
@@ -164,22 +152,14 @@ class CacheFlushService
      * @return bool
      */
     public function globalIPBlock() {
-//        $this->dispatcher->dispatch(new DeleteListenerEvent('global_block_ip_cache', [
-//        ]));
-//
-//        return true;
-
         $key = 'global_ip_block';
 
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $this->redisFactory->get('v3')->del($key);
+        }
+        $this->redisFactory->get('default')->del($key);
 
-        $v3Del = $this->redisFactory->get('v3')->del($key);
-        $v2Del = $this->redisFactory->get('default')->del($key);
-
-        return $v3Del && $v2Del;
+        return true;
     }
     
     /**
@@ -187,21 +167,14 @@ class CacheFlushService
      * @return bool
      */
     public function globalIPWhite() {
-//        $this->dispatcher->dispatch(new DeleteListenerEvent('global_white_ip_cache', [
-//        ]));
-//
-//        return true;
-
         $key = 'global_white_ip';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $v3Del = $this->redisFactory->get('v3')->del($key);
-        $v2Del = $this->redisFactory->get('default')->del($key);
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $this->redisFactory->get('v3')->del($key);
+        }
+        $this->redisFactory->get('default')->del($key);
 
-        return $v3Del && $v2Del;
+        return true;
     }
     
     /**
@@ -258,37 +231,27 @@ class CacheFlushService
      * GF幣值
      */
     public function gfCurrencyRate() {
-//        $this->dispatcher->dispatch(new DeleteListenerEvent('gf_currency_rate_cache', [
-//        ]));
-
         $key = 'gf_currency_rate';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $v3Del = $this->redisFactory->get('v3')->del($key);
-        $v2Del = $this->redisFactory->get('default')->del($key);
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $this->redisFactory->get('v3')->del($key);
+        }
+        $this->redisFactory->get('default')->del($key);
 
-        return $v3Del && $v2Del;
+        return true;
     }
 
     /**
      * GF幣值最小交易金額
      */
     public function gfCurrencyMinTransfer() {
-//        $this->dispatcher->dispatch(new DeleteListenerEvent('gf_currency_min_transfer_cache', [
-//        ]));
-
         $key = 'gf_currency_min_transfer';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
 
-        $v3Del = $this->redisFactory->get('v3')->del($key);
-        $v2Del = $this->redisFactory->get('default')->del($key);
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $this->redisFactory->get('v3')->del($key);
+        }
+        $this->redisFactory->get('default')->del($key);
 
-        return $v3Del && $v2Del;
+        return true;
     }
 }

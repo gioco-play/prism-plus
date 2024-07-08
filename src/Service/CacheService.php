@@ -372,10 +372,6 @@ class CacheService
      */
     public function platformSwitch($slug) {
         $key = 'platform_switch_' . strtolower($slug);
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
         $redis = $this->redisFactory->get('default');
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
@@ -396,10 +392,6 @@ class CacheService
      */
     public function globalIPBlock() {
         $key = 'global_block_ip';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
         $redis = $this->redisFactory->get('default');
 
         if (!$redis->get($key)) {
@@ -420,10 +412,6 @@ class CacheService
      */
     public function globalIPWhite() {
         $key = 'global_white_ip';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
         $redis = $this->redisFactory->get('default');
 
         if (!$redis->get($key)) {
@@ -514,10 +502,6 @@ class CacheService
      */
     public function gfCurrencyRate() {
         $key = 'gf_currency_rate';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
         $redis = $this->redisFactory->get('default');
 
         if (!$redis->get($key)) {
@@ -538,10 +522,6 @@ class CacheService
      */
     public function gfCurrencyMinTransfer() {
         $key = 'gf_currency_min_transfer';
-//        if (! ApplicationContext::getContainer()->has(Redis::class)){
-//            throw new \Exception('Please make sure if there is "Redis" in the container');
-//        }
-//        $redis = ApplicationContext::getContainer()->get(Redis::class);
         $redis = $this->redisFactory->get('default');
 
         if (!$redis->get($key)) {
