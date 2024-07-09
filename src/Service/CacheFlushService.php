@@ -138,13 +138,13 @@ class CacheFlushService
      */
     public function platformSwitch($slug) {
         $key = 'platform_switch_' . strtolower($slug);
-
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -154,12 +154,13 @@ class CacheFlushService
     public function globalIPBlock() {
         $key = 'global_ip_block';
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
     
     /**
@@ -169,12 +170,13 @@ class CacheFlushService
     public function globalIPWhite() {
         $key = 'global_white_ip';
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
     
     /**
@@ -233,12 +235,13 @@ class CacheFlushService
     public function gfCurrencyRate() {
         $key = 'gf_currency_rate';
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -247,11 +250,12 @@ class CacheFlushService
     public function gfCurrencyMinTransfer() {
         $key = 'gf_currency_min_transfer';
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 }

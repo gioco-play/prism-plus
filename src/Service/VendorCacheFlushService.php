@@ -6,9 +6,7 @@ namespace GiocoPlus\PrismPlus\Service;
 
 use Hyperf\Cache\Listener\DeleteListenerEvent;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Redis\Redis;
 use Hyperf\Redis\RedisFactory;
-use Hyperf\Utils\ApplicationContext;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -39,12 +37,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_basic_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -56,12 +55,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_request_params_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -73,12 +73,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_betlog_field_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -90,12 +91,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_ip_whitelist_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -107,12 +109,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_language_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -124,12 +127,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_currency_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -141,12 +145,13 @@ class VendorCacheFlushService
         $code = strtolower($code);
         $key = 'vendor_currency_rate_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -157,12 +162,13 @@ class VendorCacheFlushService
     public function games(string $code) {
         $key = 'vendor_games_' . $code;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -174,12 +180,13 @@ class VendorCacheFlushService
         $gameCode = strtolower($gameCode);
         $key = 'vendor_game_' . $gameCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -190,12 +197,13 @@ class VendorCacheFlushService
     public function gameCodeMapping(string $vendorCode) {
         $key = 'gamecode_mapping_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -207,12 +215,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gamecode_mapping_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -224,12 +233,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gameid_mapping_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -240,12 +250,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gamename_mapping_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -256,12 +267,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_gametype_mapping_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -272,12 +284,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'gf_gametype_mapping_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -288,12 +301,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_game_maintain_list_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -304,12 +318,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_game_working_list_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -320,12 +335,13 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_game_status_list_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -335,12 +351,13 @@ class VendorCacheFlushService
     public function walletCodes() {
         $key = 'vendor_wallet_code';
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 
     /**
@@ -352,11 +369,12 @@ class VendorCacheFlushService
         $vendorCode = strtolower($vendorCode);
         $key = 'vendor_channel_group_status_' . $vendorCode;
 
+        $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key);
         }
-        $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key);
 
-        return true;
+        return $v3Del && $v2Del;
     }
 }
