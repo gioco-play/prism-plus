@@ -204,6 +204,8 @@ class OperatorCacheService
                     "vendor_code" => $vendor,
                 ];
 
+                var_dump("channelId:", $channelId);
+
                 if (! empty($channelId)) {
                     $channel = $this->mongodb->fetchAll('vendor_channel', [
                         [
@@ -219,6 +221,7 @@ class OperatorCacheService
                             "params" => 1,
                         ]
                     ]);
+                    var_dump("channel:", $channel);
                     if ($channel) {
                         $redisData['vendor_channel'] = json_decode(json_encode($channel), true);
                     }
