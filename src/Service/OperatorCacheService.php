@@ -205,26 +205,25 @@ class OperatorCacheService
                     "vendor_code" => $vendor,
                 ];
 
-                var_dump('channelId:', $channelId);
+//                var_dump('channelId:', $channelId);
 
                 if (! empty($channelId)) {
-                    $channel = $this->mongodb->fetchAll('vendor_channel', [
-                        [
-                            '_id' => new ObjectId($channelId)
-                        ],
-                    ], [
+                    $filter = [
+                        '_id' => new ObjectId($channelId)
+                    ];
+
+                    $channel = current($this->mongodb->setPool('default')->fetchAll('vendor_channel', $filter, [
                         'projection' => [
-                            "_id" => 1,
-                            "name" => 1,
+                            "_id" => 0,
                             "code" => 1,
+                            "name" => 1,
                             "status" => 1,
-                            "mode" => 0,
                             "params" => 1,
                         ]
-                    ]);
-
+                    ]));
                     if ($channel) {
                         $redisData['vendor_channel'] = json_decode(json_encode($channel), true);
+                        unset($redisData['vendor_channel']['_id']);
                     }
                 }
 
