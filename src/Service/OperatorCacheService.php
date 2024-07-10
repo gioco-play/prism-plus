@@ -8,6 +8,7 @@ use GiocoPlus\Mongodb\MongoDb;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
+use MongoDB\BSON\ObjectId;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -184,11 +185,14 @@ class OperatorCacheService
                     "website" => 1,
                     "main_switch" => 1,
                     "vendor_switch.{$vendor}" => 1,
-                    "vendors.{$vendor}" => 1
+                    "vendors.{$vendor}" => 1,
                 ]
             ]));
 
             if ($data) {
+                $vendors = json_decode(json_encode($data['vendors']->$vendor), true);
+                $channelId = $data['vendors'][$vendor]['channel_group'] ?? '';
+
                 $redisData = [
                     "code" => $data['code'],
                     "status" => $data['status'],
@@ -196,9 +200,30 @@ class OperatorCacheService
                     "website" => $data['website'],
                     "main_switch" => json_decode(json_encode($data['main_switch']), true),
                     "switch" => json_decode(json_encode($data['vendor_switch']->$vendor), true),
-                    "vendor" => json_decode(json_encode($data['vendors']->$vendor), true),
-                    "vendor_code" => $vendor
+                    "vendor" => $vendors,
+                    "vendor_code" => $vendor,
                 ];
+
+                if (! empty($channelId)) {
+                    $channel = $this->mongodb->fetchAll('vendor_channel', [
+                        [
+                            '_id' => new ObjectId($channelId)
+                        ],
+                    ], [
+                        'projection' => [
+                            "_id" => 1,
+                            "name" => 1,
+                            "code" => 1,
+                            "status" => 1,
+                            "mode" => 0,
+                            "params" => 1,
+                        ]
+                    ]);
+                    if ($channel) {
+                        $redisData['vendor_channel'] = json_decode(json_encode($channel), true);
+                    }
+                }
+
                 $redis->setex($key, 60*60*1, json_encode($redisData));
                 return $redisData;
             }

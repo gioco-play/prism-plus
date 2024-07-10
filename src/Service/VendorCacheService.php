@@ -679,6 +679,7 @@ class VendorCacheService
 
     /**
      * 遊戲商線路群組狀態
+     * @deprecated
      * @param string $vendorCode
      * @return array
      */
