@@ -203,6 +203,7 @@ class OperatorCacheService
                     "switch" => json_decode(json_encode($data['vendor_switch']->$vendor), true),
                     "vendor" => $vendors,
                     "vendor_code" => $vendor,
+                    'channel_test' => [],
                 ];
 
                 if (! empty($channelId)) {
