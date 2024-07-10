@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GiocoPlus\PrismPlus\Service;
 
 use GiocoPlus\Mongodb\MongoDb;
+use GiocoPlus\PrismPlus\Helper\Log;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
@@ -205,6 +206,7 @@ class OperatorCacheService
                 ];
 
                 var_dump("channelId:", $channelId);
+                Log::info("channelId:". $channelId);
 
                 if (! empty($channelId)) {
                     $channel = $this->mongodb->fetchAll('vendor_channel', [
@@ -222,6 +224,7 @@ class OperatorCacheService
                         ]
                     ]);
                     var_dump("channel:", $channel);
+                    Log::info("channel:". json_encode($channel));
                     if ($channel) {
                         $redisData['vendor_channel'] = json_decode(json_encode($channel), true);
                     }
