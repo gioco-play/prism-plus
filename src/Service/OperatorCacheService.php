@@ -192,7 +192,7 @@ class OperatorCacheService
 
             if ($data) {
                 $vendors = json_decode(json_encode($data['vendors']->$vendor), true);
-                $channelId = $data['vendors'][$vendor]['channel_group'] ?? '';
+                $channelId = $vendors['vendors'][$vendor]['channel_group'] ?? '';
 
                 $redisData = [
                     "code" => $data['code'],
@@ -204,9 +204,6 @@ class OperatorCacheService
                     "vendor" => $vendors,
                     "vendor_code" => $vendor,
                 ];
-
-                var_dump("channelId:", $channelId);
-                Log::info("channelId:". $channelId);
 
                 if (! empty($channelId)) {
                     $channel = $this->mongodb->fetchAll('vendor_channel', [
@@ -223,8 +220,7 @@ class OperatorCacheService
                             "params" => 1,
                         ]
                     ]);
-                    var_dump("channel:", $channel);
-                    Log::info("channel:". json_encode($channel));
+
                     if ($channel) {
                         $redisData['vendor_channel'] = json_decode(json_encode($channel), true);
                     }
