@@ -192,7 +192,7 @@ class OperatorCacheService
 
             if ($data) {
                 $vendors = json_decode(json_encode($data['vendors']->$vendor), true);
-                $channelId = $vendors['vendors'][$vendor]['channel_group'] ?? '';
+                $channelId = $vendors['channel_group'] ?? '';
 
                 $redisData = [
                     "code" => $data['code'],
