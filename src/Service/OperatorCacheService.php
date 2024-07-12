@@ -222,7 +222,14 @@ class OperatorCacheService
                         ]
                     ]));
                     if ($channel) {
-                        $redisData['vendor_channel'] = json_decode(json_encode($channel), true);
+                        $vendorParams = json_decode(json_encode($channel), true);
+                        $channelParams = [];
+                        foreach ($vendorParams['params'] as $k => $v) {
+                            $channelParams[$k] = $v['value'];
+                        }
+                        $vendorParams['params'] = $channelParams;
+
+                        $redisData['vendor_channel'] = $vendorParams;
                         unset($redisData['vendor_channel']['_id']);
                     }
                 }
