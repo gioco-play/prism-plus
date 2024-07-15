@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GiocoPlus\PrismPlus\Service;
 
 use GiocoPlus\Mongodb\MongoDb;
+use GiocoPlus\PrismConst\Constant\GlobalConst;
 use GiocoPlus\PrismPlus\Helper\Log;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
@@ -205,8 +206,6 @@ class OperatorCacheService
                     "vendor_code" => $vendor,
                 ];
 
-//                var_dump('channelId:', $channelId);
-
                 if (! empty($channelId)) {
                     $filter = [
                         '_id' => new ObjectId($channelId)
@@ -230,7 +229,9 @@ class OperatorCacheService
                         $vendorParams['params'] = $channelParams;
 
                         $redisData['vendor_channel'] = $vendorParams;
-                        unset($redisData['vendor_channel']['_id']);
+                        if (isset($redisData['vendor_channel']['_id'])) {
+                            unset($redisData['vendor_channel']['_id']);
+                        }
                     }
                 }
 
@@ -570,10 +571,10 @@ class OperatorCacheService
         if (!$redis->get($key)) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('operators', [
-                "status" => "online",
+                "status" => GlobalConst::ONLINE,
                 "main_switch.grabber_log_on" => true,
                 "vendor_switch.{$vendorCode}.status" => [
-                    '$ne' => 'decommission',
+                    '$ne' => GlobalConst::DECOMMISSION,
                 ],
                 "vendor_switch.{$vendorCode}.grabber_log_on" => true
             ], [
@@ -584,9 +585,41 @@ class OperatorCacheService
             ]);
 
             if ($data) {
-                $redisData = json_encode($data);
-                $redis->setex($key, 60*60*1, $redisData);
-                return json_decode($redisData, true);
+                $data = json_decode(json_encode($data), true);
+
+                $redisData = [];
+                $vendorChannelTemp = [];
+                foreach ($data as $op) {
+                    if (! in_array($op['vendors'][$vendorCode]['channel_group'], $vendorChannelTemp)) {
+                        $vendorChannelTemp[] = $op['vendors'][$vendorCode]['channel_group'];
+                        // 查看 vendor channel 狀態
+                        $channelId = $op['vendors'][$vendorCode]['channel_group'];
+
+                        $filter = [
+                            '_id' => new ObjectId($channelId)
+                        ];
+                        $channel = current($this->mongodb->setPool('default')->fetchAll('vendor_channel', $filter, [
+                            'projection' => [
+                                "_id" => 0,
+                                "code" => 1,
+                                "name" => 1,
+                                "status" => 1,
+                                "params" => 1,
+                            ]
+                        ]));
+                        if ($channel) {
+                            $channel = json_decode(json_encode($channel), true);
+                            if ($channel['status'] != GlobalConst::DECOMMISSION) {
+                                $redisData[] = $op;
+                            }
+                        }
+                    } else {
+                        $redisData[] = $op;
+                    }
+                }
+
+                $redis->setex($key, 60*60*1, json_encode($redisData));
+                return json_decode(json_encode($redisData), true);
             }
             return [];
         }
