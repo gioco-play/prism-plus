@@ -603,7 +603,6 @@ class OperatorCacheService
 
                 $vendorChannelTemp = [];
                 foreach ($data as $op) {
-                    $op = json_decode(json_encode($op), true);
                     $channelId = $op['vendors'][$vendorCode]['channel_group'] ?? '';
                     // 無 channel 的直接存入
                     if (empty($channelId)) {
@@ -625,16 +624,19 @@ class OperatorCacheService
                                 "params" => 1,
                             ]
                         ]));
-                        if ($channel) {
-                            $channel = json_decode(json_encode($channel), true);
-                            $channelParams = [];
-                            foreach ($channel['params'] as $k => $v) {
-                                $channelParams[$k] = $v['value'];
-                            }
-                            $channel['params'] = $channelParams;
-
-                            $vendorChannelTemp[$channelId] = $channel;
+                        if (! $channel) {
+                            $redisData[] = $op;
+                            continue;
                         }
+
+                        $channel = json_decode(json_encode($channel), true);
+                        $channelParams = [];
+                        foreach ($channel['params'] as $k => $v) {
+                            $channelParams[$k] = $v['value'];
+                        }
+                        $channel['params'] = $channelParams;
+
+                        $vendorChannelTemp[$channelId] = $channel;
                     }
 
                     if ($vendorChannelTemp[$channelId]['status'] != GlobalConst::DECOMMISSION) {
