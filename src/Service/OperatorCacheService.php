@@ -638,7 +638,7 @@ class OperatorCacheService
 
                         $vendorChannelTemp[$channelId] = $channel;
                     }
-
+                    // 若 channel status : decommission 則不放入拉單 op
                     if ($vendorChannelTemp[$channelId]['status'] != GlobalConst::DECOMMISSION) {
                         $op['vendor_channel'] = $vendorChannelTemp[$channelId];
                         $redisData[] = $op;
