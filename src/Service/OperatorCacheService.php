@@ -640,7 +640,7 @@ class OperatorCacheService
                     }
 
                     if ($vendorChannelTemp[$channelId]['status'] != GlobalConst::DECOMMISSION) {
-                        $op['channel_group'] = $vendorChannelTemp[$channelId];
+                        $op['vendor_channel'] = $vendorChannelTemp[$channelId];
                         $redisData[] = $op;
                     }
                 }
