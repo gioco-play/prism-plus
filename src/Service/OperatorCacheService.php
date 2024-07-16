@@ -213,7 +213,6 @@ class OperatorCacheService
 
                     $channel = current($this->mongodb->setPool('default')->fetchAll('vendor_channel', $filter, [
                         'projection' => [
-                            "_id" => 0,
                             "code" => 1,
                             "name" => 1,
                             "status" => 1,
@@ -221,14 +220,14 @@ class OperatorCacheService
                         ]
                     ]));
                     if ($channel) {
-                        $vendorParams = json_decode(json_encode($channel), true);
+                        $channel = json_decode(json_encode($channel), true);
                         $channelParams = [];
-                        foreach ($vendorParams['params'] as $k => $v) {
+                        foreach ($channel['params'] as $k => $v) {
                             $channelParams[$k] = $v['value'];
                         }
-                        $vendorParams['params'] = $channelParams;
+                        $channel['params'] = $channelParams;
 
-                        $redisData['vendor_channel'] = $vendorParams;
+                        $redisData['vendor_channel'] = $channel;
                         if (isset($redisData['vendor_channel']['_id'])) {
                             unset($redisData['vendor_channel']['_id']);
                         }
@@ -566,10 +565,25 @@ class OperatorCacheService
     {
         $vendorCode = strtolower($vendorCode);
         $key = 'grabber_log_enable_' . $vendorCode;
+        $expire = 60*60*1;
 
         $redis = $this->redisFactory->get('default');
         if (!$redis->get($key)) {
+            $redisData = [];
             $this->dbDefaultPool();
+
+            // 判斷 vendor 是否中止
+            $vendor = $this->mongodb->fetchAll('vendors', [
+                'code' => $vendorCode,
+            ]);
+            if (!$vendor || !isset($vendor['status'])) {
+                return [];
+            }
+
+            if ($vendor['status'] == GlobalConst::DECOMMISSION) {
+                return [];
+            }
+
             $data = $this->mongodb->fetchAll('operators', [
                 "status" => GlobalConst::ONLINE,
                 "main_switch.grabber_log_on" => true,
@@ -587,20 +601,24 @@ class OperatorCacheService
             if ($data) {
                 $data = json_decode(json_encode($data), true);
 
-                $redisData = [];
                 $vendorChannelTemp = [];
                 foreach ($data as $op) {
-                    if (! in_array($op['vendors'][$vendorCode]['channel_group'], $vendorChannelTemp)) {
-                        $vendorChannelTemp[] = $op['vendors'][$vendorCode]['channel_group'];
-                        // 查看 vendor channel 狀態
-                        $channelId = $op['vendors'][$vendorCode]['channel_group'];
+                    $op = json_decode(json_encode($op), true);
+                    $channelId = $op['vendors'][$vendorCode]['channel_group'] ?? '';
+                    // 無 channel 的直接存入
+                    if (empty($channelId)) {
+                        $redisData[] = $op;
+                        continue;
+                    }
 
+                    // 檢查 channel 狀態，曾經查過的放入 vendorChannelTemp
+                    if (! isset($vendorChannelTemp[$channelId])) {
+                        // 取得 vendor channel 資料
                         $filter = [
                             '_id' => new ObjectId($channelId)
                         ];
                         $channel = current($this->mongodb->setPool('default')->fetchAll('vendor_channel', $filter, [
                             'projection' => [
-                                "_id" => 0,
                                 "code" => 1,
                                 "name" => 1,
                                 "status" => 1,
@@ -609,16 +627,23 @@ class OperatorCacheService
                         ]));
                         if ($channel) {
                             $channel = json_decode(json_encode($channel), true);
-                            if ($channel['status'] != GlobalConst::DECOMMISSION) {
-                                $redisData[] = $op;
+                            $channelParams = [];
+                            foreach ($channel['params'] as $k => $v) {
+                                $channelParams[$k] = $v['value'];
                             }
+                            $channel['params'] = $channelParams;
+
+                            $vendorChannelTemp[$channelId] = $channel;
                         }
-                    } else {
+                    }
+
+                    if ($vendorChannelTemp[$channelId]['status'] != GlobalConst::DECOMMISSION) {
+                        $op['channel_group'] = $vendorChannelTemp[$channelId];
                         $redisData[] = $op;
                     }
                 }
 
-                $redis->setex($key, 60*60*1, json_encode($redisData));
+                $redis->setex($key, $expire, json_encode($redisData));
                 return json_decode(json_encode($redisData), true);
             }
             return [];
