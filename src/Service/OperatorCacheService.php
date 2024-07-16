@@ -573,9 +573,9 @@ class OperatorCacheService
             $this->dbDefaultPool();
 
             // 判斷 vendor 是否中止
-            $vendor = $this->mongodb->fetchAll('vendors', [
+            $vendor = current($this->mongodb->fetchAll('vendors', [
                 'code' => $vendorCode,
-            ]);
+            ]));
             if (!$vendor || !isset($vendor['status'])) {
                 return [];
             }
