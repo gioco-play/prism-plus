@@ -590,7 +590,8 @@ class OperatorCacheService
                 "vendor_switch.{$vendorCode}.status" => [
                     '$ne' => GlobalConst::DECOMMISSION,
                 ],
-                "vendor_switch.{$vendorCode}.grabber_log_on" => true
+                "vendor_switch.{$vendorCode}.grabber_log_on" => true,
+                "version" => "2",
             ], [
                 'projection' => [
                     "code" => 1,
