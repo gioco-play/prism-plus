@@ -373,7 +373,8 @@ class CacheService
     public function platformSwitch($slug) {
         $key = 'platform_switch_' . strtolower($slug);
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $filter =  ['slug' => $slug];
             $data = current($this->mongodb->fetchAll('platform', $filter));
@@ -384,7 +385,7 @@ class CacheService
             }
             return false;
         }
-        return $redis->get($key);
+        return $r;
     }
 
     /**
@@ -414,7 +415,8 @@ class CacheService
         $key = 'global_white_ip';
         $redis = $this->redisFactory->get('default');
 
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('platform', ['slug' => 'white_ip']));
             if ($data) {
@@ -422,7 +424,7 @@ class CacheService
             }
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -504,7 +506,8 @@ class CacheService
         $key = 'gf_currency_rate';
         $redis = $this->redisFactory->get('default');
 
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('gf_exchange_rate');
             if ($data) {
@@ -514,7 +517,7 @@ class CacheService
             }
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -524,7 +527,8 @@ class CacheService
         $key = 'gf_currency_min_transfer';
         $redis = $this->redisFactory->get('default');
 
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('gf_exchange_rate');
             if ($data) {
@@ -532,7 +536,7 @@ class CacheService
             }
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
 }

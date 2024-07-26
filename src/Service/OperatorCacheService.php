@@ -6,7 +6,6 @@ namespace GiocoPlus\PrismPlus\Service;
 
 use GiocoPlus\Mongodb\MongoDb;
 use GiocoPlus\PrismConst\Constant\GlobalConst;
-use GiocoPlus\PrismPlus\Helper\Log;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
@@ -61,8 +60,8 @@ class OperatorCacheService
         $key = 'op_basic_' . $code;
 
         $redis = $this->redisFactory->get('default');
-
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -96,7 +95,7 @@ class OperatorCacheService
             }
             return null;
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -110,8 +109,8 @@ class OperatorCacheService
         $key = 'op_main_switch_' . $code;
 
         $redis = $this->redisFactory->get('default');
-
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -145,7 +144,7 @@ class OperatorCacheService
             }
             return null;
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -162,8 +161,8 @@ class OperatorCacheService
         $key = 'op_vendor_setting_' . $code . '_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $vendor = strtolower($vendorCode);
             $data = current($this->mongodb->fetchAll('operators', [
@@ -240,7 +239,7 @@ class OperatorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -253,8 +252,8 @@ class OperatorCacheService
         $key = 'op_currency_rate_' . $code;
 
         $redis = $this->redisFactory->get('default');
-
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -287,7 +286,7 @@ class OperatorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
 
@@ -303,8 +302,8 @@ class OperatorCacheService
         $key = 'op_currency_' . $code;
 
         $redis = $this->redisFactory->get('default');
-
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -337,7 +336,7 @@ class OperatorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -354,7 +353,8 @@ class OperatorCacheService
         $key = 'op_block_game_' . $code . '_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -382,7 +382,7 @@ class OperatorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -395,8 +395,8 @@ class OperatorCacheService
         $code = strtoupper($code);
         $key = 'op_api_whitelist_' . $code;
         $redis = $this->redisFactory->get('default');
-
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -427,7 +427,7 @@ class OperatorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -525,7 +525,8 @@ class OperatorCacheService
         $key = 'op_seamless_setting_' . $code;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -553,7 +554,7 @@ class OperatorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -568,7 +569,8 @@ class OperatorCacheService
         $expire = 60*60*1;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $redisData = [];
             $this->dbDefaultPool();
 
@@ -651,7 +653,7 @@ class OperatorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**

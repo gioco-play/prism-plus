@@ -61,7 +61,8 @@ class VendorCacheService
 
         $redis = $this->redisFactory->get('default');
 
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -87,7 +88,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -102,7 +103,8 @@ class VendorCacheService
 
         $redis = $this->redisFactory->get('default');
 
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -120,7 +122,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key), true);
+        return json_decode($r, true);
     }
 
     /**
@@ -134,7 +136,8 @@ class VendorCacheService
 
         $redis = $this->redisFactory->get('default');
 
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -152,7 +155,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -165,7 +168,8 @@ class VendorCacheService
         $key = 'vendor_ip_whitelist_' . $code;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -183,7 +187,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -196,7 +200,8 @@ class VendorCacheService
         $code = strtolower($code);
         $key = 'vendor_language_' . $code;
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -214,7 +219,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -227,7 +232,8 @@ class VendorCacheService
         $code = strtolower($code);
         $key = 'vendor_currency_' . $code;
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -252,7 +258,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -265,7 +271,8 @@ class VendorCacheService
         $key = 'vendor_currency_rate_' . $code;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('vendors', [
                 'code' => $code
@@ -289,7 +296,7 @@ class VendorCacheService
             }
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -301,7 +308,8 @@ class VendorCacheService
         $code = strtolower($code);
         $key = 'vendor_games_' . $code;
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', ['vendor_code' => $code], [
                 'projection' => [
@@ -317,7 +325,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -329,7 +337,8 @@ class VendorCacheService
         $gameCode = strtolower($gameCode);
         $key = 'vendor_game_' . $gameCode;
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $gameCode = strtolower($gameCode);
             $data = current($this->mongodb->fetchAll('games', ['game_code' => $gameCode], [
@@ -347,7 +356,7 @@ class VendorCacheService
 
             return null;
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -360,7 +369,8 @@ class VendorCacheService
         $vendorCode = strtolower($vendorCode);
         $key = 'gamecode_mapping_' . $vendorCode;
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -379,7 +389,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -392,7 +402,8 @@ class VendorCacheService
         $key = 'vendor_gamecode_mapping_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -411,7 +422,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
 
@@ -427,7 +438,8 @@ class VendorCacheService
         $key = 'vendor_gameid_mapping_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -445,7 +457,7 @@ class VendorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -460,7 +472,8 @@ class VendorCacheService
         $key = 'vendor_gamename_mapping_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -479,7 +492,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
 
@@ -495,7 +508,8 @@ class VendorCacheService
         $key = 'vendor_gametype_mapping_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -514,7 +528,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
 
@@ -530,7 +544,8 @@ class VendorCacheService
         $key = 'gf_gametype_mapping_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -549,7 +564,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
 
@@ -565,7 +580,8 @@ class VendorCacheService
         $key = 'vendor_game_maintain_list_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode,
@@ -587,7 +603,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -602,7 +618,8 @@ class VendorCacheService
         $key = 'vendor_game_working_list_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode,
@@ -622,7 +639,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
 
@@ -637,7 +654,8 @@ class VendorCacheService
         $key = 'vendor_game_status_list_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('games', [
                 'vendor_code' => $vendorCode
@@ -656,7 +674,7 @@ class VendorCacheService
 
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -667,7 +685,8 @@ class VendorCacheService
         $key = 'vendor_wallet_code';
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('vendors');
             if ($data) {
@@ -677,7 +696,7 @@ class VendorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 
     /**
@@ -692,7 +711,8 @@ class VendorCacheService
         $key = 'vendor_channel_group_status_' . $vendorCode;
 
         $redis = $this->redisFactory->get('default');
-        if (!$redis->get($key)) {
+        $r = $redis->get($key);
+        if (!$r) {
             $this->dbDefaultPool();
             $data = $this->mongodb->fetchAll('vendor_channel', [
                 'code' => $vendorCode,
@@ -710,6 +730,6 @@ class VendorCacheService
             }
             return [];
         }
-        return json_decode($redis->get($key),true);
+        return json_decode($r,true);
     }
 }
