@@ -258,4 +258,16 @@ class CacheFlushService
 
         return $v3Del && $v2Del;
     }
+
+    public function globalParams(string $code)
+    {
+        $key = 'global_params_' . $code;
+        $v3Del = true;
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $v3Del = $this->redisFactory->get('v3')->del($key);
+        }
+        $v2Del = $this->redisFactory->get('default')->del($key);
+
+        return $v3Del && $v2Del;
+    }
 }

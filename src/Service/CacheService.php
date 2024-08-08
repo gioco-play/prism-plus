@@ -539,4 +539,20 @@ class CacheService
         return json_decode($r, true);
     }
 
+    public function globalParams(string $code)
+    {
+        $key = 'global_params_' . $code;
+        $redis = $this->redisFactory->get('default');
+        $r = $redis->get($key);
+        if (!$r) {
+            $this->dbDefaultPool();
+            $data = current($this->mongodb->fetchAll('global_params', ['code' => $code]));
+            if ($data) {
+                $redisData = json_encode($data['params']);
+                $redis->setex($key, 60*60*1, $redisData);
+                return json_decode($redisData, true);
+            }
+        }
+        return json_decode($r, true);
+    }
 }
