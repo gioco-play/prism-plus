@@ -550,7 +550,7 @@ class OperatorCacheService
             if ($data && isset($data['seamless_setting'])) {
                 $redisData = json_encode($data['seamless_setting']);
                 $redis->setex($key, 60*60*1, $redisData);
-                return $data['seamless_setting'];
+                return json_decode($redisData, true);
             }
             return [];
         }
