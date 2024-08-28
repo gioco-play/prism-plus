@@ -221,14 +221,16 @@ class OperatorCacheService
                     if ($channel) {
                         $channel = json_decode(json_encode($channel), true);
                         $channelParams = [];
-                        foreach ($channel['params'] as $k => $v) {
-                            $channelParams[$k] = $v['value'];
-                        }
-                        $channel['params'] = $channelParams;
+                        if (isset($channel['params'])) {
+                            foreach ($channel['params'] as $k => $v) {
+                                $channelParams[$k] = $v['value'];
+                            }
+                            $channel['params'] = $channelParams;
 
-                        $redisData['vendor_channel'] = $channel;
-                        if (isset($redisData['vendor_channel']['_id'])) {
-                            unset($redisData['vendor_channel']['_id']);
+                            $redisData['vendor_channel'] = $channel;
+                            if (isset($redisData['vendor_channel']['_id'])) {
+                                unset($redisData['vendor_channel']['_id']);
+                            }
                         }
                     }
                 }
