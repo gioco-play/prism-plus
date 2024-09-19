@@ -117,7 +117,7 @@ class VendorCacheService
             if (isset($data['request_params'])) {
                 $redisData = json_encode($data['request_params']);
                 $redis->setex($key, 60*60*1, $redisData);
-                return json_decode($data['request_params'], true);
+                return json_decode($redisData, true);
             }
 
             return null;
