@@ -101,9 +101,12 @@ class BetlogValidation
             'game_time' => intval($inputs['game_time']),
             'parent_bet_id' => $inputs['parent_bet_id'],
             'bet_id' => $inputs['bet_id'],
-            'trace_id' => $inputs['trace_id'],
-            'valid_bet' => floatval($inputs['valid_bet'])
+            'trace_id' => $inputs['trace_id']
         ];
+
+        if (isset($inputs['valid_bet'])) {
+            $record = array_merge($record, ['valid_bet' => $inputs['valid_bet']]);
+        }
 
         $result = array_merge($record, $extraInputs);
         $result['raw'] = $rawData;
