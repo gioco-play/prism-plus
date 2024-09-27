@@ -81,7 +81,7 @@ class BetlogValidation
                 'bet_id' => 'required|string',
                 'parent_bet_id' => 'required|string',
                 'trace_id' => 'required|string',
-                'valid_bet' => 'required|numeric',
+                'valid_bet' => 'required|sometimes|numeric',
             ]
         );
 
