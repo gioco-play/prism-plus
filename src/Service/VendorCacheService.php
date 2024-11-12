@@ -83,7 +83,7 @@ class VendorCacheService
                     $data['support'] = json_decode(json_encode($data['support']), true);
                 }
                 $redis->setex($key, 60*60*1, json_encode($data));
-                return $data;
+                return json_decode(json_encode($data), true);
             }
 
             return null;
