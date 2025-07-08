@@ -152,7 +152,7 @@ class CacheFlushService
      * @return bool
      */
     public function globalIPBlock() {
-        $key = 'global_ip_block';
+        $key = 'global_block_ip';
 
         $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
