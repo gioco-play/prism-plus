@@ -132,6 +132,22 @@ class CacheFlushService
     }
 
     /**
+     * 查詢會員資料
+     * @param string $accountOp (含後綴商戶代碼)
+     * @return bool
+     */
+    public function memberInfo(string $accountOp) {
+        $key = $accountOp;
+        $v3Del = true;
+        if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
+            $v3Del = $this->redisFactory->get('v3')->del($key);
+        }
+        $v2Del = $this->redisFactory->get('default')->del($key);
+
+        return $v3Del && $v2Del;
+    }
+
+    /**
      * 總開關狀態
      * @param $slug "bo / api"
      * @return bool
