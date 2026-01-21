@@ -303,7 +303,7 @@ class CacheService
                 }
             }
         } catch (\Exception $e) {
-            Log::ERROR("memberInfo Exception", [
+            Log::error("memberInfo Exception", [
                 'account_op' => $accountOp,
                 "message" => $e->getMessage()
             ]);
@@ -312,7 +312,7 @@ class CacheService
                 'player' => false
             ];
         }
-        Log::INFO("memberInfo not found", [
+        Log::info("memberInfo not found", [
             'account_op' => $accountOp,
         ]);
 
