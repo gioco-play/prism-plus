@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GiocoPlus\PrismPlus\Service;
 
+use GiocoPlus\PrismPlus\Helper\Log;
 use GiocoPlus\PrismPlus\Helper\Tool;
 use GiocoPlus\PrismPlus\Repository\DbManager;
 use GiocoPlus\Mongodb\MongoDb;
@@ -302,11 +303,19 @@ class CacheService
                 }
             }
         } catch (\Exception $e) {
+            Log::error("memberInfo Exception", [
+                'account_op' => $accountOp,
+                "message" => $e->getMessage()
+            ]);
             return [
                 'operator' => false,
                 'player' => false
             ];
         }
+        Log::info("memberInfo not found", [
+            'account_op' => $accountOp,
+        ]);
+
         return [
             'operator' => false,
             'player' => false
