@@ -11,6 +11,7 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
 use MongoDB\BSON\ObjectId;
 use Psr\Container\ContainerInterface;
+use GiocoPlus\PrismPlus\Helper\Log;
 
 /**
  * 運營商快取
@@ -253,9 +254,17 @@ class OperatorCacheService
         $code = strtoupper($code);
         $key = 'op_currency_rate_' . $code;
 
+        $crStart = microtime(true);
+        Log::info("OperatorCacheService.currencyRate start", ['operator_code' => $code]);
+
         $redis = $this->redisFactory->get('default');
+        Log::info("OperatorCacheService.currencyRate redisFactory get", ['operator_code' => $code, 'time' => microtime(true)-$crStart]);
+
+        $crGetKeyStart = microtime(true);
         $r = $redis->get($key);
+        Log::info("OperatorCacheService.currencyRate redis get key", ['operator_code' => $code, 'time' => microtime(true)-$crGetKeyStart]);
         if (!$r) {
+            $crMongoStart = microtime(true);
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -276,13 +285,17 @@ class OperatorCacheService
                 ]
             ]));
 
+            Log::info("OperatorCacheService.currencyRate mongodb fetchAll", ['operator_code' => $code, 'time' => microtime(true)-$crMongoStart]);
+
             if ($data) {
                 $rates = json_decode(json_encode($data['currency_rate']), true);
                 $_rates = [];
                 foreach ($rates as $vendor => $value) {
                     $_rates[$vendor] = $value["rate"];
                 }
+                $crSetKeyStart = microtime(true);
                 $redis->setex($key, 60*60*1, json_encode($_rates));
+                Log::info("OperatorCacheService.currencyRate setex", ['operator_code' => $code, 'time' => microtime(true)-$crSetKeyStart]);
                 return $_rates;
             }
 
@@ -449,6 +462,8 @@ class OperatorCacheService
      * @Cacheable(prefix="op_db_setting", value="_#{code}", listener="op_db_setting_cache")
      */
     private function dbSettingCache(string $code) {
+        $dbSettingStart = microtime(true);
+
         $this->dbDefaultPool();
         $data = current($this->mongodb->fetchAll('operators', [
             '$or' => [
@@ -468,7 +483,7 @@ class OperatorCacheService
                 "db" => 1,
             ]
         ]));
-
+        Log::info("OperatorCacheService.dbSettingCache", ['operator_code' => $code, 'time' => microtime(true)-$dbSettingStart]);
         if ($data&&isset($data['db'])) {
             return $data['db'];
         }
