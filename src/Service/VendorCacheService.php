@@ -246,9 +246,9 @@ class VendorCacheService
             if ($data) {
                 $_data =  json_decode(json_encode($data['currency']), true);
                 $curr = [];
-                foreach ($_data as $key => $value) {
+                foreach ($_data as $k => $value) {
                     if (!empty($value['vendor'])&&!empty($value['rate'])) {
-                        $curr[strtoupper($key)] = $value['vendor'];
+                        $curr[strtoupper($k)] = $value['vendor'];
                     }
                 }
                 $redisData = json_encode($curr);
@@ -285,9 +285,9 @@ class VendorCacheService
             if ($data) {
                 $_data =  json_decode(json_encode($data['currency']), true);
                 $curr = [];
-                foreach ($_data as $key => $value) {
+                foreach ($_data as $k => $value) {
                     if (!empty($value['vendor']) && !empty($value['rate'])) {
-                        $curr[$key] = floatval($value['rate']);
+                        $curr[$k] = floatval($value['rate']);
                     }
                 }
                 $redisData = json_encode($curr);
