@@ -407,21 +407,22 @@ class CacheService
 
             list($account, $opCode) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
             $opCode = strtoupper($opCode);
-            $this->dbDefaultPool();
-            $dbManager = new DbManager();
-            $pg = $dbManager->opPostgreDb($opCode);
 
-            // 驗證並轉義輸入防止 SQL Injection
-            if (!preg_match('/^[a-zA-Z0-9_\-\.@]+$/', $account)) {
+            // 驗證帳號格式防止 SQL Injection (先驗證再建立連線)
+            if (!preg_match('/^[a-zA-Z0-9\-_.]+$/', $account)) {
                 Log::info("memberInfoV2 invalid account format", [
                     'account_op' => $accountOp,
                 ]);
                 return [];
             }
-            $safeAccount = addslashes($account);
+
+            $this->dbDefaultPool();
+            $dbManager = new DbManager();
+            $pg = $dbManager->opPostgreDb($opCode);
+
             $sql = "SELECT player_name, member_code, currency, status 
                     FROM members 
-                    WHERE player_name='{$safeAccount}' OR member_code='{$safeAccount}'";
+                    WHERE player_name='{$account}' OR member_code='{$account}'";
             $result = $pg->query($sql);
             $result = $pg->fetchAll($result);
 
