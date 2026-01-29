@@ -138,11 +138,12 @@ class CacheFlushService
      */
     public function memberInfo(string $accountOp) {
         $key = $accountOp;
+        $keyV2 = 'member:' . $accountOp . ':info';
         $v3Del = true;
         if (!empty(env("REDIS_SENTINEL_NODE_V3"))) {
-            $v3Del = $this->redisFactory->get('v3')->del($key);
+            $v3Del = $this->redisFactory->get('v3')->del($key, $keyV2);
         }
-        $v2Del = $this->redisFactory->get('default')->del($key);
+        $v2Del = $this->redisFactory->get('default')->del($key, $keyV2);
 
         return $v3Del && $v2Del;
     }
