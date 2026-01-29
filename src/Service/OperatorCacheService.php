@@ -91,7 +91,7 @@ class OperatorCacheService
                 ]
             ]));
             if ($data) {
-                $redis->setex($key, 60*60*1, json_encode($data));
+                $redis->setex($key, 60*60*24, json_encode($data));
                 return $data;
             }
             return null;
@@ -140,7 +140,7 @@ class OperatorCacheService
                     "status" => $data['status'],
                     'switch' => json_decode(json_encode($data['main_switch']), true)
                 ];
-                $redis->setex($key, 60*60*1, json_encode($redisData));
+                $redis->setex($key, 60*60*24, json_encode($redisData));
                 return $redisData;
             }
             return null;
@@ -236,7 +236,7 @@ class OperatorCacheService
                     }
                 }
 
-                $redis->setex($key, 60*60*1, json_encode($redisData));
+                $redis->setex($key, 60*60*24, json_encode($redisData));
                 return $redisData;
             }
 
@@ -299,7 +299,7 @@ class OperatorCacheService
                     $_rates[$vendor] = $value["rate"];
                 }
                 $crSetKeyStart = microtime(true);
-                $redis->setex($key, 60*60*1, json_encode($_rates));
+                $redis->setex($key, 60*60*24, json_encode($_rates));
                 if ((microtime(true)-$crSetKeyStart) > 1) {
                     Log::info("OperatorCacheService.currencyRate setex", ['operator_code' => $code, 'time' => microtime(true)-$crSetKeyStart]);
                 }
@@ -318,8 +318,6 @@ class OperatorCacheService
      */
     public function currency(string $code)
     {
-        return $this->currencyCache(strtoupper($code));
-
         $code = strtoupper($code);
         $key = 'op_currency_' . $code;
 
@@ -399,7 +397,7 @@ class OperatorCacheService
 
             if ($data&&isset($data['game_blocklist'])&&isset($data['game_blocklist']->$vendorCode)) {
                 $redisData = $data['game_blocklist']->$vendorCode;
-                $redis->setex($key, 60*60*1, json_encode($redisData));
+                $redis->setex($key, 60*60*24, json_encode($redisData));
                 return $redisData;
             }
             return [];
@@ -444,7 +442,7 @@ class OperatorCacheService
             ]));
 
             if ($data) {
-                $redis->setex($key, 60*60*1, json_encode($data));
+                $redis->setex($key, 60*60*24, json_encode($data));
                 return $data;
             }
             return [];
@@ -459,14 +457,21 @@ class OperatorCacheService
      */
     public function dbSetting(string $code)
     {
-        return $this->dbSettingCache(strtoupper($code));
+        $opCode = strtoupper($code);
+        $dbSettingStart = microtime(true);
+        $data = $this->dbSettingCache($opCode);
+        if ((microtime(true)-$dbSettingStart) > 1) {
+            Log::info("OperatorCacheService.dbSetting cache", ['operator_code' => $opCode, 'time' => microtime(true)-$dbSettingStart]);
+        }
+        return $data;
+
     }
 
     /**
      * 運營商 DB 配置
      * @param string $code
      * @return array
-     * @Cacheable(prefix="op_db_setting", value="_#{code}", listener="op_db_setting_cache")
+     * @Cacheable(prefix="op_db_setting", value="_#{code}", listener="op_db_setting_cache", ttl=60*60*24)
      */
     private function dbSettingCache(string $code) {
         $dbSettingStart = microtime(true);
@@ -511,7 +516,7 @@ class OperatorCacheService
     /**
      * 運營商 k8s隸屬 配置
      * @param string $code
-     * @Cacheable(prefix="op_k8s_setting", value="_#{code}", listener="op_k8s_setting_cache")
+     * @Cacheable(prefix="op_k8s_setting", value="_#{code}", listener="op_k8s_setting_cache", ttl=60*60*24)
      */
     private function k8sSettingCache(string $code) {
         $this->dbDefaultPool();
@@ -592,7 +597,7 @@ class OperatorCacheService
     {
         $vendorCode = strtolower($vendorCode);
         $key = 'grabber_log_enable_' . $vendorCode;
-        $expire = 60*60*1;
+        $expire = 60*60*6;
 
         $redis = $this->redisFactory->get('default');
         $r = $redis->get($key);
