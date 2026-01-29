@@ -411,11 +411,18 @@ class CacheService
             $dbManager = new DbManager();
             $pg = $dbManager->opPostgreDb($opCode);
 
-            // 使用 Prepared Statement 防止 SQL Injection
+            // 驗證並轉義輸入防止 SQL Injection
+            if (!preg_match('/^[a-zA-Z0-9_\-\.@]+$/', $account)) {
+                Log::info("memberInfoV2 invalid account format", [
+                    'account_op' => $accountOp,
+                ]);
+                return [];
+            }
+            $safeAccount = addslashes($account);
             $sql = "SELECT player_name, member_code, currency, status 
                     FROM members 
-                    WHERE player_name = $1 OR member_code = $1";
-            $result = $pg->query($sql, [$account]);
+                    WHERE player_name='{$safeAccount}' OR member_code='{$safeAccount}'";
+            $result = $pg->query($sql);
             $result = $pg->fetchAll($result);
 
             if ($result) {
