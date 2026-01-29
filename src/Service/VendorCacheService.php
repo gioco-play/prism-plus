@@ -691,7 +691,7 @@ class VendorCacheService
             $data = $this->mongodb->fetchAll('vendors');
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('wallet_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
             return [];
