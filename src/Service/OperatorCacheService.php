@@ -471,7 +471,7 @@ class OperatorCacheService
      * 運營商 DB 配置
      * @param string $code
      * @return array
-     * @Cacheable(prefix="op_db_setting", value="_#{code}", listener="op_db_setting_cache", ttl=60*60*24)
+     * @Cacheable(prefix="op_db_setting", value="_#{code}", listener="op_db_setting_cache", ttl=86400)
      */
     private function dbSettingCache(string $code) {
         $dbSettingStart = microtime(true);
@@ -516,7 +516,7 @@ class OperatorCacheService
     /**
      * 運營商 k8s隸屬 配置
      * @param string $code
-     * @Cacheable(prefix="op_k8s_setting", value="_#{code}", listener="op_k8s_setting_cache", ttl=60*60*24)
+     * @Cacheable(prefix="op_k8s_setting", value="_#{code}", listener="op_k8s_setting_cache", ttl=86400)
      */
     private function k8sSettingCache(string $code) {
         $this->dbDefaultPool();
