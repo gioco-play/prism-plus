@@ -389,7 +389,7 @@ class CacheService
             $data = current($this->mongodb->fetchAll('platform', $filter));
             if (isset($data['status'])) {
                 $redisData = $data['status'];
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return $data['status'];
             }
             return false;
@@ -398,7 +398,7 @@ class CacheService
     }
 
     /**
-     * 全域封鎖IP名單
+     * 全域封鎖 IP 名單
      */
     public function globalIPBlock() {
         $key = 'global_block_ip';
@@ -409,7 +409,7 @@ class CacheService
             $data = current($this->mongodb->fetchAll('platform', ['slug' => 'block_ip']));
             if (isset($data['ip'])) {
                 $redisData = json_encode($data['ip']);
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return $data['ip'];
             }
             return [];
@@ -418,7 +418,7 @@ class CacheService
     }
     
     /**
-     * 全域IP白名單
+     * 全域 IP 白名單
      */
     public function globalIPWhite() {
         $key = 'global_white_ip';
@@ -428,7 +428,9 @@ class CacheService
         if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('platform', ['slug' => 'white_ip']));
-            if ($data) {
+            if (isset($data['ip'])) {
+                $redisData = json_encode($data['ip']);
+                $redis->setex($key, 60*60*24, $redisData);
                 return $data['ip'];
             }
             return [];
@@ -530,7 +532,7 @@ class CacheService
     }
 
     /**
-     * GF幣值最小交易金額
+     * GF 幣值最小交易金額
      */
     public function gfCurrencyMinTransfer() {
         $key = 'gf_currency_min_transfer';
@@ -558,7 +560,7 @@ class CacheService
             $data = current($this->mongodb->fetchAll('global_params', ['code' => $code]));
             if ($data) {
                 $redisData = json_encode($data['params']);
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
         }

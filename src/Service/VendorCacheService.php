@@ -82,7 +82,7 @@ class VendorCacheService
                 if (isset($data['support'])) {
                     $data['support'] = json_decode(json_encode($data['support']), true);
                 }
-                $redis->setex($key, 60*60*1, json_encode($data));
+                $redis->setex($key, 60*60*24, json_encode($data));
                 return json_decode(json_encode($data), true);
             }
 
@@ -181,7 +181,7 @@ class VendorCacheService
             ]));
 
             if ($data) {
-                $redis->setex($key, 60*60*1, json_encode($data));
+                $redis->setex($key, 60*60*24, json_encode($data));
                 return json_decode(json_encode($data), true);
             }
 
@@ -252,7 +252,7 @@ class VendorCacheService
                     }
                 }
                 $redisData = json_encode($curr);
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -291,7 +291,7 @@ class VendorCacheService
                     }
                 }
                 $redisData = json_encode($curr);
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return $curr;
             }
             return null;
@@ -533,7 +533,7 @@ class VendorCacheService
 
 
     /**
-     * GF遊戲代碼與類型對應
+     * GF 遊戲代碼與類型對應
      * @param string $vendorCode
      * @return array
      * @throws \Exception
