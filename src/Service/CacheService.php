@@ -268,6 +268,7 @@ class CacheService
     }
 
     /**
+     * @deprecated
      * 查詢會員資料
      * @param string $accountOp (含後綴商戶代碼)
      * @param string $delimiter (目前遇到的有 "_"（預設） \ "0" \ "@")
@@ -371,6 +372,73 @@ class CacheService
         ];
     }
 
+    /**
+     * 查詢會員資料 (V2 優化版本)
+     *
+     * 根據帳號與商戶代碼組合查詢會員基本資訊，支援 Redis 快取機制。
+     *
+     * @param string $accountOp 會員帳號與商戶代碼的組合字串 (例如: "player123_OP01")
+     * @param string $delimiter 帳號與商戶代碼的分隔符號，支援 "_"（預設）、"0"
+     *
+     * @return array 成功時返回會員資料陣列，包含:
+     *               - player_name: 玩家名稱
+     *               - member_code: 會員代碼
+     *               - currency: 幣別
+     *               - status: 狀態
+     *               - operator_code: 商戶代碼
+     *               查無資料或發生異常時返回空陣列 []
+     *
+     * @example
+     * // 使用預設分隔符 "_"
+     * $info = $cacheService->memberInfoV2('player123_OP01');
+     */
+    public function memberInfoV2(string $accountOp, string $delimiter = '_'): array
+    {
+        try {
+            $redis = $this->redisFactory->get('default');
+            $key = 'member:' . $accountOp . ':info';
+            $r = $redis->get($key);
+
+            if ($r !== false) {
+                // 處理快取 (包含空結果的情況)
+                $decoded = json_decode($r, true);
+                return $decoded ?: [];
+            }
+
+            list($account, $opCode) = array_values(Tool::MemberSplitCode($accountOp, $delimiter));
+            $opCode = strtoupper($opCode);
+            $this->dbDefaultPool();
+            $dbManager = new DbManager();
+            $pg = $dbManager->opPostgreDb($opCode);
+
+            // 使用 Prepared Statement 防止 SQL Injection
+            $sql = "SELECT player_name, member_code, currency, status 
+                    FROM members 
+                    WHERE player_name = $1 OR member_code = $1";
+            $result = $pg->query($sql, [$account]);
+            $result = $pg->fetchAll($result);
+
+            if ($result) {
+                $data = current($result);
+                $data['operator_code'] = $opCode;
+                $redis->setex($key, 60 * 60 * 24, json_encode($data));
+                return $data;
+            }
+
+            Log::info("memberInfoV2 not found", [
+                'account_op' => $accountOp,
+            ]);
+            return [];
+
+        } catch (\Exception $e) {
+            Log::error("memberInfoV2 Exception", [
+                'account_op' => $accountOp,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
+    }
 
     /**
      * 總開關狀態

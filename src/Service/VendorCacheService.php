@@ -213,7 +213,7 @@ class VendorCacheService
 
             if (isset($data['language'])) {
                 $redisData = json_encode($data['language']);
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -319,7 +319,7 @@ class VendorCacheService
             ]);
 
             if ($data) {
-                $redis->setex($key, 60*60*1, json_encode($data));
+                $redis->setex($key, 60*60*24, json_encode($data));
                 return $data;
             }
 
@@ -350,7 +350,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode($data);
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -383,7 +383,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('game_id', 'game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -416,7 +416,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('vendor_game_code', 'game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -452,7 +452,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('game_code', 'game_id')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
             return [];
@@ -486,7 +486,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('name', 'game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -522,7 +522,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('game_type','game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -558,7 +558,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('gf_game_type','game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -597,7 +597,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('game_id', 'game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -633,7 +633,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('game_id', 'game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -668,7 +668,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('status', 'game_code')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
 
@@ -725,7 +725,7 @@ class VendorCacheService
 
             if ($data) {
                 $redisData = json_encode(collect($data)->pluck('status', 'name')->toArray());
-                $redis->setex($key, 60*60*1, $redisData);
+                $redis->setex($key, 60*60*24, $redisData);
                 return json_decode($redisData, true);
             }
             return [];
