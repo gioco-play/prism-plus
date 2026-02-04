@@ -218,7 +218,6 @@ class CacheService
     /**
      * 角色選單
      * @param string $role
-     * @Cacheable(prefix="role_menu", value="_#{role}", listener="role_menu_cache")
      */
     public function roleMenu(string $role) {
 
