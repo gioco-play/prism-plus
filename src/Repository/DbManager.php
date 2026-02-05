@@ -114,7 +114,7 @@ class DbManager
             throw new \Exception("[{$code}] Postgres 資料庫未配置");
         }
 
-//        $st = micro_timestamp();
+        $st = micro_timestamp();
 
         $dbConn = $op->postgres;
         $host = $dbConn->host;
@@ -132,10 +132,10 @@ class DbManager
 
             $conn = $pg->connect($pgConnect);
             if (!$conn) {
-//                Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
-//                    "exec_time" => ((micro_timestamp() - $st) / 1000),
-//                    "message" => $pg->error,
-//                ]);
+                Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
+                    "exec_time" => ((micro_timestamp() - $st) / 1000),
+                    "message" => $pg->error,
+                ]);
                 throw new \Exception("[{$code}] Postgres 未連線成功");
                 return;
             }
