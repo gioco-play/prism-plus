@@ -111,9 +111,9 @@ class CacheFlushService
      * @return bool
      */
     public function roleMenu(string $role) {
-        $this->dispatcher->dispatch(new DeleteListenerEvent('role_menu_cache', [
-            'role' => $role
-        ]));
+//        $this->dispatcher->dispatch(new DeleteListenerEvent('role_menu_cache', [
+//            'role' => $role
+//        ]));
 
         return true;
     }
