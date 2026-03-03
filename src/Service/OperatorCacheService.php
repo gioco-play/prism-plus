@@ -453,7 +453,7 @@ class OperatorCacheService
     /**
      * 運營商 DB 配置
      * @param string $code
-     * @return array
+     * @return mixed
      */
     public function dbSetting(string $code)
     {
@@ -470,7 +470,7 @@ class OperatorCacheService
     /**
      * 運營商 DB 配置
      * @param string $code
-     * @return array
+     * @return mixed
      * @Cacheable(prefix="op_db_setting", value="_#{code}", listener="op_db_setting_cache", ttl=86400)
      */
     private function dbSettingCache(string $code) {
