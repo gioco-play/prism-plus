@@ -12,6 +12,12 @@ class Log
      */
     private static $isLogging = false;
     private const COROUTINE_GUARD_KEY = '__prism_log_is_logging';
+    // 防止巢狀資料過深導致記憶體暴增
+    private const MAX_SANITIZE_DEPTH = 6;
+    // 單一字串最大保留長度，避免 log 被超長內容淹沒
+    private const MAX_STRING_LENGTH = 2000;
+    // Response body 僅預覽前 N bytes，避免整包載入
+    private const MAX_RESPONSE_BODY_PREVIEW = 2048;
 
     public static function get(string $name = 'system', string $group = 'default')
     {
@@ -33,9 +39,7 @@ class Log
      */
     private static function writeLog(string $level, string $message, $data = [])
     {
-        // 如果正在寫入日誌時又被觸發，直接中斷以打破循環
         if (self::isLoggingInProgress()) {
-            // 將被吞掉的深層錯誤寫入 PHP/Swoole 底層日誌，方便追蹤
             error_log("Log Loop Detected! Level: {$level}, Message: {$message}");
             return;
         }
@@ -43,17 +47,15 @@ class Log
         self::setLoggingGuard(true);
 
         try {
-            // 避免手動 json_encode 導致隱藏錯誤，統一轉為陣列交給 Monolog 處理
-            $value = is_array($data) ? $data : ['data' => $data];
+            $value = is_array($data)
+                ? self::sanitize($data)
+                : ['data' => self::sanitizeAny($data)];
 
-            // 獲取設定檔中 'message' 區塊的 Logger (寫入 service.log)
             $log = self::get('message', 'message');
             $log->{$level}($message, $value);
         } catch (\Throwable $e) {
-            // 捕捉寫入日誌時發生的任何錯誤 (例如權限不足、資料夾不存在)
-            error_log("Logging failed in Log Helper: " . $e->getMessage());
+            error_log("Logging failed: " . $e->getMessage());
         } finally {
-            // 確保無論成功或失敗，都會釋放標記
             self::setLoggingGuard(false);
         }
     }
@@ -96,5 +98,164 @@ class Log
         }
 
         return \Swoole\Coroutine::getContext();
+    }
+
+    private static function sanitize(array $data): array
+    {
+        // 用 ReflectionReference id 追蹤陣列參照，避免循環參照遞迴
+        $seenRefs = [];
+        return self::sanitizeArray($data, 0, $seenRefs);
+    }
+
+    private static function sanitizeAny($value)
+    {
+        $seenRefs = [];
+        return self::sanitizeValue($value, 0, $seenRefs);
+    }
+
+    private static function sanitizeArray(array $data, int $depth, array &$seenRefs): array
+    {
+        if ($depth >= self::MAX_SANITIZE_DEPTH) {
+            return ['__truncated' => sprintf('max depth %d reached', self::MAX_SANITIZE_DEPTH)];
+        }
+
+        $result = [];
+        foreach ($data as $key => $value) {
+            $refId = self::getArrayReferenceId($data, $key);
+            if ($refId !== null) {
+                if (isset($seenRefs[$refId])) {
+                    $result[$key] = '[circular_reference]';
+                    continue;
+                }
+                $seenRefs[$refId] = true;
+            }
+
+            $result[$key] = self::sanitizeValue($value, $depth + 1, $seenRefs);
+
+            if ($refId !== null) {
+                unset($seenRefs[$refId]);
+            }
+        }
+
+        return $result;
+    }
+
+    private static function sanitizeValue($value, int $depth, array &$seenRefs)
+    {
+        if ($depth > self::MAX_SANITIZE_DEPTH) {
+            return '[max_depth_reached]';
+        }
+
+        if ($value instanceof \Throwable) {
+            return [
+                'message' => $value->getMessage(),
+                'code'    => $value->getCode(),
+                'file'    => $value->getFile() . ':' . $value->getLine(),
+                'trace'   => self::truncateString($value->getTraceAsString()),
+            ];
+        }
+
+        if ($value instanceof \Psr\Http\Message\ResponseInterface) {
+            return self::sanitizeResponse($value);
+        }
+
+        if ($value instanceof \Psr\Http\Message\RequestInterface) {
+            return [
+                'method' => $value->getMethod(),
+                'uri'    => (string) $value->getUri(),
+            ];
+        }
+
+        if (is_object($value)) {
+            $normalized = ['class' => get_class($value)];
+            if (method_exists($value, '__toString')) {
+                try {
+                    $normalized['value'] = self::truncateString((string) $value);
+                } catch (\Throwable $e) {
+                    $normalized['value'] = '[toString_failed]';
+                }
+            }
+            return $normalized;
+        }
+
+        if (is_array($value)) {
+            return self::sanitizeArray($value, $depth, $seenRefs);
+        }
+
+        if (is_string($value)) {
+            return self::truncateString($value);
+        }
+
+        return $value;
+    }
+
+    private static function sanitizeResponse(\Psr\Http\Message\ResponseInterface $response): array
+    {
+        // 只取 preview，避免直接 (string)$body 造成記憶體與副作用風險
+        $body = self::readStreamPreview($response->getBody());
+
+        return [
+            'status' => $response->getStatusCode(),
+            'reason' => $response->getReasonPhrase(),
+            'body_size' => $body['size'],
+            'body_preview' => $body['preview'],
+        ];
+    }
+
+    private static function readStreamPreview(\Psr\Http\Message\StreamInterface $stream): array
+    {
+        $size = $stream->getSize();
+        if (!$stream->isSeekable()) {
+            return [
+                'size' => $size,
+                'preview' => '[non-seekable stream omitted]',
+            ];
+        }
+
+        try {
+            // 先記錄原位置，讀完 preview 後再 seek 回去，避免影響後續流程
+            $currentPosition = $stream->tell();
+            $stream->rewind();
+            $preview = $stream->read(self::MAX_RESPONSE_BODY_PREVIEW);
+            $hasMore = !$stream->eof();
+            $stream->seek($currentPosition);
+        } catch (\Throwable $e) {
+            return [
+                'size' => $size,
+                'preview' => '[stream preview unavailable]',
+            ];
+        }
+
+        if ($hasMore) {
+            $preview .= '...[truncated]';
+        }
+
+        return [
+            'size' => $size,
+            'preview' => self::truncateString($preview, self::MAX_RESPONSE_BODY_PREVIEW + 32),
+        ];
+    }
+
+    private static function getArrayReferenceId(array $data, $key): ?string
+    {
+        if (!class_exists(\ReflectionReference::class)) {
+            return null;
+        }
+
+        $reference = \ReflectionReference::fromArrayElement($data, $key);
+        if ($reference === null) {
+            return null;
+        }
+
+        return bin2hex($reference->getId());
+    }
+
+    private static function truncateString(string $value, int $maxLength = self::MAX_STRING_LENGTH): string
+    {
+        if (strlen($value) <= $maxLength) {
+            return $value;
+        }
+
+        return substr($value, 0, $maxLength) . '...[truncated]';
     }
 }
