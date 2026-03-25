@@ -32,7 +32,7 @@ class DbManager
     protected $mongodb;
 
     /**
-     * 選擇商戶MongoDb資料庫
+     * 選擇商戶 MongoDb 資料庫
      * @param string $code
      * @param string|null $dbName
      * @param string $readPref
@@ -40,29 +40,36 @@ class DbManager
      */
     public function opMongoDb(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
         $dbName = strtolower($dbName ?? "{$code}_db");
-        $op = $this->opCache->dbSetting($code);
-        if (!isset($op->mongodb)) {
-            $op = $this->getDbSetting($code);
-        }
-        if (!isset($op->mongodb)) {
-            throw new \Exception("[{$code}] MongoDb 資料庫未配置");
-        }
-        $dbConn = $op->mongodb;
-        $dbCfg = mongodb_pool_config(
-            $dbConn->host,
-            $dbConn->db_name??$dbName,
-            intval($dbConn->port),
-            $dbConn->replica,
-            $dbConn->read_preference??$readPref);
         $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
         if (!$config->has("mongodb.db_{$code}")) {
+            $op = $this->opCache->dbSetting($code);
+//            if (!isset($op->mongodb)) {
+//                $op = $this->getDbSetting($code);
+//            }
+            if (!isset($op->mongodb)) {
+                throw new \Exception("[{$code}] MongoDb 資料庫未配置");
+            }
+            $dbConn = $op->mongodb;
+            $dbCfg = mongodb_pool_config(
+                $dbConn->host,
+                $dbConn->db_name ?? $dbName,
+                intval($dbConn->port),
+                $dbConn->replica,
+                $dbConn->read_preference ?? $readPref,
+                [
+                    'database' => 'admin'
+                ],
+                '',
+                '',
+                200
+            );
             $config->set("mongodb.db_{$code}", $dbCfg);
         }
         return $this->mongodb->setPool("db_{$code}");
     }
 
     /**
-     * 選擇商戶MongoDb 報表資料庫
+     * 選擇商戶 MongoDb 報表資料庫
      * @param string $code
      * @param string|null $dbName
      * @param string $readPref
@@ -70,45 +77,47 @@ class DbManager
      */
     public function opMongoDbRep(string $code, string $dbName = null, string $readPref = MongoDbConst::ReadPrefPrimary) {
         $dbName = strtolower($dbName ?? "{$code}_db");
-        $op = $this->opCache->dbSetting($code);
-        if (!isset($op->mongodb_rep)) {
-            $op = $this->getDbSetting($code);
-        }
-        if (!isset($op->mongodb_rep)) {
-            throw new \Exception("[{$code}] MongoDb 報表資料庫未配置");
-        }
-        $dbConn = $op->mongodb_rep;
-        $dbCfg = mongodb_pool_config(
-            $dbConn->host,
-            $dbConn->db_name??$dbName,
-            intval($dbConn->port),
-            $dbConn->replica,
-            $dbConn->read_preference??$readPref);
         $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
         if (!$config->has("mongodb.db_{$code}_rep")) {
+            $op = $this->opCache->dbSetting($code);
+//            if (!isset($op->mongodb_rep)) {
+//                $op = $this->getDbSetting($code);
+//            }
+            if (!isset($op->mongodb_rep)) {
+                throw new \Exception("[{$code}] MongoDb 報表資料庫未配置");
+            }
+            $dbConn = $op->mongodb_rep;
+
+            $dbCfg = mongodb_pool_config(
+                $dbConn->host,
+                $dbConn->db_name ?? $dbName,
+                intval($dbConn->port),
+                $dbConn->replica,
+                $dbConn->read_preference ?? $readPref,
+                [
+                    'database' => 'admin'
+                ],
+                '',
+                '',
+                200
+            );
             $config->set("mongodb.db_{$code}_rep", $dbCfg);
         }
         return $this->mongodb->setPool("db_{$code}_rep");
     }
 
     /**
-     * 選擇商戶PostgreSql資料庫
-     * 
+     * 選擇商戶 PostgreSql 資料庫
+     *
      * @param string $code
      * @param string|null $dbName
      * @return \Swoole\Coroutine\PostgreSQL|void
      */
     public function opPostgreDb(string $code, string $dbName = null) {
-//        $st = micro_timestamp();
-
         $op = $this->opCache->dbSetting($code);
-        if (!isset($op->postgres)){
-            $op = $this->getDbSetting($code);
-        }
-
-//        Log::info(__FUNCTION__ . " [{$code}] getDbSetting ", [
-//            "exec_time" => ((micro_timestamp() - $st) / 1000),
-//        ]);
+        // if (!isset($op->postgres)){
+        //     $op = $this->getDbSetting($code);
+        // }
 
         if (!isset($op->postgres)) {
             throw new \Exception("[{$code}] Postgres 資料庫未配置");
@@ -125,24 +134,33 @@ class DbManager
         //
         $pg = new \Swoole\Coroutine\PostgreSQL();
         $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}";
-        $conn = $pg->connect($pgConnect);
-        if (!$conn) {
-//            var_dump('pgConn:', $pg->error);
-//            Log::info("[{$code}] pgConn Fail: " . $pg->error);
-
+        $maxRetries = 2;
+        $retryDelaySeconds = 0.1;
+        $maxAttempts = $maxRetries + 1;
+        $conn = false;
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             $conn = $pg->connect($pgConnect);
-            if (!$conn) {
-                Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
-                    "exec_time" => ((micro_timestamp() - $st) / 1000),
-                    "message" => $pg->error,
-                ]);
-                throw new \Exception("[{$code}] Postgres 未連線成功");
-                return;
+            if ($conn) {
+                break;
+            }
+
+            if ($attempt < $maxAttempts) {
+                // In coroutine workers use non-blocking sleep; fallback for non-coroutine contexts.
+                if (\Swoole\Coroutine::getCid() > 0) {
+                    \Swoole\Coroutine::sleep($retryDelaySeconds);
+                } else {
+                    usleep((int) ($retryDelaySeconds * 1000000));
+                }
             }
         }
-//        Log::info(__FUNCTION__ . " pg conn complete [{$code}]", [
-//            "exec_time" => ((micro_timestamp() - $st) / 1000),
-//        ]);
+        if (!$conn) {
+            Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
+                "exec_time" => ((micro_timestamp() - $st) / 1000),
+                "message" => $pg->error,
+                "attempts" => $maxAttempts,
+            ]);
+            throw new \Exception("[{$code}] Postgres 未連線成功 msg: {$pg->error}");
+        }
         return $pg;
     }
 
