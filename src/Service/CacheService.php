@@ -312,7 +312,7 @@ class CacheService
                 'player' => false
             ];
         }
-        Log::info("memberInfo not found", [
+        Log::internalInfo("memberInfo not found", [
             'account_op' => $accountOp,
         ]);
 
@@ -409,7 +409,7 @@ class CacheService
 
             // 驗證帳號格式防止 SQL Injection (先驗證再建立連線)
             if (!preg_match('/^[a-zA-Z0-9\-_.]+$/', $account)) {
-                Log::info("memberInfoV2 invalid account format", [
+                Log::internalInfo("memberInfoV2 invalid account format", [
                     'account_op' => $accountOp,
                 ]);
                 return [];

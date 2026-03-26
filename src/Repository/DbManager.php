@@ -154,7 +154,7 @@ class DbManager
             }
         }
         if (!$conn) {
-            Log::info(__FUNCTION__ . " pg conn fail [{$code}]", [
+            Log::internalInfo(__FUNCTION__ . " pg conn fail [{$code}]", [
                 "exec_time" => ((micro_timestamp() - $st) / 1000),
                 "message" => $pg->error,
                 "attempts" => $maxAttempts,

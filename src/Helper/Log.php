@@ -7,37 +7,53 @@ use Hyperf\Utils\ApplicationContext;
 
 class Log
 {
-    /**
-     * 防禦性標記，防止 Logger 觸發 Exception 後引發無限死循環
-     */
     private static $isLogging = false;
     private const COROUTINE_GUARD_KEY = '__prism_log_is_logging';
-    // 防止巢狀資料過深導致記憶體暴增
-    private const MAX_SANITIZE_DEPTH = 6;
-    // 單一字串最大保留長度，避免 log 被超長內容淹沒
-    private const MAX_STRING_LENGTH = 2000;
-    // Response body 僅預覽前 N bytes，避免整包載入
-    private const MAX_RESPONSE_BODY_PREVIEW = 2048;
+    private static $loggerCache = [];
 
     public static function get(string $name = 'system', string $group = 'default')
     {
-        return ApplicationContext::getContainer()->get(LoggerFactory::class)->get($name, $group);
+        $cacheKey = "{$name}.{$group}";
+        if (!isset(self::$loggerCache[$cacheKey])) {
+            $logger = ApplicationContext::getContainer()
+                ->get(LoggerFactory::class)
+                ->get($name, $group);
+            self::tuneMonologLoopDetection($logger);
+            self::$loggerCache[$cacheKey] = $logger;
+        }
+        return self::$loggerCache[$cacheKey];
+    }
+
+    /**
+     * 對外公開，業務專案使用 → message channel (service.log)
+     */
+    public static function info(string $message, $data = [])
+    {
+        self::writeLog('info', $message, $data, 'message');
     }
 
     public static function error(string $message, $data = [])
     {
-        self::writeLog('error', $message, $data);
+        self::writeLog('error', $message, $data, 'message');
     }
 
-    public static function info(string $message, $data = [])
+    /**
+     * package 內部專用 → default channel (system.log)
+     */
+    public static function internalInfo(string $message, $data = [])
     {
-        self::writeLog('info', $message, $data);
+        self::writeLog('info', $message, $data, 'internal');
+    }
+
+    public static function internalError(string $message, $data = [])
+    {
+        self::writeLog('error', $message, $data, 'internal');
     }
 
     /**
      * 共用的日誌寫入邏輯
      */
-    private static function writeLog(string $level, string $message, $data = [])
+    private static function writeLog(string $level, string $message, $data = [], string $channel = 'message')
     {
         if (self::isLoggingInProgress()) {
             error_log("Log Loop Detected! Level: {$level}, Message: {$message}");
@@ -47,14 +63,17 @@ class Log
         self::setLoggingGuard(true);
 
         try {
-            $value = is_array($data)
-                ? self::sanitize($data)
-                : ['data' => self::sanitizeAny($data)];
+            $value = is_array($data) ? $data : ['data' => $data];
 
-            $log = self::get('message', 'message');
+            if ($channel === 'message') {
+                $log = self::get('message', 'message');
+            } else {
+                $log = self::get('system', 'default');
+            }
+
             $log->{$level}($message, $value);
         } catch (\Throwable $e) {
-            error_log("Logging failed: " . $e->getMessage());
+            error_log("Logging failed in Log Helper: " . $e->getMessage());
         } finally {
             self::setLoggingGuard(false);
         }
@@ -89,7 +108,8 @@ class Log
             return null;
         }
 
-        if (!method_exists(\Swoole\Coroutine::class, 'getCid') || !method_exists(\Swoole\Coroutine::class, 'getContext')) {
+        if (!method_exists(\Swoole\Coroutine::class, 'getCid') ||
+            !method_exists(\Swoole\Coroutine::class, 'getContext')) {
             return null;
         }
 
@@ -100,162 +120,33 @@ class Log
         return \Swoole\Coroutine::getContext();
     }
 
-    private static function sanitize(array $data): array
+    private static function tuneMonologLoopDetection($logger): void
     {
-        // 用 ReflectionReference id 追蹤陣列參照，避免循環參照遞迴
-        $seenRefs = [];
-        return self::sanitizeArray($data, 0, $seenRefs);
-    }
-
-    private static function sanitizeAny($value)
-    {
-        $seenRefs = [];
-        return self::sanitizeValue($value, 0, $seenRefs);
-    }
-
-    private static function sanitizeArray(array $data, int $depth, array &$seenRefs): array
-    {
-        if ($depth >= self::MAX_SANITIZE_DEPTH) {
-            return ['__truncated' => sprintf('max depth %d reached', self::MAX_SANITIZE_DEPTH)];
-        }
-
-        $result = [];
-        foreach ($data as $key => $value) {
-            $refId = self::getArrayReferenceId($data, $key);
-            if ($refId !== null) {
-                if (isset($seenRefs[$refId])) {
-                    $result[$key] = '[circular_reference]';
-                    continue;
-                }
-                $seenRefs[$refId] = true;
-            }
-
-            $result[$key] = self::sanitizeValue($value, $depth + 1, $seenRefs);
-
-            if ($refId !== null) {
-                unset($seenRefs[$refId]);
-            }
-        }
-
-        return $result;
-    }
-
-    private static function sanitizeValue($value, int $depth, array &$seenRefs)
-    {
-        if ($depth > self::MAX_SANITIZE_DEPTH) {
-            return '[max_depth_reached]';
-        }
-
-        if ($value instanceof \Throwable) {
-            return [
-                'message' => $value->getMessage(),
-                'code'    => $value->getCode(),
-                'file'    => $value->getFile() . ':' . $value->getLine(),
-                'trace'   => self::truncateString($value->getTraceAsString()),
-            ];
-        }
-
-        if ($value instanceof \Psr\Http\Message\ResponseInterface) {
-            return self::sanitizeResponse($value);
-        }
-
-        if ($value instanceof \Psr\Http\Message\RequestInterface) {
-            return [
-                'method' => $value->getMethod(),
-                'uri'    => (string) $value->getUri(),
-            ];
-        }
-
-        if (is_object($value)) {
-            $normalized = ['class' => get_class($value)];
-            if (method_exists($value, '__toString')) {
-                try {
-                    $normalized['value'] = self::truncateString((string) $value);
-                } catch (\Throwable $e) {
-                    $normalized['value'] = '[toString_failed]';
-                }
-            }
-            return $normalized;
-        }
-
-        if (is_array($value)) {
-            return self::sanitizeArray($value, $depth, $seenRefs);
-        }
-
-        if (is_string($value)) {
-            return self::truncateString($value);
-        }
-
-        return $value;
-    }
-
-    private static function sanitizeResponse(\Psr\Http\Message\ResponseInterface $response): array
-    {
-        // 只取 preview，避免直接 (string)$body 造成記憶體與副作用風險
-        $body = self::readStreamPreview($response->getBody());
-
-        return [
-            'status' => $response->getStatusCode(),
-            'reason' => $response->getReasonPhrase(),
-            'body_size' => $body['size'],
-            'body_preview' => $body['preview'],
-        ];
-    }
-
-    private static function readStreamPreview(\Psr\Http\Message\StreamInterface $stream): array
-    {
-        $size = $stream->getSize();
-        if (!$stream->isSeekable()) {
-            return [
-                'size' => $size,
-                'preview' => '[non-seekable stream omitted]',
-            ];
+        if (self::getCoroutineContext() === null) {
+            return;
         }
 
         try {
-            // 先記錄原位置，讀完 preview 後再 seek 回去，避免影響後續流程
-            $currentPosition = $stream->tell();
-            $stream->rewind();
-            $preview = $stream->read(self::MAX_RESPONSE_BODY_PREVIEW);
-            $hasMore = !$stream->eof();
-            $stream->seek($currentPosition);
+            $target = $logger;
+
+            if (!($target instanceof \Monolog\Logger)) {
+                $ref = new \ReflectionObject($logger);
+                foreach ($ref->getProperties() as $prop) {
+                    $prop->setAccessible(true);
+                    $val = $prop->getValue($logger);
+                    if ($val instanceof \Monolog\Logger) {
+                        $target = $val;
+                        break;
+                    }
+                }
+            }
+
+            if ($target instanceof \Monolog\Logger &&
+                method_exists($target, 'useLoggingLoopDetection')) {
+                $target->useLoggingLoopDetection(false);
+            }
         } catch (\Throwable $e) {
-            return [
-                'size' => $size,
-                'preview' => '[stream preview unavailable]',
-            ];
+            // silent fail
         }
-
-        if ($hasMore) {
-            $preview .= '...[truncated]';
-        }
-
-        return [
-            'size' => $size,
-            'preview' => self::truncateString($preview, self::MAX_RESPONSE_BODY_PREVIEW + 32),
-        ];
-    }
-
-    private static function getArrayReferenceId(array $data, $key): ?string
-    {
-        if (!class_exists(\ReflectionReference::class)) {
-            return null;
-        }
-
-        $reference = \ReflectionReference::fromArrayElement($data, $key);
-        if ($reference === null) {
-            return null;
-        }
-
-        return bin2hex($reference->getId());
-    }
-
-    private static function truncateString(string $value, int $maxLength = self::MAX_STRING_LENGTH): string
-    {
-        if (strlen($value) <= $maxLength) {
-            return $value;
-        }
-
-        return substr($value, 0, $maxLength) . '...[truncated]';
     }
 }
