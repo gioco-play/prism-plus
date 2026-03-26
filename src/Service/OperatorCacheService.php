@@ -254,20 +254,14 @@ class OperatorCacheService
         $code = strtoupper($code);
         $key = 'op_currency_rate_' . $code;
 
-        $crStart = microtime(true);
-
         $redis = $this->redisFactory->get('default');
-        if ((microtime(true)-$crStart) > 1) {
-            Log::internalInfo("OperatorCacheService.currencyRate redisFactory get", ['operator_code' => $code, 'time' => microtime(true)-$crStart]);
-        }
 
         $crGetKeyStart = microtime(true);
         $r = $redis->get($key);
-        if ((microtime(true)-$crGetKeyStart) > 1) {
+        if ((microtime(true)-$crGetKeyStart) > 3) {
             Log::internalInfo("OperatorCacheService.currencyRate redis get key", ['operator_code' => $code, 'time' => microtime(true)-$crGetKeyStart]);
         }
         if (!$r) {
-            $crMongoStart = microtime(true);
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
                 '$or' => [
@@ -288,21 +282,13 @@ class OperatorCacheService
                 ]
             ]));
 
-            if (( microtime(true)-$crMongoStart) > 1) {
-                Log::internalInfo("OperatorCacheService.currencyRate mongodb fetchAll", ['operator_code' => $code, 'time' => microtime(true)-$crMongoStart]);
-            }
-
             if ($data) {
                 $rates = json_decode(json_encode($data['currency_rate']), true);
                 $_rates = [];
                 foreach ($rates as $vendor => $value) {
                     $_rates[$vendor] = $value["rate"];
                 }
-                $crSetKeyStart = microtime(true);
                 $redis->setex($key, 60*60*24, json_encode($_rates));
-                if ((microtime(true)-$crSetKeyStart) > 1) {
-                    Log::internalInfo("OperatorCacheService.currencyRate setex", ['operator_code' => $code, 'time' => microtime(true)-$crSetKeyStart]);
-                }
                 return $_rates;
             }
 
@@ -460,8 +446,8 @@ class OperatorCacheService
         $opCode = strtoupper($code);
         $dbSettingStart = microtime(true);
         $data = $this->dbSettingCache($opCode);
-        if ((microtime(true)-$dbSettingStart) > 1) {
-            Log::channel("default")->info("OperatorCacheService.dbSetting cache", ['operator_code' => $opCode, 'time' => microtime(true)-$dbSettingStart]);
+        if ((microtime(true)-$dbSettingStart) > 2) {
+            Log::internalInfo("OperatorCacheService.dbSetting cache", ['operator_code' => $opCode, 'time' => microtime(true)-$dbSettingStart]);
         }
         return $data;
 
@@ -495,7 +481,7 @@ class OperatorCacheService
                 "db" => 1,
             ]
         ]));
-        if ((microtime(true)-$dbSettingStart) > 1) {
+        if ((microtime(true)-$dbSettingStart) > 2) {
             Log::internalInfo("OperatorCacheService.dbSettingCache", ['operator_code' => $code, 'time' => microtime(true)-$dbSettingStart]);
         }
         if ($data && isset($data['db'])) {
