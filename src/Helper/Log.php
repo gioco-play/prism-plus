@@ -10,6 +10,7 @@ class Log
     private static $isLogging = false;
     private const COROUTINE_GUARD_KEY = '__prism_log_is_logging';
     private static $loggerCache = [];
+    private static $swooleAvailable = null;
 
     public static function get(string $name = 'system', string $group = 'default')
     {
@@ -104,16 +105,13 @@ class Log
 
     private static function getCoroutineContext()
     {
-        if (!class_exists(\Swoole\Coroutine::class)) {
-            return null;
+        if (self::$swooleAvailable === null) {
+            self::$swooleAvailable = class_exists(\Swoole\Coroutine::class)
+                && method_exists(\Swoole\Coroutine::class, 'getCid')
+                && method_exists(\Swoole\Coroutine::class, 'getContext');
         }
 
-        if (!method_exists(\Swoole\Coroutine::class, 'getCid') ||
-            !method_exists(\Swoole\Coroutine::class, 'getContext')) {
-            return null;
-        }
-
-        if (\Swoole\Coroutine::getCid() <= 0) {
+        if (!self::$swooleAvailable || \Swoole\Coroutine::getCid() <= 0) {
             return null;
         }
 

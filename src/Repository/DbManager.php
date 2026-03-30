@@ -133,7 +133,7 @@ class DbManager
         $dbName = $dbName ?? strtolower("{$code}_db");
         //
         $pg = new \Swoole\Coroutine\PostgreSQL();
-        $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password}";
+        $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password} connect_timeout=3";
         $maxRetries = 2;
         $retryDelaySeconds = 0.1;
         $maxAttempts = $maxRetries + 1;
