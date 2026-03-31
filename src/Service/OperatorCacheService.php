@@ -258,9 +258,9 @@ class OperatorCacheService
 
         $crGetKeyStart = microtime(true);
         $r = $redis->get($key);
-        if ((microtime(true)-$crGetKeyStart) > 3) {
-            Log::internalInfo("OperatorCacheService.currencyRate redis get key", ['operator_code' => $code, 'time' => microtime(true)-$crGetKeyStart]);
-        }
+        // if ((microtime(true)-$crGetKeyStart) > 3) {
+        //     Log::internalInfo("OperatorCacheService.currencyRate redis get key", ['operator_code' => $code, 'time' => microtime(true)-$crGetKeyStart]);
+        // }
         if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
@@ -446,7 +446,7 @@ class OperatorCacheService
         $opCode = strtoupper($code);
         $dbSettingStart = microtime(true);
         $data = $this->dbSettingCache($opCode);
-        if ((microtime(true)-$dbSettingStart) > 2) {
+        if ((microtime(true)-$dbSettingStart) > 3) {
             Log::internalInfo("OperatorCacheService.dbSetting cache", ['operator_code' => $opCode, 'time' => microtime(true)-$dbSettingStart]);
         }
         return $data;
@@ -481,9 +481,9 @@ class OperatorCacheService
                 "db" => 1,
             ]
         ]));
-        if ((microtime(true)-$dbSettingStart) > 2) {
-            Log::internalInfo("OperatorCacheService.dbSettingCache", ['operator_code' => $code, 'time' => microtime(true)-$dbSettingStart]);
-        }
+        // if ((microtime(true)-$dbSettingStart) > 2) {
+        //     Log::internalInfo("OperatorCacheService.dbSettingCache", ['operator_code' => $code, 'time' => microtime(true)-$dbSettingStart]);
+        // }
         if ($data && isset($data['db'])) {
             return $data['db'];
         }
