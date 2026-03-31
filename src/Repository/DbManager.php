@@ -133,9 +133,9 @@ class DbManager
         $dbName = $dbName ?? strtolower("{$code}_db");
         //
         $pg = new \Swoole\Coroutine\PostgreSQL();
-        $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password} connect_timeout=3";
+        $pgConnect = "host={$host} port={$port} dbname={$dbName} user={$user} password={$password} connect_timeout=2";
         $maxRetries = 2;
-        $retryDelaySeconds = 0.1;
+        $retryDelaySeconds = 0.2;
         $maxAttempts = $maxRetries + 1;
         $conn = false;
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
@@ -154,12 +154,13 @@ class DbManager
             }
         }
         if (!$conn) {
-            Log::internalInfo(__FUNCTION__ . " pg conn fail [{$code}]", [
-                "exec_time" => ((micro_timestamp() - $st) / 1000),
-                "message" => $pg->error,
-                "attempts" => $maxAttempts,
-            ]);
-            throw new \Exception("[{$code}] Postgres 未連線成功 msg: {$pg->error}");
+            $execTime = ((micro_timestamp() - $st) / 1000);
+            // Log::internalError(__FUNCTION__ . " pg conn fail [{$code}]", [
+            //     "exec_time" => ((micro_timestamp() - $st) / 1000),
+            //     "message" => $pg->error,
+            //     "attempts" => $maxAttempts,
+            // ]);
+            throw new \Exception("[{$code}] Postgres 未連線成功 message: {$pg->error} attempts: {$maxAttempts} exec_time: {$execTime}");
         }
         return $pg;
     }
