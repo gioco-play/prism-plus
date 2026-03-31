@@ -258,9 +258,9 @@ class OperatorCacheService
 
         $crGetKeyStart = microtime(true);
         $r = $redis->get($key);
-        // if ((microtime(true)-$crGetKeyStart) > 3) {
-        //     Log::internalInfo("OperatorCacheService.currencyRate redis get key", ['operator_code' => $code, 'time' => microtime(true)-$crGetKeyStart]);
-        // }
+        if ((microtime(true)-$crGetKeyStart) > 3) {
+            Log::internalInfo("OperatorCacheService.currencyRate redis get key", ['operator_code' => $code, 'time' => microtime(true)-$crGetKeyStart]);
+        }
         if (!$r) {
             $this->dbDefaultPool();
             $data = current($this->mongodb->fetchAll('operators', [
