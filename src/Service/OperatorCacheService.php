@@ -444,11 +444,11 @@ class OperatorCacheService
     public function dbSetting(string $code)
     {
         $opCode = strtoupper($code);
-        $dbSettingStart = microtime(true);
+        // $dbSettingStart = microtime(true);
         $data = $this->dbSettingCache($opCode);
-        if ((microtime(true)-$dbSettingStart) > 3) {
-            Log::internalInfo("OperatorCacheService.dbSetting cache", ['operator_code' => $opCode, 'time' => microtime(true)-$dbSettingStart]);
-        }
+        // if ((microtime(true)-$dbSettingStart) > 3) {
+        //     Log::internalInfo("OperatorCacheService.dbSetting cache", ['operator_code' => $opCode, 'time' => microtime(true)-$dbSettingStart]);
+        // }
         return $data;
 
     }
