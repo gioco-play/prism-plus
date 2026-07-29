@@ -139,6 +139,7 @@ class DbManager
         $maxAttempts = $maxRetries + 1;
         $conn = false;
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            $pg = new \Swoole\Coroutine\PostgreSQL();
             $conn = $pg->connect($pgConnect);
             if ($conn) {
                 break;
