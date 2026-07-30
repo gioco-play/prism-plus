@@ -223,7 +223,7 @@ class DbManager
     public function consulKV(string $key): string
     {
         $client = ApplicationContext::getContainer()->get(ClientFactory::class)->create([
-            'base_uri' => env('CONSUL_URI', 'http://127.0.0.1:8500'),
+            'base_uri' => env('CONSUL_HOST', 'http://127.0.0.1:8500'),
             'timeout' => 3,
             'http_errors' => false,
         ]);
