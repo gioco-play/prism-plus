@@ -175,30 +175,53 @@ class DbManager
     /**
      * 選擇 Grabber MongoDb 資料庫
      *
-     * 連線資訊取自 Consul KV grabber_mongo，內容為 JSON，host 與 db_name 皆為必填
-     * 例如 {"host": "1.1.1.1", "db_name": "grabber_prod"}
+     * 連線資訊取自 Consul KV grabber_mongo，內容為 JSON。
+     * host 與 db_name 為必填字串；port 為 1-65535 的整數，預設 27017。
+     * read_preference 預設 primary，可用值為 primary、primaryPreferred、secondary、secondaryPreferred、nearest。
+     * 例如 {"host":"mongo","db_name":"grabber_prod","port":27017,"replica":"rs0","user":"user","password":"password","read_preference":"primary"}。
+     * 設定在 worker 第一次建立 pool 後固定，更新 Consul KV 後需重啟 worker 才會生效。
      *
-     * @param string $readPref
      * @return MongoDb
      * @throws \Exception
      */
-    public function grabberDb(string $readPref = MongoDbConst::ReadPrefPrimary) {
+    public function grabberDb(): MongoDb {
         $key = self::GRABBER_CONSUL_KEY;
         $pool = "db_{$key}";
         $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
         if (!$config->has("mongodb.{$pool}")) {
             $dbConn = json_decode($this->consulKV($key), true);
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($dbConn)) {
+                throw new \Exception("Consul KV [{$key}] JSON 格式錯誤");
+            }
             foreach (['host', 'db_name'] as $field) {
-                if (empty($dbConn[$field])) {
-                    throw new \Exception("Consul KV [{$key}] 缺少 {$field}");
+                if (!isset($dbConn[$field]) || !is_string($dbConn[$field]) || trim($dbConn[$field]) === '') {
+                    throw new \Exception("Consul KV [{$key}] {$field} 必須為非空字串");
                 }
+            }
+            if (isset($dbConn['port']) && (!is_int($dbConn['port']) || $dbConn['port'] < 1 || $dbConn['port'] > 65535)) {
+                throw new \Exception("Consul KV [{$key}] port 必須為 1-65535 的整數");
+            }
+            foreach (['replica', 'user', 'password'] as $field) {
+                if (isset($dbConn[$field]) && !is_string($dbConn[$field])) {
+                    throw new \Exception("Consul KV [{$key}] {$field} 必須為字串");
+                }
+            }
+            $readPref = $dbConn['read_preference'] ?? MongoDbConst::ReadPrefPrimary;
+            if (!is_string($readPref) || !in_array($readPref, [
+                MongoDbConst::ReadPrefPrimary,
+                MongoDbConst::ReadPrefPrimaryPreferred,
+                MongoDbConst::ReadPrefSecondary,
+                MongoDbConst::ReadPrefSecondaryPreferred,
+                MongoDbConst::ReadPrefNearest,
+            ], true)) {
+                throw new \Exception("Consul KV [{$key}] read_preference 無效");
             }
             $dbCfg = mongodb_pool_config(
                 $dbConn['host'],
-                (string) $dbConn['db_name'],
-                intval($dbConn['port'] ?? 27017),
+                $dbConn['db_name'],
+                $dbConn['port'] ?? 27017,
                 $dbConn['replica'] ?? '',
-                $dbConn['read_preference'] ?? $readPref,
+                $readPref,
                 [
                     'database' => 'admin'
                 ],
@@ -214,7 +237,7 @@ class DbManager
     /**
      * 讀取 Consul KV 的值
      *
-     * Consul 位址取自 env('CONSUL_URI')，預設 http://127.0.0.1:8500
+     * Consul 位址取自 env('CONSUL_HOST')，預設 http://127.0.0.1:8500
      *
      * @param string $key KV 的 key，例如 grabber/db
      * @return string
