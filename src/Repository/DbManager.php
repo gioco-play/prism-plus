@@ -10,6 +10,7 @@ use GiocoPlus\PrismPlus\Helper\Log;
 use GiocoPlus\PrismPlus\Service\OperatorCacheService;
 use Hyperf\Cache\Cache;
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Guzzle\ClientFactory;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Di\Annotation\Inject;
 
@@ -164,6 +165,78 @@ class DbManager
             throw new \Exception("[{$code}] Postgres 未連線成功 message: {$pg->error} attempts: {$maxAttempts} exec_time: {$execTime}");
         }
         return $pg;
+    }
+
+    /**
+     * Grabber MongoDb 的 Consul KV key
+     */
+    const GRABBER_CONSUL_KEY = 'grabber_mongo';
+
+    /**
+     * 選擇 Grabber MongoDb 資料庫
+     *
+     * 連線資訊取自 Consul KV grabber_mongo，內容為 JSON，host 與 db_name 皆為必填
+     * 例如 {"host": "1.1.1.1", "db_name": "grabber_prod"}
+     *
+     * @param string $readPref
+     * @return MongoDb
+     * @throws \Exception
+     */
+    public function grabberDb(string $readPref = MongoDbConst::ReadPrefPrimary) {
+        $key = self::GRABBER_CONSUL_KEY;
+        $pool = "db_{$key}";
+        $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
+        if (!$config->has("mongodb.{$pool}")) {
+            $dbConn = json_decode($this->consulKV($key), true);
+            foreach (['host', 'db_name'] as $field) {
+                if (empty($dbConn[$field])) {
+                    throw new \Exception("Consul KV [{$key}] 缺少 {$field}");
+                }
+            }
+            $dbCfg = mongodb_pool_config(
+                $dbConn['host'],
+                (string) $dbConn['db_name'],
+                intval($dbConn['port'] ?? 27017),
+                $dbConn['replica'] ?? '',
+                $dbConn['read_preference'] ?? $readPref,
+                [
+                    'database' => 'admin'
+                ],
+                $dbConn['user'] ?? '',
+                $dbConn['password'] ?? '',
+                200
+            );
+            $config->set("mongodb.{$pool}", $dbCfg);
+        }
+        return $this->mongodb->setPool($pool);
+    }
+
+    /**
+     * 讀取 Consul KV 的值
+     *
+     * Consul 位址取自 env('CONSUL_URI')，預設 http://127.0.0.1:8500
+     *
+     * @param string $key KV 的 key，例如 grabber/db
+     * @return string
+     * @throws \Exception
+     */
+    public function consulKV(string $key): string
+    {
+        $client = ApplicationContext::getContainer()->get(ClientFactory::class)->create([
+            'base_uri' => env('CONSUL_URI', 'http://127.0.0.1:8500'),
+            'timeout' => 3,
+            'http_errors' => false,
+        ]);
+
+        $response = $client->get('/v1/kv/' . $key, [
+            'query' => ['raw' => 'true'],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception("Consul KV [{$key}] 讀取失敗 status: {$response->getStatusCode()}");
+        }
+
+        return (string) $response->getBody();
     }
 
     /**
