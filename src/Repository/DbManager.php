@@ -179,6 +179,8 @@ class DbManager
      * host 與 db_name 為必填字串；port 為 1-65535 的整數，預設 27017。
      * read_preference 預設 primary，可用值為 primary、primaryPreferred、secondary、secondaryPreferred、nearest。
      * 例如 {"host":"mongo","db_name":"grabber_prod","port":27017,"replica":"rs0","user":"user","password":"password","read_preference":"primary"}。
+     * 亦支援多節點 replica set，host 以逗號分隔各節點（各節點自帶 port），replica set 名稱可用 replicaSet 或 replica 欄位。
+     * 例如 {"host":"h1:27017,h2:27017,h3:27017","db_name":"grabber_prod","replicaSet":"rs0"}。
      * 設定在 worker 第一次建立 pool 後固定，更新 Consul KV 後需重啟 worker 才會生效。
      *
      * @return MongoDb
@@ -201,7 +203,7 @@ class DbManager
             if (isset($dbConn['port']) && (!is_int($dbConn['port']) || $dbConn['port'] < 1 || $dbConn['port'] > 65535)) {
                 throw new \Exception("Consul KV [{$key}] port 必須為 1-65535 的整數");
             }
-            foreach (['replica', 'user', 'password'] as $field) {
+            foreach (['replica', 'replicaSet', 'user', 'password'] as $field) {
                 if (isset($dbConn[$field]) && !is_string($dbConn[$field])) {
                     throw new \Exception("Consul KV [{$key}] {$field} 必須為字串");
                 }
@@ -217,10 +219,10 @@ class DbManager
                 throw new \Exception("Consul KV [{$key}] read_preference 無效");
             }
             $dbCfg = mongodb_pool_config(
-                $dbConn['host'],
+                str_replace(',', ';', $dbConn['host']),
                 $dbConn['db_name'],
                 $dbConn['port'] ?? 27017,
-                $dbConn['replica'] ?? '',
+                $dbConn['replicaSet'] ?? $dbConn['replica'] ?? '',
                 $readPref,
                 [
                     'database' => 'admin'
