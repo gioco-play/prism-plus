@@ -16,6 +16,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * 玩家Session
+ * @deprecated 改用 PlayerSessionV2CacheService
  * Class PlayerSessionCacheService
  * @package GiocoPlus\PrismPlus\Service
  */
